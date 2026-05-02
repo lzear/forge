@@ -1,6 +1,6 @@
 {
   "name": "@lzear/forge",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Umbrella package for all lzear dev tooling",
   "repository": {
     "type": "git",
