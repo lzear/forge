@@ -1,3 +1,9 @@
+<p align="center">
+  <picture>
+    <img alt="forge" src="assets/forge.svg" width="300"/>
+  </picture>
+</p>
+
 # forge
 
 [![CI](https://github.com/lzear/forge/actions/workflows/main.yml/badge.svg)](https://github.com/lzear/forge/actions/workflows/main.yml)
@@ -45,11 +51,11 @@ Run with `--dry` to preview without writing.
 
 ## CI
 
-| Event | Jobs |
-|---|---|
-| Push to any branch | `ci` — install, lint, test, build, `forge check` |
-| Push to `main` | `ci` then `release` — changesets opens/updates a **"Version Packages"** PR |
-| Merge "Version Packages" PR | `release` publishes changed packages to npm |
+| Event                       | Jobs                                                                       |
+|-----------------------------|----------------------------------------------------------------------------|
+| Push to any branch          | `ci` — install, lint, test, build, `forge check`                           |
+| Push to `main`              | `ci` then `release` — changesets opens/updates a **"Version Packages"** PR |
+| Merge "Version Packages" PR | `release` publishes changed packages to npm                                |
 
 The CI and release workflows are reusable (`workflow_call`) and can be consumed by other lzear repos.
 

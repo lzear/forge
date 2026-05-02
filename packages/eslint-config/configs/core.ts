@@ -64,6 +64,7 @@ export const core = (): Linter.Config => {
 
     ...sonarRules,
     'sonarjs/fixme-tag': 0,
+    'sonarjs/no-invariant-returns': 0, // annoying
     'sonarjs/no-os-command-from-path': 0, // annoying
     'sonarjs/os-command': 0, // annoying
     'sonarjs/prefer-read-only-props': 0, // annoying

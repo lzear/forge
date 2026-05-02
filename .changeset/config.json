@@ -1,8 +1,8 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
-  "changelog": "@changesets/cli/changelog",
+  "changelog": "./changelog.cjs",
   "commit": false,
-  "fixed": [],
+  "fixed": [["@lzear/configs", "@lzear/eslint-config", "@lzear/forge", "@lzear/repo-lint"]],
   "linked": [],
   "access": "public",
   "baseBranch": "main",

@@ -1,11 +1,11 @@
 import type { KnipConfig } from 'knip'
 
 const config = {
-  ignore: ['.ncurc.js'],
+  ignore: ['.ncurc.js', '.changeset/**'],
   workspaces: {
     'packages/repo-lint': {
       entry: ['src/index.ts', 'src/bin.ts'],
-      ignoreDependencies: ['@arethetypeswrong/cli', 'publint'],
+      ignoreDependencies: ['@arethetypeswrong/cli'],
     },
     'packages/eslint-config': {
       ignoreDependencies: ['eslint-import-resolver-typescript'],

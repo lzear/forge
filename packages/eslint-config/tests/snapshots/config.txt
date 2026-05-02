@@ -24082,7 +24082,7 @@
       "sonarjs/no-internal-api-use": "error",
       "sonarjs/no-intrusive-permissions": "error",
       "sonarjs/no-invalid-regexp": "error",
-      "sonarjs/no-invariant-returns": "error",
+      "sonarjs/no-invariant-returns": 0,
       "sonarjs/no-inverted-boolean-check": "error",
       "sonarjs/no-ip-forward": "error",
       "sonarjs/no-labels": "error",
