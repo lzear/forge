@@ -26,8 +26,7 @@ jobs:
       - run: yarn build
       - uses: changesets/action@v1
         with:
-          publish: yarn workspaces foreach --no-private npm publish --access public
+          publish: yarn workspaces foreach --all --no-private npm publish --access public
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
