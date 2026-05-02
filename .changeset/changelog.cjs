@@ -1,7 +1,9 @@
+const { execSync } = require('node:child_process')
 const { promises: fs } = require('node:fs')
 const path = require('node:path')
 
-const ROOT_CHANGELOG = path.resolve(__dirname, '../CHANGELOG.md')
+const ROOT = path.resolve(__dirname, '..')
+const ROOT_CHANGELOG = path.resolve(ROOT, 'CHANGELOG.md')
 const written = new Set()
 
 const bump = (version, type) => {
@@ -11,6 +13,23 @@ const bump = (version, type) => {
   return `${major}.${minor}.${patch + 1}`
 }
 
+const getCommits = () => {
+  try {
+    const lastTag = execSync('git describe --tags --abbrev=0', { cwd: ROOT })
+      .toString()
+      .trim()
+    return execSync(`git log ${lastTag}..HEAD --oneline --no-merges`, {
+      cwd: ROOT,
+    })
+      .toString()
+      .trim()
+  } catch {
+    return execSync('git log --oneline --no-merges -20', { cwd: ROOT })
+      .toString()
+      .trim()
+  }
+}
+
 /** @type {import("@changesets/types").ChangelogFunctions} */
 module.exports = {
   getReleaseLine: async (changeset, type) => {
@@ -18,15 +37,22 @@ module.exports = {
     written.add(changeset.id)
     const pkg = JSON.parse(
       await fs.readFile(
-        path.resolve(__dirname, '../packages/forge/package.json'),
+        path.resolve(ROOT, 'packages/forge/package.json'),
         'utf8',
       ),
     )
     const version = bump(pkg.version, type)
+    const commits = getCommits()
+    const commitSection = commits
+      ? `### Commits\n\n${commits
+          .split('\n')
+          .map((l) => `- ${l}`)
+          .join('\n')}\n\n`
+      : ''
     const existing = await fs.readFile(ROOT_CHANGELOG, 'utf8').catch(() => '')
     await fs.writeFile(
       ROOT_CHANGELOG,
-      `## ${version}\n\n- ${changeset.summary}\n\n${existing}`,
+      `## ${version}\n\n- ${changeset.summary}\n\n${commitSection}${existing}`,
     )
     return ''
   },
