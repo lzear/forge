@@ -1,0 +1,82 @@
+{
+  "name": "@lzear/configs",
+  "version": "0.0.1",
+  "description": "Shared configs for lzear repos — tsconfig, vitest, tsup, vite",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lzear/forge.git",
+    "directory": "packages/configs"
+  },
+  "author": "lzear",
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    "./tsconfig/app": "./tsconfig/app.json",
+    "./tsconfig/base": "./tsconfig/base.json",
+    "./tsconfig/lib": "./tsconfig/lib.json",
+    "./tsconfig/react": "./tsconfig/react.json",
+    "./tsup": {
+      "types": "./dist/tsup.d.ts",
+      "default": "./dist/tsup.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "default": "./dist/vite.js"
+    },
+    "./vitest": {
+      "types": "./dist/vitest.d.ts",
+      "default": "./dist/vitest.js"
+    },
+    "./vitest/react": {
+      "types": "./dist/vitest.react.d.ts",
+      "default": "./dist/vitest.react.js"
+    }
+  },
+  "files": [
+    "dist",
+    "tsconfig"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6",
+    "jsdom": "~29",
+    "tsup": "^8",
+    "typescript": "^6",
+    "vite": "^8",
+    "vitest": "^4"
+  },
+  "peerDependencies": {
+    "@vitejs/plugin-react": "^6",
+    "jsdom": "~29",
+    "tsup": "^8",
+    "vite": "^8",
+    "vitest": "^4"
+  },
+  "peerDependenciesMeta": {
+    "@vitejs/plugin-react": {
+      "optional": true
+    },
+    "jsdom": {
+      "optional": true
+    },
+    "tsup": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
+    },
+    "vitest": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

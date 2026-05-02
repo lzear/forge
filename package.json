@@ -1,0 +1,29 @@
+{
+  "name": "forge",
+  "version": "0.0.0",
+  "private": true,
+  "description": "lzear dev tooling monorepo",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "yarn workspaces foreach -A --topological run build",
+    "changeset": "changeset",
+    "health": "forge health",
+    "lint": "eslint .",
+    "qa": "yarn build && yarn lint && yarn test && yarn forge check",
+    "release": "changeset publish",
+    "setup-repo": "forge setup",
+    "test": "yarn workspaces foreach -A run test",
+    "version-packages": "changeset version"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2",
+    "@lzear/configs": "workspace:*",
+    "@lzear/forge": "workspace:*",
+    "eslint": "^9",
+    "typescript": "^6"
+  },
+  "type": "commonjs",
+  "packageManager": "yarn@4.14.1"
+}

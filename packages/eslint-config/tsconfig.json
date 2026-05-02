@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@lzear/configs/tsconfig/lib",
+  "include": ["**/*.ts", "environment.d.ts"],
+  "compilerOptions": {
+    "types": ["node", "vitest/globals"]
+  }
+}

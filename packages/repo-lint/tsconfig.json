@@ -1,0 +1,4 @@
+{
+  "extends": "@lzear/configs/tsconfig/lib",
+  "include": ["src", "*.ts"]
+}

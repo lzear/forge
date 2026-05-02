@@ -1,0 +1,50 @@
+{
+  "name": "@lzear/repo-lint",
+  "version": "0.0.1",
+  "description": "Checks lzear repos against forge standards",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lzear/forge.git",
+    "directory": "packages/repo-lint"
+  },
+  "author": "lzear",
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": "./dist/bin.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@arethetypeswrong/cli": "^0.18",
+    "knip": "^6",
+    "npm-check-updates": "^22",
+    "publint": "^0.3"
+  },
+  "devDependencies": {
+    "@lzear/configs": "workspace:*",
+    "@types/node": "^25",
+    "@vitest/coverage-v8": "^4",
+    "tsup": "^8",
+    "typescript": "^6",
+    "vitest": "^4"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "name": "@lzear/eslint-config",
+  "version": "4.0.0",
+  "description": "Shared ESLint flat config for lzear repos",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lzear/forge.git",
+    "directory": "packages/eslint-config"
+  },
+  "author": "lzear",
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@eslint-community/eslint-plugin-eslint-comments": "^4",
+    "@eslint/js": "^9",
+    "@next/eslint-plugin-next": "^16",
+    "@vitest/eslint-plugin": "^1",
+    "eslint-config-prettier": "^10",
+    "eslint-import-resolver-typescript": "^4",
+    "eslint-module-utils": "^2",
+    "eslint-plugin-de-morgan": "^2",
+    "eslint-plugin-import-x": "^4",
+    "eslint-plugin-jsx-a11y": "^6",
+    "eslint-plugin-n": "^17",
+    "eslint-plugin-package-json": "^0.91",
+    "eslint-plugin-prefer-arrow": "^1",
+    "eslint-plugin-prettier": "^5",
+    "eslint-plugin-promise": "^7",
+    "eslint-plugin-react": "^7",
+    "eslint-plugin-react-compiler": "^19.1.0-rc.2",
+    "eslint-plugin-react-dom": "^5",
+    "eslint-plugin-react-hooks": "^7",
+    "eslint-plugin-react-perf": "^3",
+    "eslint-plugin-react-web-api": "^5",
+    "eslint-plugin-react-x": "^5",
+    "eslint-plugin-regexp": "^3",
+    "eslint-plugin-sonarjs": "^4",
+    "eslint-plugin-unicorn": "^64",
+    "globals": "^17",
+    "jsonc-eslint-parser": "^3",
+    "prettier": "^3",
+    "typescript-eslint": "^8"
+  },
+  "devDependencies": {
+    "@lzear/configs": "workspace:*",
+    "@vitest/coverage-v8": "^4",
+    "eslint": "^9",
+    "tsup": "^8",
+    "typescript": "^6",
+    "vitest": "^4"
+  },
+  "peerDependencies": {
+    "eslint": "^9"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "name": "@lzear/forge",
+  "version": "0.0.1",
+  "description": "Umbrella package for all lzear dev tooling",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lzear/forge.git",
+    "directory": "packages/forge"
+  },
+  "author": "lzear",
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    "./eslint": {
+      "types": "./dist/eslint.d.ts",
+      "default": "./dist/eslint.js"
+    },
+    "./repo-lint": {
+      "types": "./dist/repo-lint.d.ts",
+      "default": "./dist/repo-lint.js"
+    },
+    "./tsconfig/app": "./tsconfig/app.json",
+    "./tsconfig/lib": "./tsconfig/lib.json",
+    "./tsconfig/react": "./tsconfig/react.json",
+    "./tsup": {
+      "types": "./dist/tsup.d.ts",
+      "default": "./dist/tsup.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "default": "./dist/vite.js"
+    },
+    "./vitest": {
+      "types": "./dist/vitest.d.ts",
+      "default": "./dist/vitest.js"
+    },
+    "./vitest/react": {
+      "types": "./dist/vitest.react.d.ts",
+      "default": "./dist/vitest.react.js"
+    }
+  },
+  "bin": "./dist/bin.js",
+  "files": [
+    "dist",
+    "tsconfig"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1",
+    "@lzear/configs": "workspace:*",
+    "@lzear/eslint-config": "workspace:*",
+    "@lzear/repo-lint": "workspace:*",
+    "commander": "^14",
+    "picocolors": "^1"
+  },
+  "devDependencies": {
+    "@types/node": "^25",
+    "@vitejs/plugin-react": "^6",
+    "eslint": "^9",
+    "jsdom": "^29",
+    "tsup": "^8",
+    "typescript": "^6",
+    "vite": "^8",
+    "vitest": "^4"
+  },
+  "peerDependencies": {
+    "@vitejs/plugin-react": "^6",
+    "eslint": "^9",
+    "jsdom": "^29",
+    "tsup": "^8",
+    "vite": "^8",
+    "vitest": "^4"
+  },
+  "peerDependenciesMeta": {
+    "@vitejs/plugin-react": {
+      "optional": true
+    },
+    "eslint": {
+      "optional": true
+    },
+    "jsdom": {
+      "optional": true
+    },
+    "tsup": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
+    },
+    "vitest": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
