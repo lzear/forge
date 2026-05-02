@@ -33,7 +33,7 @@ export const node = async (config: ConfigOptions): Promise<Linter.Config> => {
     },
 
     rules: {
-      ...nodePlugin.configs['flat/recommended']?.rules,
+      ...nodePlugin.configs['flat/recommended'].rules,
       'n/hashbang': 0,
       // n resolver doesn't understand TypeScript imports; TypeScript handles this
       'n/no-extraneous-import': 0,

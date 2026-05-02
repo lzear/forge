@@ -13,7 +13,7 @@ import pc from 'picocolors'
 const require = createRequire(import.meta.url)
 const { version } = require('../package.json') as { version: string }
 
-const isTTY = process.stdout.isTTY ?? false
+const isTTY = process.stdout.isTTY
 const isDebug = process.env.DEBUG?.includes('forge') ?? false
 
 const debug = (...args: unknown[]) => {
@@ -21,14 +21,21 @@ const debug = (...args: unknown[]) => {
 }
 
 const log = {
-  intro: (msg: string) => (isTTY ? clack.intro(msg) : console.log(msg)),
-  outro: (msg: string) => (isTTY ? clack.outro(msg) : console.log(msg)),
-  success: (msg: string) =>
-    isTTY ? clack.log.success(msg) : console.log(`✓ ${msg}`),
-  error: (msg: string) =>
-    isTTY ? clack.log.error(msg) : console.error(`✗ ${msg}`),
-  warn: (msg: string) =>
-    isTTY ? clack.log.warn(msg) : console.warn(`! ${msg}`),
+  intro: (msg: string) => {
+    isTTY ? clack.intro(msg) : console.log(msg)
+  },
+  outro: (msg: string) => {
+    isTTY ? clack.outro(msg) : console.log(msg)
+  },
+  success: (msg: string) => {
+    isTTY ? clack.log.success(msg) : console.log(`✓ ${msg}`)
+  },
+  error: (msg: string) => {
+    isTTY ? clack.log.error(msg) : console.error(`✗ ${msg}`)
+  },
+  warn: (msg: string) => {
+    isTTY ? clack.log.warn(msg) : console.warn(`! ${msg}`)
+  },
   spinner: () =>
     isTTY
       ? clack.spinner()
@@ -149,13 +156,13 @@ const promptAndSet = async (
   const value = await clack.password({
     message: `${s.name}: ${pc.dim(s.desc)}`,
   })
-  if (clack.isCancel(value) || !String(value).trim()) {
+  if (clack.isCancel(value) || !value.trim()) {
     log.warn(`${s.name} skipped.`)
     return
   }
   spawnSync(
     'gh',
-    ['secret', 'set', s.name, '--repo', repo, '--body', String(value).trim()],
+    ['secret', 'set', s.name, '--repo', repo, '--body', value.trim()],
     { stdio: 'ignore' },
   )
   log.success(`${s.name} set.`)

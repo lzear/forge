@@ -23,11 +23,23 @@ export const typescript = async (
 
     extends: [
       eslint.configs.recommended,
-      tseslint.configs.recommendedTypeChecked,
+      tseslint.configs.strictTypeChecked,
       tseslint.configs.stylisticTypeChecked,
     ],
 
     files,
+
+    rules: {
+      '@typescript-eslint/no-unnecessary-condition': [
+        2,
+        { allowConstantLoopConditions: 'only-allowed-literals' },
+      ],
+      '@typescript-eslint/no-unused-expressions': [2, { allowTernary: true }],
+      '@typescript-eslint/restrict-template-expressions': [
+        2,
+        { allowNumber: true },
+      ],
+    },
 
     languageOptions: {
       parser: typescriptParser as unknown as Linter.Parser,

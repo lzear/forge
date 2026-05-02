@@ -62,8 +62,9 @@ describe('LOCAL_CHECKS', () => {
   })
 
   describe('readme-exists', () => {
-    it('fails when missing', async () =>
-      expect(await check('readme-exists', dir)).toBe(false))
+    it('fails when missing', async () => {
+      expect(await check('readme-exists', dir)).toBe(false)
+    })
     it('passes when present', async () => {
       write(dir, 'README.md')
       expect(await check('readme-exists', dir)).toBe(true)
@@ -112,8 +113,9 @@ describe('LOCAL_CHECKS', () => {
   })
 
   describe('editorconfig', () => {
-    it('fails when missing', async () =>
-      expect(await check('editorconfig', dir)).toBe(false))
+    it('fails when missing', async () => {
+      expect(await check('editorconfig', dir)).toBe(false)
+    })
     it('passes when present', async () => {
       write(dir, '.editorconfig', 'root = true')
       expect(await check('editorconfig', dir)).toBe(true)
@@ -121,8 +123,9 @@ describe('LOCAL_CHECKS', () => {
   })
 
   describe('codacy-config', () => {
-    it('fails when missing', async () =>
-      expect(await check('codacy-config', dir)).toBe(false))
+    it('fails when missing', async () => {
+      expect(await check('codacy-config', dir)).toBe(false)
+    })
     it('passes when present', async () => {
       write(dir, '.codacy.yml', 'engines:')
       expect(await check('codacy-config', dir)).toBe(true)
@@ -130,8 +133,9 @@ describe('LOCAL_CHECKS', () => {
   })
 
   describe('license', () => {
-    it('fails when missing', async () =>
-      expect(await check('license', dir)).toBe(false))
+    it('fails when missing', async () => {
+      expect(await check('license', dir)).toBe(false)
+    })
     it('passes when present', async () => {
       write(dir, 'LICENSE', 'MIT')
       expect(await check('license', dir)).toBe(true)
@@ -139,8 +143,9 @@ describe('LOCAL_CHECKS', () => {
   })
 
   describe('ci-workflow', () => {
-    it('fails when missing', async () =>
-      expect(await check('ci-workflow', dir)).toBe(false))
+    it('fails when missing', async () => {
+      expect(await check('ci-workflow', dir)).toBe(false)
+    })
     it('passes when present', async () => {
       write(dir, '.github/workflows/ci.yml', 'on: push')
       expect(await check('ci-workflow', dir)).toBe(true)
@@ -148,8 +153,9 @@ describe('LOCAL_CHECKS', () => {
   })
 
   describe('renovate', () => {
-    it('fails when missing', async () =>
-      expect(await check('renovate', dir)).toBe(false))
+    it('fails when missing', async () => {
+      expect(await check('renovate', dir)).toBe(false)
+    })
     it('passes when present', async () => {
       write(dir, 'renovate.json', '{}')
       expect(await check('renovate', dir)).toBe(true)

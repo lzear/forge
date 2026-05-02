@@ -74,7 +74,7 @@ export const preferRelativeImports: Rule.RuleModule = {
   create: (context) => {
     const opts = (context.options as Options)[0]
     const maxParentPrefixes = opts?.maxParentPrefixes ?? 1
-    const filename = context.physicalFilename ?? context.filename
+    const filename = context.physicalFilename
 
     const check = (source: SourceNode) => {
       const importPath = source.value

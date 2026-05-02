@@ -5,7 +5,7 @@
 [![Codacy grade](https://app.codacy.com/project/badge/Grade/e9dcbdfc5611478d81981841c10d42fa)](https://app.codacy.com/gh/lzear/forge)
 [![Codacy coverage](https://app.codacy.com/project/badge/Coverage/e9dcbdfc5611478d81981841c10d42fa)](https://app.codacy.com/gh/lzear/forge)
 [![license](https://img.shields.io/github/license/lzear/forge)](LICENSE)
-![TypeScript](https://img.shields.io/badge/TypeScript-blue?logo=typescript&logoColor=white)
+[![language](https://img.shields.io/github/languages/top/lzear/forge)](https://github.com/lzear/forge)
 
 > Shared dev tooling, configs, and standards for all lzear repos.
 
