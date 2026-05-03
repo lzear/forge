@@ -140,6 +140,26 @@ Add `"prepare": "lefthook install"` to `package.json` to auto-install hooks on `
 
 Enforces [Conventional Commits](https://www.conventionalcommits.org/) with `header-max-length` of 100.
 
+**Require every commit to start with an emoji:**
+
+```ts
+import emoji from '@lzear/forge/commitlint/emoji'
+export default emoji
+```
+
+Combine both:
+
+```ts
+import base from '@lzear/forge/commitlint'
+import emoji from '@lzear/forge/commitlint/emoji'
+
+export default {
+  ...base,
+  plugins: [...(base.plugins ?? []), ...(emoji.plugins ?? [])],
+  rules: { ...base.rules, ...emoji.rules },
+}
+```
+
 ### `forge sync`
 
 Writes the following files (fetched from `main`):

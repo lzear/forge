@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/@lzear/configs)](https://www.npmjs.com/package/@lzear/configs)
 [![license](https://img.shields.io/npm/l/@lzear/configs)](../../LICENSE)
 
-Shared configs for lzear repos: tsconfig, vitest, tsup, and vite.
+Shared configs for lzear repos: tsconfig, vitest, tsup, vite, and commitlint.
 
 ## Install
 
@@ -91,6 +91,49 @@ export default config
 import config from '@lzear/configs/vite'
 
 export default config
+```
+
+## commitlint
+
+```ts
+// commitlint.config.ts
+import config from '@lzear/configs/commitlint'
+
+export default config
+```
+
+Enforces [Conventional Commits](https://www.conventionalcommits.org/) with `header-max-length` of 100.
+
+Pair with `lefthook.yml`:
+
+```yaml
+commit-msg:
+  commands:
+    commitlint:
+      run: yarn commitlint --edit {1}
+```
+
+### Emoji rule
+
+Require every commit message to start with an emoji:
+
+```ts
+import emoji from '@lzear/configs/commitlint/emoji'
+
+export default emoji
+```
+
+Combine with conventional commits:
+
+```ts
+import base from '@lzear/configs/commitlint'
+import emoji from '@lzear/configs/commitlint/emoji'
+
+export default {
+  ...base,
+  plugins: [...(base.plugins ?? []), ...(emoji.plugins ?? [])],
+  rules: { ...base.rules, ...emoji.rules },
+}
 ```
 
 ## Part of forge

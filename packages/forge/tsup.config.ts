@@ -4,6 +4,7 @@ export default defineConfig([
   {
     entry: {
       commitlint: 'src/commitlint.ts',
+      'commitlint.emoji': 'src/commitlint-emoji.ts',
       eslint: 'src/eslint.ts',
       vitest: 'src/vitest.ts',
       'vitest.react': 'src/vitest.react.ts',

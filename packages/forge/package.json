@@ -16,6 +16,10 @@
       "types": "./dist/commitlint.d.ts",
       "default": "./dist/commitlint.js"
     },
+    "./commitlint/emoji": {
+      "types": "./dist/commitlint.emoji.d.ts",
+      "default": "./dist/commitlint.emoji.js"
+    },
     "./eslint": {
       "types": "./dist/eslint.d.ts",
       "default": "./dist/eslint.js"

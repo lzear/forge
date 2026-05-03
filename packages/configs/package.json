@@ -16,6 +16,10 @@
       "types": "./dist/commitlint.d.ts",
       "default": "./dist/commitlint.js"
     },
+    "./commitlint/emoji": {
+      "types": "./dist/commitlint.emoji.d.ts",
+      "default": "./dist/commitlint.emoji.js"
+    },
     "./tsconfig/app": "./tsconfig/app.json",
     "./tsconfig/base": "./tsconfig/base.json",
     "./tsconfig/lib": "./tsconfig/lib.json",

@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/@lzear/forge)](https://www.npmjs.com/package/@lzear/forge)
 [![license](https://img.shields.io/npm/l/@lzear/forge)](../../LICENSE)
 
-Umbrella package for lzear dev tooling. One dependency gives you ESLint config, shared build configs, repo compliance checks, and the `forge` CLI.
+Umbrella package for lzear dev tooling. One dependency gives you ESLint config, shared build configs, commitlint config, repo compliance checks, and the `forge` CLI.
 
 ## Install
 
@@ -50,7 +50,7 @@ forge setup --dry                   # check only, do not prompt
 Fetches shared template files from the forge `main` branch and writes them locally.
 
 ```sh
-forge sync        # write .editorconfig and .codacy.yml
+forge sync        # write .editorconfig, .codacy.yml, lefthook.yml
 forge sync --dry  # preview without writing
 ```
 
@@ -102,6 +102,38 @@ For React: `@lzear/forge/vitest/react`.
 import config from '@lzear/forge/vite'
 
 export default config
+```
+
+## commitlint
+
+```ts
+// commitlint.config.ts
+import config from '@lzear/forge/commitlint'
+
+export default config
+```
+
+Enforces [Conventional Commits](https://www.conventionalcommits.org/) with `header-max-length` of 100. Pair with `lefthook.yml` (via `forge sync`) to run on every commit.
+
+Require every commit to start with an emoji:
+
+```ts
+import emoji from '@lzear/forge/commitlint/emoji'
+
+export default emoji
+```
+
+Combine both:
+
+```ts
+import base from '@lzear/forge/commitlint'
+import emoji from '@lzear/forge/commitlint/emoji'
+
+export default {
+  ...base,
+  plugins: [...(base.plugins ?? []), ...(emoji.plugins ?? [])],
+  rules: { ...base.rules, ...emoji.rules },
+}
 ```
 
 ## Repo compliance
