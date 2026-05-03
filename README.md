@@ -19,7 +19,7 @@
 
 - **[`@lzear/forge`](packages/forge)** — Umbrella: one dep for everything + `forge` CLI
 
-- **[`@lzear/configs`](packages/configs)** — tsconfig, vitest, tsup, vite configs
+- **[`@lzear/configs`](packages/configs)** — tsconfig, vitest, tsup, vite, commitlint configs
 
 - **[`@lzear/eslint-config`](packages/eslint-config)** — ESLint flat config
   
@@ -114,6 +114,32 @@ const config: Linter.Config[] = [
 export default config
 ```
 
+### `@lzear/configs` — commitlint
+
+```sh
+yarn add -D @lzear/forge @commitlint/cli lefthook
+```
+
+**`commitlint.config.ts`:**
+
+```ts
+import config from '@lzear/forge/commitlint'
+export default config
+```
+
+**`lefthook.yml`** (or run `forge sync` to get it):
+
+```yaml
+commit-msg:
+  commands:
+    commitlint:
+      run: yarn commitlint --edit {1}
+```
+
+Add `"prepare": "lefthook install"` to `package.json` to auto-install hooks on `yarn install`.
+
+Enforces [Conventional Commits](https://www.conventionalcommits.org/) with `header-max-length` of 100.
+
 ### `forge sync`
 
 Writes the following files (fetched from `main`):
@@ -122,6 +148,7 @@ Writes the following files (fetched from `main`):
 |-----------------|-----------------------------------|
 | `.editorconfig` | Editor whitespace/indent settings |
 | `.codacy.yml`   | Codacy analysis config            |
+| `lefthook.yml`  | Git hooks (commitlint on commit-msg) |
 
 Run with `--dry` to preview without writing.
 

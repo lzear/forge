@@ -265,6 +265,7 @@ program
 const SYNC_FILES: { src: string; dest: string }[] = [
   { src: 'template/.editorconfig', dest: '.editorconfig' },
   { src: 'template/.codacy.yml', dest: '.codacy.yml' },
+  { src: 'template/lefthook.yml', dest: 'lefthook.yml' },
 ]
 
 const RAW_BASE = 'https://raw.githubusercontent.com/lzear/forge/main'

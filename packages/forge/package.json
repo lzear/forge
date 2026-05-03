@@ -12,6 +12,10 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
+    "./commitlint": {
+      "types": "./dist/commitlint.d.ts",
+      "default": "./dist/commitlint.js"
+    },
     "./eslint": {
       "types": "./dist/eslint.d.ts",
       "default": "./dist/eslint.js"
@@ -62,7 +66,6 @@
     "@types/node": "^25",
     "@vitejs/plugin-react": "^6",
     "eslint": "^9",
-    "jsdom": "^29",
     "tsup": "^8",
     "typescript": "^6",
     "vite": "^8",
@@ -71,7 +74,6 @@
   "peerDependencies": {
     "@vitejs/plugin-react": "^6",
     "eslint": "^9",
-    "jsdom": "^29",
     "tsup": "^8",
     "vite": "^8",
     "vitest": "^4"

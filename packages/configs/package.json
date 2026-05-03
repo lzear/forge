@@ -12,6 +12,10 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
+    "./commitlint": {
+      "types": "./dist/commitlint.d.ts",
+      "default": "./dist/commitlint.js"
+    },
     "./tsconfig/app": "./tsconfig/app.json",
     "./tsconfig/base": "./tsconfig/base.json",
     "./tsconfig/lib": "./tsconfig/lib.json",
@@ -42,7 +46,11 @@
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@commitlint/config-conventional": "^20"
+  },
   "devDependencies": {
+    "@commitlint/types": "^20",
     "@vitejs/plugin-react": "^6",
     "jsdom": "~29",
     "tsup": "^8",
@@ -58,6 +66,9 @@
     "vitest": "^4"
   },
   "peerDependenciesMeta": {
+    "@commitlint/cli": {
+      "optional": true
+    },
     "@vitejs/plugin-react": {
       "optional": true
     },
