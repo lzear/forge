@@ -1,7 +1,8 @@
 import type { KnipConfig } from 'knip'
 
 const config = {
-  ignore: ['.ncurc.js', '.changeset/**'],
+  ignore: ['.ncurc.js'],
+  ignoreDependencies: ['@changesets/cli'],
   workspaces: {
     'packages/repo-lint': {
       entry: ['src/index.ts', 'src/bin.ts'],

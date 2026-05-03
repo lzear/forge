@@ -193,12 +193,8 @@ yarn qa        # build + typecheck + lint + test (parallel) + forge check
 
 ## Publishing
 
-Publishing is fully automated via CI:
+```sh
+yarn changeset   # create a changeset on your branch
+```
 
-1. Add a changeset on your branch:
-   ```sh
-   yarn changeset
-   ```
-2. Merge to `main`
-3. CI opens (or updates) a **"Version Packages"** PR
-4. Merge that PR → CI publishes to npm automatically
+Merge to `main` → CI opens a **"Version Packages"** PR. Merge that PR → CI publishes to npm.

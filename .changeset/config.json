@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
-  "changelog": "./changelog.cjs",
+  "changelog": ["@changesets/changelog-github", { "repo": "lzear/forge" }],
   "commit": false,
   "fixed": [["@lzear/configs", "@lzear/eslint-config", "@lzear/forge", "@lzear/repo-lint"]],
   "linked": [],
