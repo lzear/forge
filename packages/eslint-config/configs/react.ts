@@ -12,7 +12,6 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
     reactHooksPlugin,
     reactPerfPlugin,
     reactPlugin,
-    nextPlugin,
     reactXPlugin,
     reactDomPlugin,
     reactWebApiPlugin,
@@ -21,7 +20,6 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
     interopDefault(import('eslint-plugin-react-hooks')),
     interopDefault(import('eslint-plugin-react-perf')),
     interopDefault(import('eslint-plugin-react')),
-    interopDefault(import('@next/eslint-plugin-next')),
     interopDefault(import('eslint-plugin-react-x')),
     interopDefault(import('eslint-plugin-react-dom')),
     interopDefault(import('eslint-plugin-react-web-api')),
@@ -39,7 +37,6 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
     files,
 
     plugins: {
-      '@next/next': nextPlugin,
       react: reactPlugin,
       'react-compiler': reactCompilerPlugin,
       'react-dom': reactDomPlugin,
@@ -59,10 +56,6 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
       'react-perf/jsx-no-new-object-as-prop': 0,
 
       ...reactPlugin.configs.recommended.rules,
-
-      ...nextPlugin.configs.recommended.rules,
-
-      ...nextPlugin.configs['core-web-vitals'].rules,
 
       'react/react-in-jsx-scope': 0,
       'react/no-unknown-property': ['error', { ignore: ['jsx', 'global'] }],

@@ -6,17 +6,6 @@ declare module '@eslint-community/eslint-plugin-eslint-comments' {
   export = { ...plugin, configs }
 }
 
-declare module '@next/eslint-plugin-next' {
-  import type { ESLint, Linter } from 'eslint'
-
-  let plugin: ESLint.Plugin
-  let configs: {
-    'core-web-vitals': { rules: Linter.RulesRecord }
-    recommended: { rules: Linter.RulesRecord }
-  }
-  export = { ...plugin, configs }
-}
-
 declare module 'eslint-plugin-jsx-a11y' {
   import type { ESLint, Linter } from 'eslint'
 

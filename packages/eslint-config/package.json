@@ -29,7 +29,6 @@
   "dependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "^4",
     "@eslint/js": "^9",
-    "@next/eslint-plugin-next": "^16",
     "@vitest/eslint-plugin": "^1",
     "eslint-config-prettier": "^10",
     "eslint-import-resolver-typescript": "^4",
