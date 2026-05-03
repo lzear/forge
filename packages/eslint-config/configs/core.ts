@@ -1,6 +1,6 @@
 import js from '@eslint/js'
 import eslintCommentsPlugin from '@eslint-community/eslint-plugin-eslint-comments'
-import type { ESLint, Linter } from 'eslint'
+import type { Linter } from 'eslint'
 import deMorganPlugin from 'eslint-plugin-de-morgan'
 import importXPlugin from 'eslint-plugin-import-x'
 import preferArrowPlugin from 'eslint-plugin-prefer-arrow'
@@ -98,7 +98,7 @@ export const core = (): Linter.Config => {
     plugins: {
       '@eslint-community/eslint-comments': eslintCommentsPlugin,
       'de-morgan': deMorganPlugin,
-      'import-x': importXPlugin as unknown as ESLint.Plugin,
+      'import-x': importXPlugin,
       lzear: lzearPlugin,
       'prefer-arrow': preferArrowPlugin,
       promise: promisePlugin,

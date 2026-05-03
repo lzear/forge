@@ -42,7 +42,7 @@ export const typescript = async (
     },
 
     languageOptions: {
-      parser: typescriptParser as unknown as Linter.Parser,
+      parser: typescriptParser,
       parserOptions: {
         ecmaFeatures: { jsx: config.react },
         ecmaVersion: 'latest',

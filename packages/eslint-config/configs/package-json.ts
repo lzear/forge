@@ -1,4 +1,4 @@
-import type { ESLint, Linter } from 'eslint'
+import type { Linter } from 'eslint'
 import * as packageJsonPlugin from 'eslint-plugin-package-json'
 import * as jsoncParser from 'jsonc-eslint-parser'
 import { plugin as lzearPlugin } from '../plugin'
@@ -10,7 +10,7 @@ export const packageJson = (): Linter.Config => ({
 
   plugins: {
     lzear: lzearPlugin,
-    'package-json': packageJsonPlugin as unknown as ESLint.Plugin,
+    'package-json': packageJsonPlugin,
   },
 
   languageOptions: {

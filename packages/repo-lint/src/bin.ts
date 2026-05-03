@@ -52,7 +52,7 @@ const main = async (): Promise<void> => {
       console.log(`\n── ${repo}`)
       try {
         const result = await checkRepo(repo, {
-          token: values.token,
+          ...(values.token !== undefined && { token: values.token }),
           baseDir: values.dir,
           skipRemote: values['skip-remote'],
         })

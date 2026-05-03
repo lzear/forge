@@ -94,12 +94,10 @@ const eachPublishedPkg = async (
     )
     const failures = results.filter((r) => !r.pass)
     if (failures.length === 0) return { pass: true }
-    return {
-      pass: false,
-      detail:
-        failures.flatMap((r) => (r.detail ? [r.detail] : [])).join('\n') ||
-        undefined,
-    }
+    const detail = failures
+      .flatMap((r) => (r.detail ? [r.detail] : []))
+      .join('\n')
+    return { pass: false, ...(detail && { detail }) }
   }
   return fn(dir)
 }
