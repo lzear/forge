@@ -2,12 +2,12 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./base.json",
   "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "target": "ES2022",
     "declaration": true,
     "declarationMap": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "sourceMap": true,
+    "target": "ES2022",
     "types": ["node"]
   }
 }
