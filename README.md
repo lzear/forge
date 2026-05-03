@@ -6,7 +6,7 @@
 
 # forge
 
-[![CI](https://github.com/lzear/forge/actions/workflows/main.yml/badge.svg)](https://github.com/lzear/forge/actions/workflows/main.yml)
+[![npm](https://img.shields.io/npm/v/@lzear/forge)](https://www.npmjs.com/package/@lzear/forge)
 [![last commit](https://img.shields.io/github/last-commit/lzear/forge)](https://github.com/lzear/forge/commits/main)
 [![Codacy grade](https://app.codacy.com/project/badge/Grade/e9dcbdfc5611478d81981841c10d42fa)](https://app.codacy.com/gh/lzear/forge)
 [![Codacy coverage](https://app.codacy.com/project/badge/Coverage/e9dcbdfc5611478d81981841c10d42fa)](https://app.codacy.com/gh/lzear/forge)
@@ -17,13 +17,13 @@
 
 ## Packages
 
-- [![npm](https://img.shields.io/npm/v/@lzear/forge)](https://www.npmjs.com/package/@lzear/forge) ![downloads](https://img.shields.io/npm/dm/@lzear/forge) [![Libraries.io](https://img.shields.io/librariesio/release/npm/@lzear/forge)](https://libraries.io/npm/@lzear%2Fforge) **[`@lzear/forge`](packages/forge)** — Umbrella: one dep for everything + `forge` CLI
+- **[`@lzear/forge`](packages/forge)** — Umbrella: one dep for everything + `forge` CLI
 
-- [![npm](https://img.shields.io/npm/v/@lzear/configs)](https://www.npmjs.com/package/@lzear/configs) ![downloads](https://img.shields.io/npm/dm/@lzear/configs) [![Libraries.io](https://img.shields.io/librariesio/release/npm/@lzear/configs)](https://libraries.io/npm/@lzear%2Fconfigs) **[`@lzear/configs`](packages/configs)** — tsconfig, vitest, tsup, vite configs
+- **[`@lzear/configs`](packages/configs)** — tsconfig, vitest, tsup, vite configs
 
-- [![npm](https://img.shields.io/npm/v/@lzear/eslint-config)](https://www.npmjs.com/package/@lzear/eslint-config) ![downloads](https://img.shields.io/npm/dm/@lzear/eslint-config) [![Libraries.io](https://img.shields.io/librariesio/release/npm/@lzear/eslint-config)](https://libraries.io/npm/@lzear%2Feslint-config) **[`@lzear/eslint-config`](packages/eslint-config)** — ESLint flat config
+- **[`@lzear/eslint-config`](packages/eslint-config)** — ESLint flat config
   
-- [![npm](https://img.shields.io/npm/v/@lzear/repo-lint)](https://www.npmjs.com/package/@lzear/repo-lint) ![downloads](https://img.shields.io/npm/dm/@lzear/repo-lint) [![Libraries.io](https://img.shields.io/librariesio/release/npm/@lzear/repo-lint)](https://libraries.io/npm/@lzear%2Frepo-lint) **[`@lzear/repo-lint`](packages/repo-lint)** — Repo compliance checker
+- **[`@lzear/repo-lint`](packages/repo-lint)** — Repo compliance checker
   
 
 ## Usage
@@ -36,6 +36,82 @@ yarn add -D @lzear/forge
 yarn forge check          # audit this repo against forge standards
 yarn forge setup          # check and set required GitHub secrets
 yarn forge sync           # pull shared files from forge into this repo
+```
+
+### `@lzear/eslint-config`
+
+```sh
+yarn add -D @lzear/eslint-config eslint
+```
+
+**Minimal `eslint.config.ts`:**
+
+```ts
+import lzearConfig from '@lzear/eslint-config'
+
+export default await lzearConfig()
+```
+
+**With options** — disable feature sets you don't use:
+
+```ts
+import lzearConfig from '@lzear/eslint-config'
+
+export default await lzearConfig({
+  react: false,    // not a React project
+  vitest: false,   // no tests
+})
+```
+
+Available options (all default to `true`): `node`, `react`, `typescript`, `vitest`.
+
+**Extend with extra rules, overrides, and ignores:**
+
+```ts
+import type { Linter } from 'eslint'
+import lzearConfig from '@lzear/eslint-config'
+
+const base = await lzearConfig({ react: false })
+
+const config: Linter.Config[] = [
+  ...base,
+
+  // Extra rules applied to all files
+  {
+    rules: {
+      'no-console': 'error',
+      'unicorn/filename-case': ['error', { case: 'kebabCase' }],
+    },
+  },
+
+  // Turn off or downgrade specific rules
+  {
+    rules: {
+      'sonarjs/cognitive-complexity': 'off',
+      'import-x/order': 'warn',
+    },
+  },
+
+  // Override rules for specific files
+  {
+    files: ['scripts/**/*.ts'],
+    rules: {
+      'no-console': 'off',
+      'unicorn/no-process-exit': 'off',
+    },
+  },
+
+  // Ignore generated files and specific folders
+  {
+    ignores: [
+      'src/generated/**',
+      'public/**',
+      '**/*.min.js',
+    ],
+  },
+]
+
+export default config
 ```
 
 ### `forge sync`
