@@ -1,6 +1,6 @@
 {
   "name": "@lzear/eslint-config",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "description": "Shared ESLint flat config for lzear repos",
   "repository": {
     "type": "git",

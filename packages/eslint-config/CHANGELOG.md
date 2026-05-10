@@ -1,5 +1,11 @@
 # @lzear/eslint-config
 
+## 4.1.2
+
+### Patch Changes
+
+- [`76b2ce3`](https://github.com/lzear/forge/commit/76b2ce3af6e002ae7884eec50979ce8a5d5d7e3e) Thanks [@lzear](https://github.com/lzear)! - Fix publish script
+
 ## 4.1.1
 
 ### Patch Changes

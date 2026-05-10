@@ -1,5 +1,16 @@
 # @lzear/forge
 
+## 4.1.2
+
+### Patch Changes
+
+- [`76b2ce3`](https://github.com/lzear/forge/commit/76b2ce3af6e002ae7884eec50979ce8a5d5d7e3e) Thanks [@lzear](https://github.com/lzear)! - Fix publish script
+
+- Updated dependencies [[`76b2ce3`](https://github.com/lzear/forge/commit/76b2ce3af6e002ae7884eec50979ce8a5d5d7e3e)]:
+  - @lzear/configs@4.1.2
+  - @lzear/eslint-config@4.1.2
+  - @lzear/repo-lint@4.1.2
+
 ## 4.1.1
 
 ### Patch Changes
