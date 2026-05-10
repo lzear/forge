@@ -1612,7 +1612,7 @@
         },
         "meta": {
           "name": "eslint-plugin-de-morgan",
-          "version": "2.1.1",
+          "version": "2.1.2",
         },
         "rules": {
           "no-negated-conjunction": {
@@ -32560,7 +32560,7 @@
               "react-dom": {
                 "meta": {
                   "name": "eslint-plugin-react-dom",
-                  "version": "5.7.1",
+                  "version": "5.7.5",
                 },
                 "rules": {
                   "no-dangerously-set-innerhtml": {
@@ -32881,7 +32881,7 @@
               "react-dom": {
                 "meta": {
                   "name": "eslint-plugin-react-dom",
-                  "version": "5.7.1",
+                  "version": "5.7.5",
                 },
                 "rules": {
                   "no-dangerously-set-innerhtml": {
@@ -33202,7 +33202,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-dom",
-          "version": "5.7.1",
+          "version": "5.7.5",
         },
         "rules": {
           "no-dangerously-set-innerhtml": {
@@ -34383,7 +34383,7 @@
               "react-web-api": {
                 "meta": {
                   "name": "eslint-plugin-react-web-api",
-                  "version": "5.7.1",
+                  "version": "5.7.5",
                 },
                 "rules": {
                   "no-leaked-event-listener": {
@@ -34493,7 +34493,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-web-api",
-          "version": "5.7.1",
+          "version": "5.7.5",
         },
         "rules": {
           "no-leaked-event-listener": {
@@ -34679,7 +34679,7 @@
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.7.1",
+                  "version": "5.7.5",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -34765,6 +34765,7 @@
                       "messages": {
                         "mutatingArrayMethod": "Do not call '{{method}}()' on '{{name}}'. Props and state are immutable — create a new array instead.",
                         "mutatingAssignment": "Do not mutate '{{name}}' directly. Props and state are immutable — create a new object instead.",
+                        "noRefLikeStateName": "State variable '{{name}}' should not be named 'ref' or end with 'Ref'. Use a different name to avoid confusion with mutable refs.",
                       },
                       "schema": [],
                       "type": "problem",
@@ -35671,7 +35672,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x/no-unsafe-component-will-receive-props": "warn",
               "react-x/no-unsafe-component-will-update": "warn",
               "react-x/no-unused-class-component-members": "warn",
-              "react-x/no-unused-state": "warn",
               "react-x/no-use-context": "warn",
               "react-x/purity": "warn",
               "react-x/rules-of-hooks": "error",
@@ -35696,7 +35696,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.7.1",
+                  "version": "5.7.5",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -35782,6 +35782,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                       "messages": {
                         "mutatingArrayMethod": "Do not call '{{method}}()' on '{{name}}'. Props and state are immutable — create a new array instead.",
                         "mutatingAssignment": "Do not mutate '{{name}}' directly. Props and state are immutable — create a new object instead.",
+                        "noRefLikeStateName": "State variable '{{name}}' should not be named 'ref' or end with 'Ref'. Use a different name to avoid confusion with mutable refs.",
                       },
                       "schema": [],
                       "type": "problem",
@@ -36689,7 +36690,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x/no-unsafe-component-will-receive-props": "warn",
               "react-x/no-unsafe-component-will-update": "warn",
               "react-x/no-unused-class-component-members": "warn",
-              "react-x/no-unused-state": "warn",
               "react-x/no-use-context": "warn",
               "react-x/purity": "warn",
               "react-x/rules-of-hooks": "error",
@@ -36714,7 +36714,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.7.1",
+                  "version": "5.7.5",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -36800,6 +36800,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                       "messages": {
                         "mutatingArrayMethod": "Do not call '{{method}}()' on '{{name}}'. Props and state are immutable — create a new array instead.",
                         "mutatingAssignment": "Do not mutate '{{name}}' directly. Props and state are immutable — create a new object instead.",
+                        "noRefLikeStateName": "State variable '{{name}}' should not be named 'ref' or end with 'Ref'. Use a different name to avoid confusion with mutable refs.",
                       },
                       "schema": [],
                       "type": "problem",
@@ -37706,7 +37707,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x/no-unsafe-component-will-receive-props": "warn",
               "react-x/no-unsafe-component-will-update": "warn",
               "react-x/no-unused-class-component-members": "warn",
-              "react-x/no-unused-state": "warn",
               "react-x/no-use-context": "warn",
               "react-x/purity": "warn",
               "react-x/rules-of-hooks": "error",
@@ -37731,7 +37731,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.7.1",
+                  "version": "5.7.5",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -37817,6 +37817,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                       "messages": {
                         "mutatingArrayMethod": "Do not call '{{method}}()' on '{{name}}'. Props and state are immutable — create a new array instead.",
                         "mutatingAssignment": "Do not mutate '{{name}}' directly. Props and state are immutable — create a new object instead.",
+                        "noRefLikeStateName": "State variable '{{name}}' should not be named 'ref' or end with 'Ref'. Use a different name to avoid confusion with mutable refs.",
                       },
                       "schema": [],
                       "type": "problem",
@@ -38727,7 +38728,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x/no-unstable-context-value": "warn",
               "react-x/no-unstable-default-props": "warn",
               "react-x/no-unused-class-component-members": "warn",
-              "react-x/no-unused-state": "warn",
               "react-x/no-use-context": "warn",
               "react-x/purity": "warn",
               "react-x/rules-of-hooks": "error",
@@ -38752,7 +38752,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.7.1",
+                  "version": "5.7.5",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -38838,6 +38838,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                       "messages": {
                         "mutatingArrayMethod": "Do not call '{{method}}()' on '{{name}}'. Props and state are immutable — create a new array instead.",
                         "mutatingAssignment": "Do not mutate '{{name}}' directly. Props and state are immutable — create a new object instead.",
+                        "noRefLikeStateName": "State variable '{{name}}' should not be named 'ref' or end with 'Ref'. Use a different name to avoid confusion with mutable refs.",
                       },
                       "schema": [],
                       "type": "problem",
@@ -39750,7 +39751,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x/no-unstable-default-props": "warn",
               "react-x/no-unused-class-component-members": "warn",
               "react-x/no-unused-props": "warn",
-              "react-x/no-unused-state": "warn",
               "react-x/no-use-context": "warn",
               "react-x/purity": "warn",
               "react-x/rules-of-hooks": "error",
@@ -39775,7 +39775,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.7.1",
+                  "version": "5.7.5",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -39861,6 +39861,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                       "messages": {
                         "mutatingArrayMethod": "Do not call '{{method}}()' on '{{name}}'. Props and state are immutable — create a new array instead.",
                         "mutatingAssignment": "Do not mutate '{{name}}' directly. Props and state are immutable — create a new object instead.",
+                        "noRefLikeStateName": "State variable '{{name}}' should not be named 'ref' or end with 'Ref'. Use a different name to avoid confusion with mutable refs.",
                       },
                       "schema": [],
                       "type": "problem",
@@ -40771,7 +40772,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x/no-unstable-context-value": "warn",
               "react-x/no-unstable-default-props": "warn",
               "react-x/no-unused-class-component-members": "warn",
-              "react-x/no-unused-state": "warn",
               "react-x/no-use-context": "warn",
               "react-x/purity": "warn",
               "react-x/rules-of-hooks": "error",
@@ -40793,7 +40793,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         },
         "meta": {
           "name": "eslint-plugin-react-x",
-          "version": "5.7.1",
+          "version": "5.7.5",
         },
         "rules": {
           "error-boundaries": {
@@ -40879,6 +40879,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "messages": {
                 "mutatingArrayMethod": "Do not call '{{method}}()' on '{{name}}'. Props and state are immutable — create a new array instead.",
                 "mutatingAssignment": "Do not mutate '{{name}}' directly. Props and state are immutable — create a new object instead.",
+                "noRefLikeStateName": "State variable '{{name}}' should not be named 'ref' or end with 'Ref'. Use a different name to avoid confusion with mutable refs.",
               },
               "schema": [],
               "type": "problem",
@@ -41821,7 +41822,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
       "react-x/no-unsafe-component-will-receive-props": "warn",
       "react-x/no-unsafe-component-will-update": "warn",
       "react-x/no-unused-class-component-members": "warn",
-      "react-x/no-unused-state": "warn",
       "react-x/no-use-context": "warn",
       "react-x/purity": "warn",
       "react-x/rules-of-hooks": "error",
@@ -42046,6 +42046,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "n/no-exports-assign": "error",
               "n/no-extraneous-import": "error",
               "n/no-extraneous-require": "error",
+              "n/no-hide-core-modules": "error",
               "n/no-missing-import": "error",
               "n/no-missing-require": "error",
               "n/no-mixed-requires": "error",
@@ -42076,6 +42077,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "n/prefer-promises/dns": "error",
               "n/prefer-promises/fs": "error",
               "n/process-exit-as-throw": "error",
+              "n/shebang": "error",
             },
           },
           "flat/mixed-esm-and-cjs": [
@@ -42235,7 +42237,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "n/no-missing-import": "error",
                 "n/no-missing-require": "error",
                 "n/no-process-exit": "error",
-                "n/no-unpublished-bin": "error",
                 "n/no-unpublished-import": "error",
                 "n/no-unpublished-require": "error",
                 "n/no-unsupported-features/es-builtins": "error",
@@ -42407,7 +42408,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "n/no-missing-import": "error",
                 "n/no-missing-require": "error",
                 "n/no-process-exit": "error",
-                "n/no-unpublished-bin": "error",
                 "n/no-unpublished-import": "error",
                 "n/no-unpublished-require": "error",
                 "n/no-unsupported-features/es-builtins": "error",
@@ -42579,7 +42579,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "n/no-missing-import": "error",
                 "n/no-missing-require": "error",
                 "n/no-process-exit": "error",
-                "n/no-unpublished-bin": "error",
                 "n/no-unpublished-import": "error",
                 "n/no-unpublished-require": "error",
                 "n/no-unsupported-features/es-builtins": "error",
@@ -42747,7 +42746,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "n/no-missing-import": "error",
               "n/no-missing-require": "error",
               "n/no-process-exit": "error",
-              "n/no-unpublished-bin": "error",
               "n/no-unpublished-import": "error",
               "n/no-unpublished-require": "error",
               "n/no-unsupported-features/es-builtins": "error",
@@ -42916,7 +42914,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "n/no-missing-import": "error",
               "n/no-missing-require": "error",
               "n/no-process-exit": "error",
-              "n/no-unpublished-bin": "error",
               "n/no-unpublished-import": "error",
               "n/no-unpublished-require": "error",
               "n/no-unsupported-features/es-builtins": "error",
@@ -43085,7 +43082,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "n/no-missing-import": "error",
               "n/no-missing-require": "error",
               "n/no-process-exit": "error",
-              "n/no-unpublished-bin": "error",
               "n/no-unpublished-import": "error",
               "n/no-unpublished-require": "error",
               "n/no-unsupported-features/es-builtins": "error",
@@ -43262,7 +43258,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                   "n/no-missing-import": "error",
                   "n/no-missing-require": "error",
                   "n/no-process-exit": "error",
-                  "n/no-unpublished-bin": "error",
                   "n/no-unpublished-import": "error",
                   "n/no-unpublished-require": "error",
                   "n/no-unsupported-features/es-builtins": "error",
@@ -43367,7 +43362,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                   "n/no-missing-import": "error",
                   "n/no-missing-require": "error",
                   "n/no-process-exit": "error",
-                  "n/no-unpublished-bin": "error",
                   "n/no-unpublished-import": "error",
                   "n/no-unpublished-require": "error",
                   "n/no-unsupported-features/es-builtins": "error",
@@ -43403,7 +43397,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "n/no-missing-import": "error",
               "n/no-missing-require": "error",
               "n/no-process-exit": "error",
-              "n/no-unpublished-bin": "error",
               "n/no-unpublished-import": "error",
               "n/no-unpublished-require": "error",
               "n/no-unsupported-features/es-builtins": "error",
@@ -43509,7 +43502,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "n/no-missing-import": "error",
               "n/no-missing-require": "error",
               "n/no-process-exit": "error",
-              "n/no-unpublished-bin": "error",
               "n/no-unpublished-import": "error",
               "n/no-unpublished-require": "error",
               "n/no-unsupported-features/es-builtins": "error",
@@ -43615,7 +43607,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "n/no-missing-import": "error",
               "n/no-missing-require": "error",
               "n/no-process-exit": "error",
-              "n/no-unpublished-bin": "error",
               "n/no-unpublished-import": "error",
               "n/no-unpublished-require": "error",
               "n/no-unsupported-features/es-builtins": "error",
@@ -43632,7 +43623,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         },
         "meta": {
           "name": "eslint-plugin-n",
-          "version": "17.24.0",
+          "version": "18.0.1",
         },
         "rules": {
           "callback-return": {
@@ -43643,7 +43634,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/callback-return.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "missingReturn": "Expected return with your callback function.",
               },
@@ -43734,7 +43725,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/global-require.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "unexpected": "Unexpected require().",
               },
@@ -43750,7 +43741,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/handle-callback-err.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "expected": "Expected error to be handled.",
               },
@@ -43871,7 +43862,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-callback-literal.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "unexpectedLiteral": "Unexpected literal in error position of callback.",
               },
@@ -43887,7 +43878,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-deprecated-api.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "deprecated": "{{name}} was deprecated since v{{version}}{{replace}}.",
                 "removed": "{{name}} was deprecated since v{{version}}, and removed in v{{removed}}.",
@@ -44050,7 +44041,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-exports-assign.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "forbidden": "Unexpected assignment to 'exports' variable. Use 'module.exports' instead.",
               },
@@ -44066,7 +44057,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-extraneous-import.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "extraneous": ""{{moduleName}}" is extraneous.",
               },
@@ -44165,7 +44156,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-extraneous-require.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "extraneous": ""{{moduleName}}" is extraneous.",
               },
@@ -44267,13 +44258,17 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
           "no-hide-core-modules": {
             "create": [Function],
             "meta": {
-              "deprecated": true,
+              "deprecated": {
+                "deprecatedSince": "4.2.0",
+                "message": "This rule was based on an invalid assumption.",
+                "url": "https://github.com/mysticatea/eslint-plugin-node/issues/69",
+              },
               "docs": {
                 "description": "disallow third-party modules which are hiding core modules",
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-hide-core-modules.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "unexpectedImport": "Unexpected import of third-party module '{{name}}'.",
               },
@@ -44340,7 +44335,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-missing-import.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "notFound": "{{resolveError}}",
               },
@@ -44430,7 +44425,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-missing-require.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "notFound": "{{resolveError}}",
               },
@@ -44516,7 +44511,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-mixed-requires.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "noMixCoreModuleFileComputed": "Do not mix core, module, file and computed requires.",
                 "noMixRequire": "Do not mix 'require' and other declarations.",
@@ -44553,7 +44548,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-new-require.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "noNewRequire": "Unexpected use of new with require.",
               },
@@ -44569,7 +44564,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-path-concat.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "usePathFunctions": "Use path.join() or path.resolve() instead of string concatenation.",
               },
@@ -44585,7 +44580,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-process-env.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "unexpectedProcessEnv": "Unexpected use of process.env.",
               },
@@ -44614,7 +44609,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-process-exit.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "noProcessExit": "Don't use process.exit(); throw an error instead.",
               },
@@ -44630,7 +44625,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-restricted-import.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "restricted": "'{{name}}' module is restricted from being used.{{customMessage}}",
               },
@@ -44684,7 +44679,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-restricted-require.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "restricted": "'{{name}}' module is restricted from being used.{{customMessage}}",
               },
@@ -44738,7 +44733,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-sync.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "noSync": "Unexpected sync method: '{{propertyName}}'.",
               },
@@ -44827,7 +44822,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-top-level-await.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "forbidden": "Top-level `await` is forbidden in published modules.",
               },
@@ -44906,15 +44901,15 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
             "meta": {
               "docs": {
                 "description": "disallow `bin` files that npm ignores",
-                "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-unpublished-bin.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "invalidIgnored": "npm ignores '{{name}}'. Check 'files' field of 'package.json' or '.npmignore'.",
               },
               "schema": [
                 {
+                  "additionalProperties": false,
                   "properties": {
                     "convertPath": {
                       "anyOf": [
@@ -44987,7 +44982,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-unpublished-import.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "notPublished": ""{{name}}" is not published.",
               },
@@ -45102,7 +45097,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-unpublished-require.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "notPublished": ""{{name}}" is not published.",
               },
@@ -45213,7 +45208,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-unsupported-features/es-builtins.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "not-experimental-till": "The '{{name}}' is not an experimental feature until Node.js {{experimental}}. The configured version range is '{{version}}'.",
                 "not-supported-till": "The '{{name}}' is still an experimental feature and is not supported until Node.js {{supported}}. The configured version range is '{{version}}'.",
@@ -45532,7 +45527,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-unsupported-features/es-syntax.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "not-supported-till": "'{{featureName}}' is not supported until Node.js {{supported}}. The configured version range is '{{version}}'.",
                 "not-supported-yet": "'{{featureName}}' is not supported in Node.js. The configured version range is '{{version}}'.",
@@ -46157,7 +46152,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-unsupported-features/node-builtins.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "not-experimental-till": "The '{{name}}' is not an experimental feature until Node.js {{experimental}}. The configured version range is '{{version}}'.",
                 "not-supported-till": "The '{{name}}' is still an experimental feature and is not supported until Node.js {{supported}}. The configured version range is '{{version}}'.",
@@ -46214,6 +46209,9 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "navigator.hardwareConcurrency",
                           "navigator.language",
                           "navigator.languages",
+                          "navigator.locks",
+                          "navigator.locks.request",
+                          "navigator.locks.query",
                           "navigator.platform",
                           "navigator.userAgent",
                           "structuredClone",
@@ -46262,13 +46260,18 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "console.warn",
                           "crypto",
                           "crypto.subtle",
+                          "crypto.subtle.decapsulateBits",
+                          "crypto.subtle.decapsulateKey",
                           "crypto.subtle.decrypt",
                           "crypto.subtle.deriveBits",
                           "crypto.subtle.deriveKey",
                           "crypto.subtle.digest",
+                          "crypto.subtle.encapsulateBits",
+                          "crypto.subtle.encapsulateKey",
                           "crypto.subtle.encrypt",
                           "crypto.subtle.exportKey",
                           "crypto.subtle.generateKey",
+                          "crypto.subtle.getPublicKey",
                           "crypto.subtle.importKey",
                           "crypto.subtle.sign",
                           "crypto.subtle.unwrapKey",
@@ -46279,6 +46282,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "Crypto",
                           "CryptoKey",
                           "SubtleCrypto",
+                          "SubtleCrypto.supports",
                           "CloseEvent",
                           "CustomEvent",
                           "Event",
@@ -46587,13 +46591,18 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "crypto.fips",
                           "crypto.webcrypto",
                           "crypto.webcrypto.subtle",
+                          "crypto.webcrypto.subtle.decapsulateBits",
+                          "crypto.webcrypto.subtle.decapsulateKey",
                           "crypto.webcrypto.subtle.decrypt",
                           "crypto.webcrypto.subtle.deriveBits",
                           "crypto.webcrypto.subtle.deriveKey",
                           "crypto.webcrypto.subtle.digest",
+                          "crypto.webcrypto.subtle.encapsulateBits",
+                          "crypto.webcrypto.subtle.encapsulateKey",
                           "crypto.webcrypto.subtle.encrypt",
                           "crypto.webcrypto.subtle.exportKey",
                           "crypto.webcrypto.subtle.generateKey",
+                          "crypto.webcrypto.subtle.getPublicKey",
                           "crypto.webcrypto.subtle.importKey",
                           "crypto.webcrypto.subtle.sign",
                           "crypto.webcrypto.subtle.unwrapKey",
@@ -46601,6 +46610,8 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "crypto.webcrypto.subtle.wrapKey",
                           "crypto.webcrypto.getRandomValues",
                           "crypto.webcrypto.randomUUID",
+                          "crypto.argon2",
+                          "crypto.argon2Sync",
                           "crypto.checkPrime",
                           "crypto.checkPrimeSync",
                           "crypto.createCipher",
@@ -46617,7 +46628,9 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "crypto.createSecretKey",
                           "crypto.createSign",
                           "crypto.createVerify",
+                          "crypto.decapsulate",
                           "crypto.diffieHellman",
+                          "crypto.encapsulate",
                           "crypto.generateKey",
                           "crypto.generateKeyPair",
                           "crypto.generateKeyPairSync",
@@ -46815,6 +46828,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "fs.promises.lutimes",
                           "fs.promises.mkdir",
                           "fs.promises.mkdtemp",
+                          "fs.promises.mkdtempDisposable",
                           "fs.promises.open",
                           "fs.promises.opendir",
                           "fs.promises.readFile",
@@ -46906,6 +46920,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "fs.lutimesSync",
                           "fs.mkdirSync",
                           "fs.mkdtempSync",
+                          "fs.mkdtempDisposableSync",
                           "fs.opendirSync",
                           "fs.openSync",
                           "fs.readdirSync",
@@ -46938,6 +46953,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "fs.Stats",
                           "fs.StatFs",
                           "fs.WriteStream",
+                          "fs.Utf8Stream",
                           "fs.common_objects",
                           "fs/promises",
                           "fs/promises.FileHandle",
@@ -46956,6 +46972,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "fs/promises.lutimes",
                           "fs/promises.mkdir",
                           "fs/promises.mkdtemp",
+                          "fs/promises.mkdtempDisposable",
                           "fs/promises.open",
                           "fs/promises.opendir",
                           "fs/promises.readFile",
@@ -47004,12 +47021,19 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "http.validateHeaderName",
                           "http.validateHeaderValue",
                           "http.setMaxIdleHTTPParsers",
+                          "http.Agent()",
                           "http.Agent",
+                          "http.ClientRequest()",
                           "http.ClientRequest",
+                          "http.Server()",
                           "http.Server",
+                          "http.ServerResponse()",
                           "http.ServerResponse",
+                          "http.IncomingMessage()",
                           "http.IncomingMessage",
+                          "http.OutgoingMessage()",
                           "http.OutgoingMessage",
+                          "http.WebSocket()",
                           "http.WebSocket",
                           "_http_agent",
                           "_http_client",
@@ -47032,6 +47056,9 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "inspector.Network.loadingFinished",
                           "inspector.Network.requestWillBeSent",
                           "inspector.Network.responseReceived",
+                          "inspector.Network.webSocketCreated",
+                          "inspector.Network.webSocketHandshakeResponseReceived",
+                          "inspector.Network.webSocketClosed",
                           "inspector.NetworkResources.put",
                           "inspector.console",
                           "inspector.close",
@@ -47046,6 +47073,9 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "inspector/promises.Network.loadingFinished",
                           "inspector/promises.Network.requestWillBeSent",
                           "inspector/promises.Network.responseReceived",
+                          "inspector/promises.Network.webSocketCreated",
+                          "inspector/promises.Network.webSocketHandshakeResponseReceived",
+                          "inspector/promises.Network.webSocketClosed",
                           "inspector/promises.NetworkResources.put",
                           "inspector/promises.console",
                           "inspector/promises.close",
@@ -47230,6 +47260,8 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "perf_hooks.performance.timerify",
                           "perf_hooks.performance.toJSON",
                           "perf_hooks.createHistogram",
+                          "perf_hooks.eventLoopUtilization",
+                          "perf_hooks.timerify",
                           "perf_hooks.monitorEventLoopDelay",
                           "perf_hooks.PerformanceEntry",
                           "perf_hooks.PerformanceMark",
@@ -47288,10 +47320,12 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "sea.isSea",
                           "sea.getAsset",
                           "sea.getAssetAsBlob",
+                          "sea.getAssetKeys",
                           "sea.getRawAsset",
                           "sea.sea.isSea",
                           "sea.sea.getAsset",
                           "sea.sea.getAssetAsBlob",
+                          "sea.sea.getAssetKeys",
                           "sea.sea.getRawAsset",
                           "stream",
                           "stream.promises",
@@ -47346,6 +47380,12 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "stream/consumers.buffer",
                           "stream/consumers.json",
                           "stream/consumers.text",
+                          "_stream_duplex",
+                          "_stream_passthrough",
+                          "_stream_readable",
+                          "_stream_transform",
+                          "_stream_wrap",
+                          "_stream_writable",
                           "string_decoder",
                           "string_decoder.StringDecoder",
                           "sqlite",
@@ -47355,6 +47395,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "sqlite.constants.SQLITE_CHANGESET_ABORT",
                           "sqlite.backup",
                           "sqlite.DatabaseSync",
+                          "sqlite.Session",
                           "sqlite.StatementSync",
                           "sqlite.SQLITE_CHANGESET_OMIT",
                           "sqlite.SQLITE_CHANGESET_REPLACE",
@@ -47379,6 +47420,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "test.mock.getter",
                           "test.mock.method",
                           "test.mock.module",
+                          "test.mock.property",
                           "test.mock.reset",
                           "test.mock.restoreAll",
                           "test.mock.setter",
@@ -47438,6 +47480,8 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "tls.Server",
                           "tls.setDefaultCACertificates",
                           "tls.TLSSocket",
+                          "_tls_common",
+                          "_tls_wrap",
                           "trace_events",
                           "trace_events.createTracing",
                           "trace_events.getEnabledCategories",
@@ -47631,6 +47675,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "v8.writeHeapSnapshot",
                           "v8.setHeapSnapshotNearHeapLimit",
                           "v8.GCProfiler",
+                          "v8.startCpuProfile",
                           "vm.constants",
                           "vm.compileFunction",
                           "vm.createContext",
@@ -47651,6 +47696,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "worker_threads.resourceLimits",
                           "worker_threads.SHARE_ENV",
                           "worker_threads.threadId",
+                          "worker_threads.threadName",
                           "worker_threads.workerData",
                           "worker_threads.getEnvironmentData",
                           "worker_threads.getHeapStatistics",
@@ -47659,6 +47705,9 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                           "worker_threads.isInternalThread",
                           "worker_threads.isMainThread",
                           "worker_threads.isMarkedAsUntransferable",
+                          "worker_threads.locks",
+                          "worker_threads.locks.request",
+                          "worker_threads.locks.query",
                           "worker_threads.moveMessagePortToContext",
                           "worker_threads.postMessageToThread",
                           "worker_threads.receiveMessageOnPort",
@@ -47812,7 +47861,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-global/buffer.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "preferGlobal": "Unexpected use of 'require("buffer").Buffer'. Use the global variable 'Buffer' instead.",
                 "preferModule": "Unexpected use of the global variable 'Buffer'. Use 'require("buffer").Buffer' instead.",
@@ -47836,7 +47885,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-global/console.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "preferGlobal": "Unexpected use of 'require("console")'. Use the global variable 'console' instead.",
                 "preferModule": "Unexpected use of the global variable 'console'. Use 'require("console")' instead.",
@@ -47860,7 +47909,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-global/crypto.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "preferGlobal": "Unexpected use of 'require("crypto").webcrypto'. Use the global variable 'crypto' instead.",
                 "preferModule": "Unexpected use of the global variable 'crypto'. Use 'require("crypto").webcrypto' instead.",
@@ -47884,7 +47933,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-global/process.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "preferGlobal": "Unexpected use of 'require("process")'. Use the global variable 'process' instead.",
                 "preferModule": "Unexpected use of the global variable 'process'. Use 'require("process")' instead.",
@@ -47908,7 +47957,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-global/text-decoder.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "preferGlobal": "Unexpected use of 'require("util").TextDecoder'. Use the global variable 'TextDecoder' instead.",
                 "preferModule": "Unexpected use of the global variable 'TextDecoder'. Use 'require("util").TextDecoder' instead.",
@@ -47932,7 +47981,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-global/text-encoder.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "preferGlobal": "Unexpected use of 'require("util").TextEncoder'. Use the global variable 'TextEncoder' instead.",
                 "preferModule": "Unexpected use of the global variable 'TextEncoder'. Use 'require("util").TextEncoder' instead.",
@@ -47956,7 +48005,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-global/timers.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "preferGlobal": "Unexpected use of 'require("timers").*'. Use the global variable instead.",
                 "preferModule": "Unexpected use of the global variable. Use 'require("timers").*' instead.",
@@ -47980,7 +48029,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-global/url.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "preferGlobal": "Unexpected use of 'require("url").URL'. Use the global variable 'URL' instead.",
                 "preferModule": "Unexpected use of the global variable 'URL'. Use 'require("url").URL' instead.",
@@ -48004,7 +48053,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-global/url-search-params.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "preferGlobal": "Unexpected use of 'require("url").URLSearchParams'. Use the global variable 'URLSearchParams' instead.",
                 "preferModule": "Unexpected use of the global variable 'URLSearchParams'. Use 'require("url").URLSearchParams' instead.",
@@ -48054,7 +48103,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-promises/dns.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "preferPromises": "Use 'dns.promises.{{name}}()' instead.",
                 "preferPromisesNew": "Use 'new dns.promises.{{name}}()' instead.",
@@ -48071,7 +48120,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-promises/fs.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "messages": {
                 "preferPromises": "Use 'fs.promises.{{name}}()' instead.",
               },
@@ -48087,7 +48136,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "recommended": true,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/process-exit-as-throw.md",
               },
-              "fixable": null,
+              "fixable": undefined,
               "schema": [],
               "supported": false,
               "type": "problem",
@@ -48096,7 +48145,19 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
           "shebang": {
             "create": [Function],
             "meta": {
-              "deprecated": true,
+              "deprecated": {
+                "deprecatedSince": "17.0.0",
+                "message": "This rule was deprecated in eslint-plugin-n v17.0.0. Please use 'n/hashbang'",
+                "replacedBy": [
+                  {
+                    "rule": {
+                      "name": "n/hashbang",
+                      "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/hashbang.md",
+                    },
+                  },
+                ],
+                "url": "https://github.com/eslint-community/eslint-plugin-n/issues/196",
+              },
               "docs": {
                 "description": "require correct usage of hashbang",
                 "recommended": false,
@@ -48109,9 +48170,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "expectedLF": "This file must have Unix linebreaks (LF).",
                 "unexpectedBOM": "This file must not have Unicode BOM.",
               },
-              "replacedBy": [
-                "n/hashbang",
-              ],
               "schema": [
                 {
                   "additionalProperties": false,
@@ -48210,7 +48268,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
       "n/no-missing-import": 0,
       "n/no-missing-require": "error",
       "n/no-process-exit": 0,
-      "n/no-unpublished-bin": "error",
       "n/no-unpublished-import": "error",
       "n/no-unpublished-require": "error",
       "n/no-unsupported-features/es-builtins": "error",
@@ -48314,7 +48371,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.59.1",
+          "version": "8.59.2",
         },
         "parseForESLint": [Function],
       },
@@ -48607,7 +48664,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -48816,7 +48873,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "parser": {
                 "meta": {
                   "name": "typescript-eslint/parser",
-                  "version": "8.59.1",
+                  "version": "8.59.2",
                 },
                 "parseForESLint": [Function],
               },
@@ -48940,7 +48997,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -49020,7 +49077,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -49127,7 +49184,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -49211,7 +49268,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -49305,7 +49362,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -49464,7 +49521,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -49588,7 +49645,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -49659,7 +49716,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -49739,7 +49796,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -50287,7 +50344,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         "meta": {
           "name": "@typescript-eslint/eslint-plugin",
           "namespace": "@typescript-eslint",
-          "version": "8.59.1",
+          "version": "8.59.2",
         },
         "rules": {
           "adjacent-overload-signatures": {
@@ -59310,7 +59367,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.59.1",
+          "version": "8.59.2",
         },
         "parseForESLint": [Function],
       },
@@ -59603,7 +59660,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -59812,7 +59869,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               "parser": {
                 "meta": {
                   "name": "typescript-eslint/parser",
-                  "version": "8.59.1",
+                  "version": "8.59.2",
                 },
                 "parseForESLint": [Function],
               },
@@ -59936,7 +59993,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60016,7 +60073,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60123,7 +60180,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60207,7 +60264,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60301,7 +60358,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60462,7 +60519,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60586,7 +60643,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60657,7 +60714,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60735,7 +60792,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.59.1",
+                    "version": "8.59.2",
                   },
                   "parseForESLint": [Function],
                 },
@@ -61283,7 +61340,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
         "meta": {
           "name": "@typescript-eslint/eslint-plugin",
           "namespace": "@typescript-eslint",
-          "version": "8.59.1",
+          "version": "8.59.2",
         },
         "rules": {
           "adjacent-overload-signatures": {
@@ -70225,7 +70282,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.59.1",
+          "version": "8.59.2",
         },
         "parseForESLint": [Function],
       },

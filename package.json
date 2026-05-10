@@ -9,6 +9,7 @@
   "scripts": {
     "build": "yarn workspaces foreach -A --topological run build",
     "lint": "eslint .",
+    "ncu": "npx npm-check-updates --workspaces --upgrade --root && yarn && yarn up --recursive '*'",
     "prepare": "lefthook install",
     "qa": "yarn install --immutable && yarn build && concurrently -g 'yarn typecheck' 'yarn lint' 'yarn test' && yarn forge check",
     "setup-repo": "forge setup",
@@ -18,12 +19,13 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0",
     "@changesets/cli": "^2",
-    "@commitlint/cli": "^20",
+    "@commitlint/cli": "^21",
     "@lzear/configs": "workspace:*",
     "@lzear/forge": "workspace:*",
     "concurrently": "^9",
     "eslint": "^9",
     "lefthook": "^2",
+    "npm-check-updates": "^22",
     "typescript": "^6"
   },
   "type": "commonjs",

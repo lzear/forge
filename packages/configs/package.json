@@ -51,10 +51,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@commitlint/config-conventional": "^20"
+    "@commitlint/config-conventional": "^21"
   },
   "devDependencies": {
-    "@commitlint/types": "^20",
+    "@commitlint/types": "^21",
     "@vitejs/plugin-react": "^6",
     "jsdom": "~29",
     "tsup": "^8",
