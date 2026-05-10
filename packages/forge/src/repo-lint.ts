@@ -1,4 +1,3 @@
-export { checkLocal, checkRepo } from '@lzear/repo-lint'
 export type {
   Check,
   CheckLocalOptions,
@@ -8,3 +7,4 @@ export type {
   RemoteCheck,
   RepoReport,
 } from '@lzear/repo-lint'
+export { checkLocal, checkRepo } from '@lzear/repo-lint'

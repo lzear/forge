@@ -5,8 +5,7 @@ import path from 'node:path'
 import { run as ncuRun } from 'npm-check-updates'
 import { publint } from 'publint'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { CheckDetail } from './checks.js'
-import { LOCAL_CHECKS, REMOTE_CHECKS } from './checks.js'
+import { type CheckDetail, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.js'
 
 vi.mock('publint', () => ({ publint: vi.fn() }))
 vi.mock('npm-check-updates', () => ({ run: vi.fn() }))

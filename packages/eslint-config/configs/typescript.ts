@@ -30,6 +30,10 @@ export const typescript = async (
     files,
 
     rules: {
+      '@typescript-eslint/no-misused-promises': [
+        2,
+        { checksVoidReturn: { attributes: false } },
+      ],
       '@typescript-eslint/no-unnecessary-condition': [
         2,
         { allowConstantLoopConditions: 'only-allowed-literals' },

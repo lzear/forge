@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
 import { spawnSync } from 'node:child_process'
-import { writeFile, mkdir } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { homedir } from 'node:os'
 import path from 'node:path'
 import * as clack from '@clack/prompts'
-import { checkLocal, checkRepo, type RepoReport } from '@lzear/repo-lint'
 import { Command } from 'commander'
 import pc from 'picocolors'
+import { checkLocal, checkRepo, type RepoReport } from '@lzear/repo-lint'
 
 const require = createRequire(import.meta.url)
 const { version } = require('../package.json') as { version: string }

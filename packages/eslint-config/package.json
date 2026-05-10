@@ -29,6 +29,7 @@
   "dependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "^4",
     "@eslint/js": "^9",
+    "@stylistic/eslint-plugin": "^5",
     "@vitest/eslint-plugin": "^1",
     "eslint-config-prettier": "^10",
     "eslint-import-resolver-typescript": "^4",
@@ -49,6 +50,7 @@
     "eslint-plugin-react-web-api": "^5",
     "eslint-plugin-react-x": "^5",
     "eslint-plugin-regexp": "^3",
+    "eslint-plugin-simple-import-sort": "^13",
     "eslint-plugin-sonarjs": "^4",
     "eslint-plugin-unicorn": "^64",
     "globals": "^17",

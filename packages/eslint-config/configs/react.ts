@@ -58,7 +58,7 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
       ...reactPlugin.configs.recommended.rules,
 
       'react/react-in-jsx-scope': 0,
-      'react/no-unknown-property': ['error', { ignore: ['jsx', 'global'] }],
+      'react/no-unknown-property': [2, { ignore: ['jsx', 'global'] }],
 
       ...(config.typescript
         ? reactXPlugin.configs['recommended-typescript'].rules

@@ -14,6 +14,7 @@ export interface ConfigOptions {
   react: boolean
   typescript: boolean
   vitest: boolean
+  local?: string
 }
 
 const configGenerator = async (
@@ -37,7 +38,7 @@ const configGenerator = async (
 
   return [
     { name: 'lzear/ignores', ignores },
-    core(),
+    core(config.local),
     a11y(config),
     reactConfig,
     nodeConfig,
