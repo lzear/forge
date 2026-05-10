@@ -66,7 +66,6 @@ interface RepoReport {
 | `readme-npm-badge`             | README has an npm badge                               |
 | `readme-codacy-grade-badge`    | README has Codacy grade badge                         |
 | `readme-codacy-coverage-badge` | README has Codacy coverage badge                      |
-| `editorconfig`                 | `.editorconfig` exists                                |
 | `codacy-config`                | `.codacy.yml` exists                                  |
 | `license`                      | `LICENSE` exists                                      |
 | `ci-workflow`                  | `.github/workflows/ci.yml` exists                     |

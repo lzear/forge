@@ -164,11 +164,10 @@ export default {
 
 Writes the following files (fetched from `main`):
 
-| File            | Purpose                           |
-|-----------------|-----------------------------------|
-| `.editorconfig` | Editor whitespace/indent settings |
-| `.codacy.yml`   | Codacy analysis config            |
-| `lefthook.yml`  | Git hooks (commitlint on commit-msg) |
+| File           | Purpose                              |
+|----------------|--------------------------------------|
+| `.codacy.yml`  | Codacy analysis config               |
+| `lefthook.yml` | Git hooks (commitlint on commit-msg) |
 
 Run with `--dry` to preview without writing.
 

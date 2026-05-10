@@ -111,16 +111,6 @@ describe('LOCAL_CHECKS', () => {
     })
   })
 
-  describe('editorconfig', () => {
-    it('fails when missing', async () => {
-      expect(await check('editorconfig', dir)).toBe(false)
-    })
-    it('passes when present', async () => {
-      write(dir, '.editorconfig', 'root = true')
-      expect(await check('editorconfig', dir)).toBe(true)
-    })
-  })
-
   describe('codacy-config', () => {
     it('fails when missing', async () => {
       expect(await check('codacy-config', dir)).toBe(false)

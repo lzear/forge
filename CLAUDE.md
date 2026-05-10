@@ -46,7 +46,7 @@ Async default export `configGenerator(options)`. Options: `node | react | typesc
 
 ### `@lzear/repo-lint`
 
-Defines `LOCAL_CHECKS` (13) and `REMOTE_CHECKS` (2). Local checks verify: required files (README, .editorconfig, .codacy.yml, LICENSE, CI workflow, renovate.json), README badges (Codacy grade/coverage, npm), and package quality (`publint`, `attw`, `knip`, fresh deps). Remote checks verify GitHub secrets (NPM_TOKEN, CODACY_PROJECT_TOKEN).
+Defines `LOCAL_CHECKS` (13) and `REMOTE_CHECKS` (2). Local checks verify: required files (README, .codacy.yml, LICENSE, CI workflow, renovate.json), README badges (Codacy grade/coverage, npm), and package quality (`publint`, `attw`, `knip`, fresh deps). Remote checks verify GitHub secrets (NPM_TOKEN, CODACY_PROJECT_TOKEN).
 
 `eachPublishedPkg(dir)` walks workspaces, skipping private packages.
 

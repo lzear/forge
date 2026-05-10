@@ -17,6 +17,7 @@ export interface LocalCheck {
   id: string
   desc: string
   type: 'local'
+  publishedOnly?: boolean
   check: (dir: string) => CheckResult
 }
 
@@ -24,6 +25,7 @@ export interface RemoteCheck {
   id: string
   desc: string
   type: 'remote'
+  publishedOnly?: boolean
   check: (repo: string) => boolean
 }
 
@@ -102,6 +104,13 @@ const eachPublishedPkg = async (
   return fn(dir)
 }
 
+export const hasPublishedPkg = (dir: string): boolean => {
+  const pkg = readPkg(dir)
+  if (!pkg) return false
+  if (pkg.private !== true) return true
+  return getWorkspaceDirs(dir).some((d) => hasPublishedPkg(d))
+}
+
 const readmeIncludes = (dir: string, needle: string): boolean => {
   const f = path.join(dir, 'README.md')
   return existsSync(f) && readFileSync(f, 'utf8').includes(needle)
@@ -118,42 +127,42 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'readme-codacy-grade-badge',
     desc: 'README has Codacy grade badge',
     type: 'local',
+    publishedOnly: true,
     check: (dir) => readmeIncludes(dir, 'project/badge/Grade/'),
   },
   {
     id: 'readme-codacy-coverage-badge',
     desc: 'README has Codacy coverage badge',
     type: 'local',
+    publishedOnly: true,
     check: (dir) => readmeIncludes(dir, 'project/badge/Coverage/'),
   },
   {
     id: 'readme-npm-badge',
     desc: 'README has npm badge',
     type: 'local',
+    publishedOnly: true,
     check: (dir) => readmeIncludes(dir, 'shields.io/npm/v/'),
-  },
-  {
-    id: 'editorconfig',
-    desc: '.editorconfig exists',
-    type: 'local',
-    check: (dir) => existsSync(path.join(dir, '.editorconfig')),
   },
   {
     id: 'codacy-config',
     desc: '.codacy.yml exists',
     type: 'local',
+    publishedOnly: true,
     check: (dir) => existsSync(path.join(dir, '.codacy.yml')),
   },
   {
     id: 'license',
     desc: 'LICENSE exists',
     type: 'local',
+    publishedOnly: true,
     check: (dir) => existsSync(path.join(dir, 'LICENSE')),
   },
   {
     id: 'ci-workflow',
     desc: 'CI workflow exists',
     type: 'local',
+    publishedOnly: true,
     check: (dir) => existsSync(path.join(dir, '.github/workflows/ci.yml')),
   },
   {
@@ -166,6 +175,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'pkg-publint',
     desc: 'publint (all published packages)',
     type: 'local',
+    publishedOnly: true,
     check: (dir) =>
       eachPublishedPkg(dir, async (pkgDir) => {
         const { messages } = await publint({ pkgDir })
@@ -276,6 +286,7 @@ export const REMOTE_CHECKS: RemoteCheck[] = [
     id: 'secret-npm-token',
     desc: 'Secret NPM_TOKEN set',
     type: 'remote',
+    publishedOnly: true,
     check: (repo) => {
       const secrets = listSecrets(repo)
       return secrets?.includes('NPM_TOKEN') ?? false
@@ -285,6 +296,7 @@ export const REMOTE_CHECKS: RemoteCheck[] = [
     id: 'secret-codacy-token',
     desc: 'Secret CODACY_PROJECT_TOKEN set',
     type: 'remote',
+    publishedOnly: true,
     check: (repo) => {
       const secrets = listSecrets(repo)
       return secrets?.includes('CODACY_PROJECT_TOKEN') ?? false
