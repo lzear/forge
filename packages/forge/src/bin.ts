@@ -255,9 +255,7 @@ program
       return
     }
 
-    for (const s of missing) {
-      await promptAndSet(s, repo)
-    }
+    for (const s of missing) await promptAndSet(s, repo)
 
     log.outro(pc.green('Done.'))
   })
@@ -284,9 +282,8 @@ program
         const res = await fetch(url)
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const content = await res.text()
-        if (opts.dry) {
-          log.success(`${dest} ${pc.dim('(dry)')}`)
-        } else {
+        if (opts.dry) log.success(`${dest} ${pc.dim('(dry)')}`)
+        else {
           await mkdir(path.dirname(destPath), { recursive: true })
           await writeFile(destPath, content, 'utf8')
           log.success(dest)

@@ -3,9 +3,7 @@ import type { ConfigOptions } from '../index'
 import { interopDefault } from '../utils'
 
 export const vitest = async (config: ConfigOptions): Promise<Linter.Config> => {
-  if (!config.vitest) {
-    return {}
-  }
+  if (!config.vitest) return {}
 
   const vitestPlugin = await interopDefault(import('@vitest/eslint-plugin'))
 
@@ -18,7 +16,7 @@ export const vitest = async (config: ConfigOptions): Promise<Linter.Config> => {
     '**/*.test.mjs',
   ]
 
-  if (config.typescript) {
+  if (config.typescript)
     files.push(
       '**/test/*.ts',
       '**/test/*.cts',
@@ -27,14 +25,11 @@ export const vitest = async (config: ConfigOptions): Promise<Linter.Config> => {
       '**/*.test.cts',
       '**/*.test.mts',
     )
-  }
 
   if (config.react) {
     files.push('**/test/*.jsx', '**/*.test.jsx')
 
-    if (config.typescript) {
-      files.push('**/test/*.tsx', '**/*.test.tsx')
-    }
+    if (config.typescript) files.push('**/test/*.tsx', '**/*.test.tsx')
   }
 
   return {

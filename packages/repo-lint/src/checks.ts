@@ -64,9 +64,8 @@ const getWorkspaceDirs = (rootDir: string): string[] => {
   for (const pattern of getWorkspacePatterns(pkg)) {
     const base = patternToBase(rootDir, pattern)
     if (!base || !existsSync(base)) continue
-    for (const entry of readdirSync(base, { withFileTypes: true })) {
+    for (const entry of readdirSync(base, { withFileTypes: true }))
       if (entry.isDirectory()) dirs.push(path.join(base, entry.name))
-    }
   }
   return dirs
 }

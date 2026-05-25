@@ -7,9 +7,7 @@ import { interopDefault } from '../utils'
 export const typescript = async (
   config: ConfigOptions,
 ): Promise<Linter.Config[]> => {
-  if (!config.typescript) {
-    return []
-  }
+  if (!config.typescript) return []
 
   const { parser: typescriptParser } = await interopDefault(
     import('typescript-eslint'),

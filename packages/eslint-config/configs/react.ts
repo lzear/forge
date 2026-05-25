@@ -3,9 +3,7 @@ import type { ConfigOptions } from '../index'
 import { interopDefault } from '../utils'
 
 export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
-  if (!config.react) {
-    return {}
-  }
+  if (!config.react) return {}
 
   const [
     reactCompilerPlugin,
@@ -27,9 +25,7 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
 
   const files = ['**/*.jsx']
 
-  if (config.typescript) {
-    files.push('**/*.tsx')
-  }
+  if (config.typescript) files.push('**/*.tsx')
 
   return {
     name: 'lzear/react',

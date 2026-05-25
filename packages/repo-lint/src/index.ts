@@ -83,9 +83,9 @@ export const checkRepo = async (
   } = options
   const dir = path.join(baseDir, repo.replace('/', '__'))
 
-  if (existsSync(dir)) {
+  if (existsSync(dir))
     execSync(`git -C ${dir} pull --quiet`, { stdio: 'ignore' })
-  } else {
+  else {
     const url = token
       ? `https://${token}@github.com/${repo}.git`
       : `https://github.com/${repo}.git`

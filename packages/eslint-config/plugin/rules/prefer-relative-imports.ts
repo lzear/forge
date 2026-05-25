@@ -16,17 +16,12 @@ const toRelative = (
   context: Rule.RuleContext,
 ): string | null => {
   const resolved = resolve(importPath, context)
-  if (!resolved) {
-    return null
-  }
+  if (!resolved) return null
 
   let rel = path.relative(path.dirname(from), resolved)
-  if (!rel) {
-    return null
-  }
-  if (!rel.startsWith('.')) {
-    rel = `./${rel}`
-  }
+  if (!rel) return null
+
+  if (!rel.startsWith('.')) rel = `./${rel}`
 
   // If the original had no extension but the resolved path does,
   // strip the extension (and /index suffix) to match import style
@@ -37,9 +32,7 @@ const toRelative = (
       rel = withoutExt.endsWith('/index')
         ? withoutExt.slice(0, -'/index'.length) || '.'
         : withoutExt
-      if (!rel.startsWith('.')) {
-        rel = `./${rel}`
-      }
+      if (!rel.startsWith('.')) rel = `./${rel}`
     }
   }
 
@@ -78,17 +71,12 @@ export const preferRelativeImports: Rule.RuleModule = {
 
     const check = (source: SourceNode) => {
       const importPath = source.value
-      if (typeof importPath !== 'string' || importPath.startsWith('.')) {
-        return
-      }
+      if (typeof importPath !== 'string' || importPath.startsWith('.')) return
 
       const relative = toRelative(filename, importPath, context)
-      if (!relative || relative.length >= importPath.length) {
-        return
-      }
-      if (countParentPrefixes(relative) > maxParentPrefixes) {
-        return
-      }
+      if (!relative || relative.length >= importPath.length) return
+
+      if (countParentPrefixes(relative) > maxParentPrefixes) return
 
       context.report({
         node: source,

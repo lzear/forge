@@ -12,9 +12,8 @@ const VERSION_RE = /^([~^])(\d+)\.(\d+)(?:\.\d+)?$/
 
 const simplify = (version: string): string | null => {
   const match = VERSION_RE.exec(version)
-  if (!match) {
-    return null
-  }
+  if (!match) return null
+
   const [, operator, major, minor] = match
 
   // For 0.x packages, ^ semver means minor is the "major" (breaking) version.
@@ -103,14 +102,10 @@ export const majorVersionOnly: Rule.RuleModule = {
             ? String(node.key.value)
             : (node.key.name ?? '')
 
-        if (!DEP_FIELDS.has(keyName)) {
-          return
-        }
+        if (!DEP_FIELDS.has(keyName)) return
 
         const depsNode = node.value
-        if (depsNode.type !== 'JSONObjectExpression') {
-          return
-        }
+        if (depsNode.type !== 'JSONObjectExpression') return
 
         for (const prop of depsNode.properties) {
           const pkgName =
@@ -118,24 +113,16 @@ export const majorVersionOnly: Rule.RuleModule = {
               ? String(prop.key.value)
               : (prop.key.name ?? '')
 
-          if (isIgnored(pkgName, ignore)) {
-            continue
-          }
+          if (isIgnored(pkgName, ignore)) continue
 
           const versionNode = prop.value
-          if (versionNode.type !== 'JSONLiteral') {
-            continue
-          }
+          if (versionNode.type !== 'JSONLiteral') continue
 
           const version = versionNode.value
-          if (typeof version !== 'string') {
-            continue
-          }
+          if (typeof version !== 'string') continue
 
           const suggested = simplify(version)
-          if (!suggested) {
-            continue
-          }
+          if (!suggested) continue
 
           context.report({
             node: versionNode,
