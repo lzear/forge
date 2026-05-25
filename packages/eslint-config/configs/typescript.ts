@@ -1,4 +1,3 @@
-import eslint from '@eslint/js'
 import type { Linter } from 'eslint'
 import { defineConfig } from 'eslint/config'
 import tseslint from 'typescript-eslint'
@@ -22,7 +21,6 @@ export const typescript = async (
     name: 'lzear/typescript',
 
     extends: [
-      eslint.configs.recommended,
       tseslint.configs.strictTypeChecked,
       tseslint.configs.stylisticTypeChecked,
     ],
@@ -37,6 +35,10 @@ export const typescript = async (
       '@typescript-eslint/no-unnecessary-condition': [
         2,
         { allowConstantLoopConditions: 'only-allowed-literals' },
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        2,
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
       '@typescript-eslint/no-unused-expressions': [2, { allowTernary: true }],
       '@typescript-eslint/restrict-template-expressions': [

@@ -33,6 +33,7 @@ export const core = (local?: string): Linter.Config => {
 
   const rules = {
     ...js.configs.recommended.rules,
+    curly: [2, 'multi'],
 
     ...eslintCommentsPlugin.configs.recommended.rules,
     '@eslint-community/eslint-comments/disable-enable-pair': 0,
@@ -104,6 +105,7 @@ export const core = (local?: string): Linter.Config => {
     'unicorn/no-abusive-eslint-disable': 0,
     'unicorn/no-null': 0,
     'unicorn/prevent-abbreviations': 0,
+    'unicorn/switch-case-braces': [2, 'avoid'],
   } satisfies Linter.RulesRecord
 
   return {
