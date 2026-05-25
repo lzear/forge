@@ -17,9 +17,7 @@
       "default": "./dist/index.js"
     }
   },
-  "bin": {
-    "repo-lint": "./dist/bin.js"
-  },
+  "bin": "./dist/bin.js",
   "files": [
     "dist"
   ],

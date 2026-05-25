@@ -48,9 +48,7 @@
       "default": "./dist/vitest.react.js"
     }
   },
-  "bin": {
-    "forge": "./dist/bin.js"
-  },
+  "bin": "./dist/bin.js",
   "files": [
     "dist",
     "tsconfig"
