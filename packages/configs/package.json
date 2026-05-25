@@ -70,9 +70,6 @@
     "vitest": "^4"
   },
   "peerDependenciesMeta": {
-    "@commitlint/cli": {
-      "optional": true
-    },
     "@vitejs/plugin-react": {
       "optional": true
     },

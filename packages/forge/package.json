@@ -91,9 +91,6 @@
     "eslint": {
       "optional": true
     },
-    "jsdom": {
-      "optional": true
-    },
     "tsup": {
       "optional": true
     },
