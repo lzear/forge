@@ -57350,11 +57350,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
       "n/no-unsupported-features/node-builtins": "error",
       "n/process-exit-as-throw": "error",
     },
-    "settings": {
-      "node": {
-        "version": ">=22.16.0",
-      },
-    },
   },
   {
     "files": [

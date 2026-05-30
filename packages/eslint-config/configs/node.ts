@@ -34,10 +34,5 @@ export const node = async (config: ConfigOptions): Promise<Linter.Config> => {
       'n/no-missing-import': 0,
       'n/no-process-exit': 0,
     },
-
-    settings: {
-      // Align with the minimum version where import.meta.dirname is stable
-      node: { version: '>=22.16.0' },
-    },
   }
 }
