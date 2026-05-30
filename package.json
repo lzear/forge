@@ -22,7 +22,7 @@
     "@commitlint/cli": "^21",
     "@lzear/configs": "workspace:*",
     "@lzear/forge": "workspace:*",
-    "concurrently": "^9",
+    "concurrently": "^10",
     "eslint": "^9",
     "lefthook": "^2",
     "npm-check-updates": "^22",

@@ -63,7 +63,7 @@
     "@lzear/configs": "workspace:*",
     "@lzear/eslint-config": "workspace:*",
     "@lzear/repo-lint": "workspace:*",
-    "commander": "^14",
+    "commander": "^15",
     "picocolors": "^1"
   },
   "devDependencies": {
