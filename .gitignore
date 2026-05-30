@@ -1,3 +1,4 @@
+packages/*/CHANGELOG.md
 node_modules/
 dist/
 *.tsbuildinfo

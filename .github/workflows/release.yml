@@ -23,6 +23,7 @@ jobs:
       - run: yarn build
       - uses: changesets/action@v1
         with:
+          version: yarn version-packages
           publish: npm publish -ws --access public --provenance
           createGithubReleases: false
         env:

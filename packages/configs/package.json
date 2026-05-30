@@ -12,6 +12,7 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
+    "./changelog": "./src/changelog.mjs",
     "./commitlint": {
       "types": "./dist/commitlint.d.ts",
       "default": "./dist/commitlint.js"
