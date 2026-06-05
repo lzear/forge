@@ -18,17 +18,51 @@ const getCommits = () => {
     const lastTag = execSync('git describe --tags --abbrev=0', { cwd: ROOT })
       .toString()
       .trim()
-    return execSync(`git log ${lastTag}..HEAD --oneline --no-merges`, {
+    const commits = execSync(`git log ${lastTag}..HEAD --oneline --no-merges`, {
       cwd: ROOT,
     })
       .toString()
       .trim()
+    // If commits include a "Version Packages" entry, the tag predates a prior
+    // release cycle — fall through to the Version Packages baseline instead.
+    if (!commits.includes('Version Packages')) return commits
   } catch {
-    return execSync('git log --oneline --no-merges -20', { cwd: ROOT })
+    // tag lookup failed, fall through
+  }
+  try {
+    const base = execSync(
+      'git log --oneline --format=%H --grep="^Version Packages$" -1',
+      { cwd: ROOT },
+    )
       .toString()
       .trim()
+    if (base)
+      return execSync(`git log ${base}..HEAD --oneline --no-merges`, {
+        cwd: ROOT,
+      })
+        .toString()
+        .trim()
+  } catch {
+    // no Version Packages commit found
   }
+  return execSync('git log --oneline --no-merges -20', { cwd: ROOT })
+    .toString()
+    .trim()
 }
+
+const SKIP_PREFIXES = [
+  'ci:',
+  'chore: ncu',
+  'chore: add changeset',
+  'chore: add root CHANGELOG',
+  'Version Packages',
+]
+
+const filterCommits = (raw) =>
+  raw
+    .split('\n')
+    .filter((l) => l && !SKIP_PREFIXES.some((p) => l.slice(9).startsWith(p)))
+    .join('\n')
 
 export const getReleaseLine = async (changeset, type) => {
   if (written.has(changeset.id)) return ''
@@ -40,7 +74,7 @@ export const getReleaseLine = async (changeset, type) => {
     ),
   )
   const version = bump(pkg.version, type)
-  const commits = getCommits()
+  const commits = filterCommits(getCommits())
   const commitSection = commits
     ? `### Commits\n\n${commits
         .split('\n')
@@ -50,7 +84,7 @@ export const getReleaseLine = async (changeset, type) => {
   const existing = await fs.readFile(ROOT_CHANGELOG, 'utf8').catch(() => '')
   await fs.writeFile(
     ROOT_CHANGELOG,
-    `## ${version}\n\n- ${changeset.summary}\n\n${commitSection}${existing}`,
+    `## ${version}\n\n${changeset.summary}\n\n${commitSection}${existing}`,
   )
   return ''
 }
