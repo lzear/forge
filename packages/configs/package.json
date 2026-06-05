@@ -12,7 +12,10 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    "./changelog": "./src/changelog.mjs",
+    "./changelog": {
+      "types": "./src/changelog.d.ts",
+      "default": "./src/changelog.mjs"
+    },
     "./commitlint": {
       "types": "./dist/commitlint.d.ts",
       "default": "./dist/commitlint.js"
@@ -44,6 +47,8 @@
   },
   "files": [
     "dist",
+    "src/changelog.d.ts",
+    "src/changelog.mjs",
     "tsconfig"
   ],
   "scripts": {
