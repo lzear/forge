@@ -32886,6 +32886,7 @@
       "no-shadow-restricted-names": "error",
       "no-sparse-arrays": "error",
       "no-this-before-super": "error",
+      "no-unassigned-vars": "error",
       "no-undef": "error",
       "no-unexpected-multiline": "error",
       "no-unreachable": "error",
@@ -32895,6 +32896,7 @@
       "no-unused-labels": "error",
       "no-unused-private-class-members": "error",
       "no-unused-vars": "error",
+      "no-useless-assignment": "error",
       "no-useless-backreference": "off",
       "no-useless-catch": "error",
       "no-useless-escape": "error",
@@ -32908,6 +32910,7 @@
         },
       ],
       "prefer-regex-literals": "error",
+      "preserve-caught-error": "error",
       "promise/always-return": "error",
       "promise/avoid-new": "off",
       "promise/catch-or-return": "error",
@@ -41628,7 +41631,7 @@
               "react-dom": {
                 "meta": {
                   "name": "eslint-plugin-react-dom",
-                  "version": "5.8.7",
+                  "version": "5.8.12",
                 },
                 "rules": {
                   "no-dangerously-set-innerhtml": {
@@ -41949,7 +41952,7 @@
               "react-dom": {
                 "meta": {
                   "name": "eslint-plugin-react-dom",
-                  "version": "5.8.7",
+                  "version": "5.8.12",
                 },
                 "rules": {
                   "no-dangerously-set-innerhtml": {
@@ -42270,7 +42273,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-dom",
-          "version": "5.8.7",
+          "version": "5.8.12",
         },
         "rules": {
           "no-dangerously-set-innerhtml": {
@@ -43451,7 +43454,7 @@
               "react-web-api": {
                 "meta": {
                   "name": "eslint-plugin-react-web-api",
-                  "version": "5.8.7",
+                  "version": "5.8.12",
                 },
                 "rules": {
                   "no-leaked-event-listener": {
@@ -43561,7 +43564,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-web-api",
-          "version": "5.8.7",
+          "version": "5.8.12",
         },
         "rules": {
           "no-leaked-event-listener": {
@@ -43747,7 +43750,7 @@
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.8.7",
+                  "version": "5.8.12",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -44764,7 +44767,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.8.7",
+                  "version": "5.8.12",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -45782,7 +45785,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.8.7",
+                  "version": "5.8.12",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -46799,7 +46802,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.8.7",
+                  "version": "5.8.12",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -47820,7 +47823,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.8.7",
+                  "version": "5.8.12",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -48843,7 +48846,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.8.7",
+                  "version": "5.8.12",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -49861,7 +49864,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         },
         "meta": {
           "name": "eslint-plugin-react-x",
-          "version": "5.8.7",
+          "version": "5.8.12",
         },
         "rules": {
           "error-boundaries": {
@@ -57362,7 +57365,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.60.0",
+          "version": "8.60.1",
         },
         "parseForESLint": [Function],
       },
@@ -57655,7 +57658,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -57864,7 +57867,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "parser": {
                 "meta": {
                   "name": "typescript-eslint/parser",
-                  "version": "8.60.0",
+                  "version": "8.60.1",
                 },
                 "parseForESLint": [Function],
               },
@@ -57988,7 +57991,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -58068,7 +58071,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -58175,7 +58178,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -58259,7 +58262,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -58353,7 +58356,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -58512,7 +58515,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -58636,7 +58639,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -58707,7 +58710,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -58787,7 +58790,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -59335,7 +59338,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         "meta": {
           "name": "@typescript-eslint/eslint-plugin",
           "namespace": "@typescript-eslint",
-          "version": "8.60.0",
+          "version": "8.60.1",
         },
         "rules": {
           "adjacent-overload-signatures": {
@@ -64047,11 +64050,9 @@ You must still type the parameters of the function.",
                   "additionalProperties": false,
                   "properties": {
                     "detectObjects": {
-                      "default": false,
                       "type": "boolean",
                     },
                     "enforceConst": {
-                      "default": false,
                       "type": "boolean",
                     },
                     "ignore": {
@@ -64070,34 +64071,27 @@ You must still type the parameters of the function.",
                       "uniqueItems": true,
                     },
                     "ignoreArrayIndexes": {
-                      "default": false,
                       "type": "boolean",
                     },
                     "ignoreClassFieldInitialValues": {
-                      "default": false,
                       "type": "boolean",
                     },
                     "ignoreDefaultValues": {
-                      "default": false,
                       "type": "boolean",
                     },
                     "ignoreEnums": {
-                      "default": false,
                       "description": "Whether enums used in TypeScript are considered okay.",
                       "type": "boolean",
                     },
                     "ignoreNumericLiteralTypes": {
-                      "default": false,
                       "description": "Whether numbers used in TypeScript numeric literal types are considered okay.",
                       "type": "boolean",
                     },
                     "ignoreReadonlyClassProperties": {
-                      "default": false,
                       "description": "Whether `readonly` class properties are considered okay.",
                       "type": "boolean",
                     },
                     "ignoreTypeIndexes": {
-                      "default": false,
                       "description": "Whether numbers used to index types are okay.",
                       "type": "boolean",
                     },
@@ -64628,22 +64622,22 @@ Otherwise, if you don't need to preserve emojis or other non-Ascii characters, d
               },
               "fixable": undefined,
               "messages": {
-                "allowedImportName": "'{{importName}}' import from '{{importSource}}' is restricted because only '{{allowedImportNames}}' import(s) is/are allowed.",
+                "allowedImportName": "'{{importName}}' import from '{{importSource}}' is restricted because only {{allowedImportNames}} {{isOrAre}} allowed.",
                 "allowedImportNamePattern": "'{{importName}}' import from '{{importSource}}' is restricted because only imports that match the pattern '{{allowedImportNamePattern}}' are allowed from '{{importSource}}'.",
                 "allowedImportNamePatternWithCustomMessage": "'{{importName}}' import from '{{importSource}}' is restricted because only imports that match the pattern '{{allowedImportNamePattern}}' are allowed from '{{importSource}}'. {{customMessage}}",
-                "allowedImportNameWithCustomMessage": "'{{importName}}' import from '{{importSource}}' is restricted because only '{{allowedImportNames}}' import(s) is/are allowed. {{customMessage}}",
-                "everything": "* import is invalid because '{{importNames}}' from '{{importSource}}' is restricted.",
-                "everythingWithAllowImportNames": "* import is invalid because only '{{allowedImportNames}}' from '{{importSource}}' is/are allowed.",
-                "everythingWithAllowImportNamesAndCustomMessage": "* import is invalid because only '{{allowedImportNames}}' from '{{importSource}}' is/are allowed. {{customMessage}}",
+                "allowedImportNameWithCustomMessage": "'{{importName}}' import from '{{importSource}}' is restricted because only {{allowedImportNames}} {{isOrAre}} allowed. {{customMessage}}",
+                "everything": "* import is invalid because {{importNames}} from '{{importSource}}' {{isOrAre}} restricted.",
+                "everythingWithAllowImportNames": "* import is invalid because only {{allowedImportNames}} from '{{importSource}}' {{isOrAre}} allowed.",
+                "everythingWithAllowImportNamesAndCustomMessage": "* import is invalid because only {{allowedImportNames}} from '{{importSource}}' {{isOrAre}} allowed. {{customMessage}}",
                 "everythingWithAllowedImportNamePattern": "* import is invalid because only imports that match the pattern '{{allowedImportNamePattern}}' from '{{importSource}}' are allowed.",
                 "everythingWithAllowedImportNamePatternWithCustomMessage": "* import is invalid because only imports that match the pattern '{{allowedImportNamePattern}}' from '{{importSource}}' are allowed. {{customMessage}}",
-                "everythingWithCustomMessage": "* import is invalid because '{{importNames}}' from '{{importSource}}' is restricted. {{customMessage}}",
+                "everythingWithCustomMessage": "* import is invalid because {{importNames}} from '{{importSource}}' {{isOrAre}} restricted. {{customMessage}}",
                 "importName": "'{{importName}}' import from '{{importSource}}' is restricted.",
                 "importNameWithCustomMessage": "'{{importName}}' import from '{{importSource}}' is restricted. {{customMessage}}",
                 "path": "'{{importSource}}' import is restricted from being used.",
                 "pathWithCustomMessage": "'{{importSource}}' import is restricted from being used. {{customMessage}}",
-                "patternAndEverything": "* import is invalid because '{{importNames}}' from '{{importSource}}' is restricted from being used by a pattern.",
-                "patternAndEverythingWithCustomMessage": "* import is invalid because '{{importNames}}' from '{{importSource}}' is restricted from being used by a pattern. {{customMessage}}",
+                "patternAndEverything": "* import is invalid because {{importNames}} from '{{importSource}}' {{isOrAre}} restricted from being used by a pattern.",
+                "patternAndEverythingWithCustomMessage": "* import is invalid because {{importNames}} from '{{importSource}}' {{isOrAre}} restricted from being used by a pattern. {{customMessage}}",
                 "patternAndEverythingWithRegexImportName": "* import is invalid because import name matching '{{importNames}}' pattern from '{{importSource}}' is restricted from being used.",
                 "patternAndEverythingWithRegexImportNameAndCustomMessage": "* import is invalid because import name matching '{{importNames}}' pattern from '{{importSource}}' is restricted from being used. {{customMessage}}",
                 "patternAndImportName": "'{{importName}}' import from '{{importSource}}' is restricted from being used by a pattern.",
@@ -68370,7 +68364,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.60.0",
+          "version": "8.60.1",
         },
         "parseForESLint": [Function],
       },
@@ -68663,7 +68657,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -68872,7 +68866,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               "parser": {
                 "meta": {
                   "name": "typescript-eslint/parser",
-                  "version": "8.60.0",
+                  "version": "8.60.1",
                 },
                 "parseForESLint": [Function],
               },
@@ -68996,7 +68990,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -69076,7 +69070,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -69183,7 +69177,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -69267,7 +69261,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -69361,7 +69355,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -69522,7 +69516,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -69646,7 +69640,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -69717,7 +69711,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -69795,7 +69789,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.60.0",
+                    "version": "8.60.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -70343,7 +70337,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
         "meta": {
           "name": "@typescript-eslint/eslint-plugin",
           "namespace": "@typescript-eslint",
-          "version": "8.60.0",
+          "version": "8.60.1",
         },
         "rules": {
           "adjacent-overload-signatures": {
@@ -75055,11 +75049,9 @@ You must still type the parameters of the function.",
                   "additionalProperties": false,
                   "properties": {
                     "detectObjects": {
-                      "default": false,
                       "type": "boolean",
                     },
                     "enforceConst": {
-                      "default": false,
                       "type": "boolean",
                     },
                     "ignore": {
@@ -75078,34 +75070,27 @@ You must still type the parameters of the function.",
                       "uniqueItems": true,
                     },
                     "ignoreArrayIndexes": {
-                      "default": false,
                       "type": "boolean",
                     },
                     "ignoreClassFieldInitialValues": {
-                      "default": false,
                       "type": "boolean",
                     },
                     "ignoreDefaultValues": {
-                      "default": false,
                       "type": "boolean",
                     },
                     "ignoreEnums": {
-                      "default": false,
                       "description": "Whether enums used in TypeScript are considered okay.",
                       "type": "boolean",
                     },
                     "ignoreNumericLiteralTypes": {
-                      "default": false,
                       "description": "Whether numbers used in TypeScript numeric literal types are considered okay.",
                       "type": "boolean",
                     },
                     "ignoreReadonlyClassProperties": {
-                      "default": false,
                       "description": "Whether `readonly` class properties are considered okay.",
                       "type": "boolean",
                     },
                     "ignoreTypeIndexes": {
-                      "default": false,
                       "description": "Whether numbers used to index types are okay.",
                       "type": "boolean",
                     },
@@ -75636,22 +75621,22 @@ Otherwise, if you don't need to preserve emojis or other non-Ascii characters, d
               },
               "fixable": undefined,
               "messages": {
-                "allowedImportName": "'{{importName}}' import from '{{importSource}}' is restricted because only '{{allowedImportNames}}' import(s) is/are allowed.",
+                "allowedImportName": "'{{importName}}' import from '{{importSource}}' is restricted because only {{allowedImportNames}} {{isOrAre}} allowed.",
                 "allowedImportNamePattern": "'{{importName}}' import from '{{importSource}}' is restricted because only imports that match the pattern '{{allowedImportNamePattern}}' are allowed from '{{importSource}}'.",
                 "allowedImportNamePatternWithCustomMessage": "'{{importName}}' import from '{{importSource}}' is restricted because only imports that match the pattern '{{allowedImportNamePattern}}' are allowed from '{{importSource}}'. {{customMessage}}",
-                "allowedImportNameWithCustomMessage": "'{{importName}}' import from '{{importSource}}' is restricted because only '{{allowedImportNames}}' import(s) is/are allowed. {{customMessage}}",
-                "everything": "* import is invalid because '{{importNames}}' from '{{importSource}}' is restricted.",
-                "everythingWithAllowImportNames": "* import is invalid because only '{{allowedImportNames}}' from '{{importSource}}' is/are allowed.",
-                "everythingWithAllowImportNamesAndCustomMessage": "* import is invalid because only '{{allowedImportNames}}' from '{{importSource}}' is/are allowed. {{customMessage}}",
+                "allowedImportNameWithCustomMessage": "'{{importName}}' import from '{{importSource}}' is restricted because only {{allowedImportNames}} {{isOrAre}} allowed. {{customMessage}}",
+                "everything": "* import is invalid because {{importNames}} from '{{importSource}}' {{isOrAre}} restricted.",
+                "everythingWithAllowImportNames": "* import is invalid because only {{allowedImportNames}} from '{{importSource}}' {{isOrAre}} allowed.",
+                "everythingWithAllowImportNamesAndCustomMessage": "* import is invalid because only {{allowedImportNames}} from '{{importSource}}' {{isOrAre}} allowed. {{customMessage}}",
                 "everythingWithAllowedImportNamePattern": "* import is invalid because only imports that match the pattern '{{allowedImportNamePattern}}' from '{{importSource}}' are allowed.",
                 "everythingWithAllowedImportNamePatternWithCustomMessage": "* import is invalid because only imports that match the pattern '{{allowedImportNamePattern}}' from '{{importSource}}' are allowed. {{customMessage}}",
-                "everythingWithCustomMessage": "* import is invalid because '{{importNames}}' from '{{importSource}}' is restricted. {{customMessage}}",
+                "everythingWithCustomMessage": "* import is invalid because {{importNames}} from '{{importSource}}' {{isOrAre}} restricted. {{customMessage}}",
                 "importName": "'{{importName}}' import from '{{importSource}}' is restricted.",
                 "importNameWithCustomMessage": "'{{importName}}' import from '{{importSource}}' is restricted. {{customMessage}}",
                 "path": "'{{importSource}}' import is restricted from being used.",
                 "pathWithCustomMessage": "'{{importSource}}' import is restricted from being used. {{customMessage}}",
-                "patternAndEverything": "* import is invalid because '{{importNames}}' from '{{importSource}}' is restricted from being used by a pattern.",
-                "patternAndEverythingWithCustomMessage": "* import is invalid because '{{importNames}}' from '{{importSource}}' is restricted from being used by a pattern. {{customMessage}}",
+                "patternAndEverything": "* import is invalid because {{importNames}} from '{{importSource}}' {{isOrAre}} restricted from being used by a pattern.",
+                "patternAndEverythingWithCustomMessage": "* import is invalid because {{importNames}} from '{{importSource}}' {{isOrAre}} restricted from being used by a pattern. {{customMessage}}",
                 "patternAndEverythingWithRegexImportName": "* import is invalid because import name matching '{{importNames}}' pattern from '{{importSource}}' is restricted from being used.",
                 "patternAndEverythingWithRegexImportNameAndCustomMessage": "* import is invalid because import name matching '{{importNames}}' pattern from '{{importSource}}' is restricted from being used. {{customMessage}}",
                 "patternAndImportName": "'{{importName}}' import from '{{importSource}}' is restricted from being used by a pattern.",
@@ -79297,7 +79282,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.60.0",
+          "version": "8.60.1",
         },
         "parseForESLint": [Function],
       },
@@ -82565,7 +82550,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "configs": [Circular],
                 "meta": {
                   "name": "eslint-plugin-package-json",
-                  "version": "1.2.0",
+                  "version": "1.3.0",
                 },
                 "rules": {
                   "bin-name-casing": {
@@ -82661,6 +82646,36 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                         },
                       ],
                       "type": "suggestion",
+                    },
+                  },
+                  "no-local-dependencies": {
+                    "create": [Function],
+                    "meta": {
+                      "defaultOptions": [
+                        {
+                          "ignorePrivate": true,
+                        },
+                      ],
+                      "docs": {
+                        "description": "Requires that dependencies do not use local file paths, which will likely result in errors when installing from a registry.",
+                        "url": "https://eslint-plugin-package-json.dev/rules/no-local-dependencies",
+                      },
+                      "messages": {
+                        "localDependencyFound": "Local dependency "{{ name }}" is not allowed.",
+                      },
+                      "schema": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "ignorePrivate": {
+                              "description": "Determines if this rule should be enforced when the package's `private` property is `true`.",
+                              "type": "boolean",
+                            },
+                          },
+                          "type": "object",
+                        },
+                      ],
+                      "type": "problem",
                     },
                   },
                   "no-redundant-files": {
@@ -85444,7 +85459,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "configs": [Circular],
                 "meta": {
                   "name": "eslint-plugin-package-json",
-                  "version": "1.2.0",
+                  "version": "1.3.0",
                 },
                 "rules": {
                   "bin-name-casing": {
@@ -85540,6 +85555,36 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                         },
                       ],
                       "type": "suggestion",
+                    },
+                  },
+                  "no-local-dependencies": {
+                    "create": [Function],
+                    "meta": {
+                      "defaultOptions": [
+                        {
+                          "ignorePrivate": true,
+                        },
+                      ],
+                      "docs": {
+                        "description": "Requires that dependencies do not use local file paths, which will likely result in errors when installing from a registry.",
+                        "url": "https://eslint-plugin-package-json.dev/rules/no-local-dependencies",
+                      },
+                      "messages": {
+                        "localDependencyFound": "Local dependency "{{ name }}" is not allowed.",
+                      },
+                      "schema": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "ignorePrivate": {
+                              "description": "Determines if this rule should be enforced when the package's `private` property is `true`.",
+                              "type": "boolean",
+                            },
+                          },
+                          "type": "object",
+                        },
+                      ],
+                      "type": "problem",
                     },
                   },
                   "no-redundant-files": {
@@ -88323,7 +88368,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "configs": [Circular],
                 "meta": {
                   "name": "eslint-plugin-package-json",
-                  "version": "1.2.0",
+                  "version": "1.3.0",
                 },
                 "rules": {
                   "bin-name-casing": {
@@ -88419,6 +88464,36 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                         },
                       ],
                       "type": "suggestion",
+                    },
+                  },
+                  "no-local-dependencies": {
+                    "create": [Function],
+                    "meta": {
+                      "defaultOptions": [
+                        {
+                          "ignorePrivate": true,
+                        },
+                      ],
+                      "docs": {
+                        "description": "Requires that dependencies do not use local file paths, which will likely result in errors when installing from a registry.",
+                        "url": "https://eslint-plugin-package-json.dev/rules/no-local-dependencies",
+                      },
+                      "messages": {
+                        "localDependencyFound": "Local dependency "{{ name }}" is not allowed.",
+                      },
+                      "schema": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "ignorePrivate": {
+                              "description": "Determines if this rule should be enforced when the package's `private` property is `true`.",
+                              "type": "boolean",
+                            },
+                          },
+                          "type": "object",
+                        },
+                      ],
+                      "type": "problem",
                     },
                   },
                   "no-redundant-files": {
@@ -91995,7 +92070,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
           },
           "meta": {
             "name": "eslint-plugin-package-json",
-            "version": "1.2.0",
+            "version": "1.3.0",
           },
           "rules": {
             "bin-name-casing": {
@@ -92091,6 +92166,36 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                   },
                 ],
                 "type": "suggestion",
+              },
+            },
+            "no-local-dependencies": {
+              "create": [Function],
+              "meta": {
+                "defaultOptions": [
+                  {
+                    "ignorePrivate": true,
+                  },
+                ],
+                "docs": {
+                  "description": "Requires that dependencies do not use local file paths, which will likely result in errors when installing from a registry.",
+                  "url": "https://eslint-plugin-package-json.dev/rules/no-local-dependencies",
+                },
+                "messages": {
+                  "localDependencyFound": "Local dependency "{{ name }}" is not allowed.",
+                },
+                "schema": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "ignorePrivate": {
+                        "description": "Determines if this rule should be enforced when the package's `private` property is `true`.",
+                        "type": "boolean",
+                      },
+                    },
+                    "type": "object",
+                  },
+                ],
+                "type": "problem",
               },
             },
             "no-redundant-files": {
@@ -94547,6 +94652,36 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 },
               ],
               "type": "suggestion",
+            },
+          },
+          "no-local-dependencies": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "ignorePrivate": true,
+                },
+              ],
+              "docs": {
+                "description": "Requires that dependencies do not use local file paths, which will likely result in errors when installing from a registry.",
+                "url": "https://eslint-plugin-package-json.dev/rules/no-local-dependencies",
+              },
+              "messages": {
+                "localDependencyFound": "Local dependency "{{ name }}" is not allowed.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "ignorePrivate": {
+                      "description": "Determines if this rule should be enforced when the package's `private` property is `true`.",
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
             },
           },
           "no-redundant-files": {

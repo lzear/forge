@@ -24,7 +24,7 @@
     "@lzear/configs": "workspace:*",
     "@lzear/forge": "workspace:*",
     "concurrently": "^10",
-    "eslint": "^9",
+    "eslint": "^10",
     "lefthook": "^2",
     "npm-check-updates": "^22",
     "typescript": "^6"
