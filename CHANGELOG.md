@@ -1,28 +1,17 @@
 ## 4.2.1
 
-- Fix `./changelog` export: include `src/changelog.mjs` and `src/changelog.d.ts` in published files; add type declarations
-- Read Node.js minimum version from `engines` field in ESLint config instead of hardcoding
-- Update ESLint and related dependencies
-- Remove `@changesets/changelog-github` in favor of custom changelog generator
-
-### Commits
-
-- 178a1e9 docs: fixup and rebuild changelog
-- e25fa9a docs: add changeset for configs changelog export fix
-- bdd8142 build: publish changelog.mjs and add type declarations
-- 88ee015 ci: update knip config
-- 4f8fffc ci: remove @changesets/changelog-github
-- 46eb238 chore: update eslint
-
-## 4.2.0
-
 - Add `curly` (multi) and `unicorn/switch-case-braces` (avoid) rules; update dependencies
+- Fix `@lzear/configs/changelog` export: add `src/changelog.mjs` and `src/changelog.d.ts` to published files
+- Read Node.js minimum version from `engines` field in ESLint config instead of hardcoding
+- Remove `@changesets/changelog-github` in favour of custom changelog generator
 
 ### Commits
 
 - d4a6993 chore: read node version from engines field in eslint config
 - 9e1ef9a chore: update rules (incl. curly)
 - 4464ef9 chore: apply curly
+- 4f8fffc ci: remove @changesets/changelog-github
+- bdd8142 build: publish changelog.mjs and add type declarations
 
 ## 4.1.2
 
