@@ -38,6 +38,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - if: steps.changesets.outputs.hasChangesets == 'false'
-        run: npm publish --workspaces --access public --provenance
+        run: |
+          for workspace in packages/configs packages/eslint-config packages/forge packages/repo-lint; do
+            name=$(node -p "require('./${workspace}/package.json').name")
+            version=$(node -p "require('./${workspace}/package.json').version")
+            if npm view "${name}@${version}" version 2>/dev/null | grep -qF "${version}"; then
+              echo "${name}@${version} already published, skipping"
+            else
+              npm publish --workspace="${workspace}" --access public --provenance
+            fi
+          done
         env:
           NPM_CONFIG_PROVENANCE: 'true'
