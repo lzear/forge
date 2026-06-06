@@ -11,6 +11,9 @@
   "license": "MIT",
   "sideEffects": false,
   "type": "module",
+  "bin": {
+    "lzear-publish": "./src/publish.mjs"
+  },
   "exports": {
     "./changelog": {
       "types": "./src/changelog.d.ts",
@@ -24,6 +27,7 @@
       "types": "./dist/commitlint.emoji.d.ts",
       "default": "./dist/commitlint.emoji.js"
     },
+    "./publish": "./src/publish.mjs",
     "./tsconfig/app": "./tsconfig/app.json",
     "./tsconfig/base": "./tsconfig/base.json",
     "./tsconfig/lib": "./tsconfig/lib.json",

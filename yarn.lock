@@ -1498,6 +1498,8 @@ __metadata:
       optional: true
     vitest:
       optional: true
+  bin:
+    lzear-publish: ./src/publish.mjs
   languageName: unknown
   linkType: soft
 
