@@ -1,3 +1,20 @@
+## 4.2.2
+
+Update eslint peer to version 10, and minor fixes.
+
+### Commits
+
+- f3666bd chore: ncu also updates peerDeps; bump peerDep eslint to ^10
+- 549b0bd fix: remove ./publish from exports (bin script)
+- 6083f47 chore: remove NPM_TOKEN secret check (using OIDC now)
+- 2a5b150 docs: changelog
+- dda32b0 ci: fixup versioning
+- 3a81680 Revert "ci: publish after misconfiguration"
+- b7e5677 ci: publish after misconfiguration
+- e237ade ci: fix npm publish
+- 58d8606 ci: fix npm publish
+- 1b3d40b ci: fix npm publish
+
 ## 4.2.1
 
 - Add `curly` (multi) and `unicorn/switch-case-braces` (avoid) rules; update dependencies
