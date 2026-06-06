@@ -299,35 +299,13 @@ const mockSecrets = (names: string[]): void => {
 describe('REMOTE_CHECKS', () => {
   afterEach(() => vi.clearAllMocks())
 
-  describe('secret-npm-token', () => {
-    it('fails when gh errors', () => {
-      vi.mocked(childProcess.spawnSync).mockReturnValue({
-        status: 1,
-        stdout: '',
-        stderr: '',
-        pid: 0,
-        output: [],
-        signal: null,
-      })
-      expect(remoteCheck('secret-npm-token', 'lzear/repo')).toBe(false)
-    })
-    it('fails when secret absent', () => {
-      mockSecrets(['OTHER_TOKEN'])
-      expect(remoteCheck('secret-npm-token', 'lzear/repo')).toBe(false)
-    })
-    it('passes when secret present', () => {
-      mockSecrets(['NPM_TOKEN'])
-      expect(remoteCheck('secret-npm-token', 'lzear/repo')).toBe(true)
-    })
-  })
-
   describe('secret-codacy-token', () => {
     it('passes when secret present', () => {
       mockSecrets(['CODACY_PROJECT_TOKEN'])
       expect(remoteCheck('secret-codacy-token', 'lzear/repo')).toBe(true)
     })
     it('fails when secret absent', () => {
-      mockSecrets(['NPM_TOKEN'])
+      mockSecrets(['OTHER_TOKEN'])
       expect(remoteCheck('secret-codacy-token', 'lzear/repo')).toBe(false)
     })
   })

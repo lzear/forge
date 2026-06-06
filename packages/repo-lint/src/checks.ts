@@ -282,16 +282,6 @@ const listSecrets = (repo: string): string[] | null => {
 
 export const REMOTE_CHECKS: RemoteCheck[] = [
   {
-    id: 'secret-npm-token',
-    desc: 'Secret NPM_TOKEN set',
-    type: 'remote',
-    publishedOnly: true,
-    check: (repo) => {
-      const secrets = listSecrets(repo)
-      return secrets?.includes('NPM_TOKEN') ?? false
-    },
-  },
-  {
     id: 'secret-codacy-token',
     desc: 'Secret CODACY_PROJECT_TOKEN set',
     type: 'remote',
