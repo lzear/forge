@@ -1,3 +1,18 @@
+## 4.3.0
+
+More maintenance automation. `forge check` gains two checks: `deps-audit` (package-manager-native security audit — prod deps, high severity and up) and `deps-deprecated` (flags direct dependencies whose resolved version is deprecated on npm, including workspaces and `npm:` aliases). `forge update` gains a LICENSE copyright-year bump (`2023` → `2023-2026`) and a dedupe pass after install (`yarn dedupe` / `pnpm dedupe` / `npm dedupe`). `@lzear/configs` tsconfig target bumped ES2022 → ES2023 (node ≥ 24 everywhere).
+
+### Commits
+
+- 678a3aa ci: fix zizmor findings, pin actions to SHAs
+- 5d6b081 refactor(repo-lint): terser check output, single codacy check
+- f4c0def chore: forge update (LICENSE copyright year)
+- 0a27064 feat: sherif check, zizmor & pkg.pr.new CI jobs
+- e8a0ab7 feat: more maintenance automation. `forge check` `forge update`...
+- 764c808 chore: replace `eslint-plugin-package-json` by `eslint-package-json`
+- 34ae88a chore: ncu (unicorn update)
+- 8db39fe chore: update to typescript 7
+
 ## 4.2.2
 
 Update eslint peer to version 10, and minor fixes.
@@ -77,4 +92,6 @@ Update eslint peer to version 10, and minor fixes.
 - 3ad0b75 chore: extract configuration files into repo
 - d55cee2 chore: add typecheck
 - dfbe2ff chore: update TS ESLint configurations with strictTypeChecked
+- 4755eb7 fix: publish script
+rations with strictTypeChecked
 - 4755eb7 fix: publish script
