@@ -118,6 +118,24 @@ const readmeIncludes = (dir: string, needle: string): boolean => {
   return existsSync(f) && readFileSync(f, 'utf8').includes(needle)
 }
 
+const FORGE_WORKFLOW_RE = /uses:\s*lzear\/forge\/\.github\/workflows\/ci\.yml@/
+
+// The forge repo hosts the reusable workflow and calls it locally.
+const isForgeRepo = (dir: string): boolean =>
+  getWorkspaceDirectories(dir).some(
+    (d) => readPackage(d)?.name === '@lzear/forge',
+  )
+
+const callsForgeWorkflow = (dir: string): boolean => {
+  const wfDir = path.join(dir, '.github', 'workflows')
+  if (!existsSync(wfDir)) return false
+  return readdirSync(wfDir)
+    .filter((f) => /\.ya?ml$/.test(f))
+    .some((f) =>
+      FORGE_WORKFLOW_RE.test(readFileSync(path.join(wfDir, f), 'utf8')),
+    )
+}
+
 const auditCommand = (pm: PackageManager): [string, ...string[]] => {
   switch (pm.name) {
     case 'npm':
@@ -257,10 +275,20 @@ export const LOCAL_CHECKS: LocalCheck[] = [
   },
   {
     id: 'ci-workflow',
-    desc: 'CI workflow',
+    desc: 'CI calls forge workflow',
     type: 'local',
     publishedOnly: true,
-    check: (dir) => existsSync(path.join(dir, '.github/workflows/ci.yml')),
+    check: (dir) => {
+      if (callsForgeWorkflow(dir) || isForgeRepo(dir)) return true
+      return {
+        pass: false,
+        detail:
+          'no workflow calls the forge reusable CI — replace the local ci.yml copy with:\n' +
+          '  jobs:\n' +
+          '    ci:\n' +
+          '      uses: lzear/forge/.github/workflows/ci.yml@main',
+      }
+    },
   },
   {
     id: 'renovate',

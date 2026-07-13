@@ -139,11 +139,37 @@ describe('LOCAL_CHECKS', () => {
   })
 
   describe('ci-workflow', () => {
-    it('fails when missing', async () => {
-      expect(await check('ci-workflow', dir)).toBe(false)
+    it('fails when no workflows exist', async () => {
+      const result = await check('ci-workflow', dir)
+      expect(result).toMatchObject({ pass: false })
+      expect((result as CheckDetail).detail).toContain(
+        'lzear/forge/.github/workflows/ci.yml@main',
+      )
     })
-    it('passes when present', async () => {
-      write(dir, '.github/workflows/ci.yml', 'on: push')
+    it('fails on a local ci.yml copy that never calls forge', async () => {
+      write(dir, '.github/workflows/ci.yml', 'on: workflow_call\njobs: {}')
+      expect(await check('ci-workflow', dir)).toMatchObject({ pass: false })
+    })
+    it('passes when a workflow calls the forge reusable CI', async () => {
+      write(
+        dir,
+        '.github/workflows/main.yml',
+        'jobs:\n  ci:\n    uses: lzear/forge/.github/workflows/ci.yml@main\n',
+      )
+      expect(await check('ci-workflow', dir)).toBe(true)
+    })
+    it('passes in the forge repo itself (hosts the workflow)', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ private: true, workspaces: ['packages/*'] }),
+      )
+      write(
+        dir,
+        'packages/forge/package.json',
+        JSON.stringify({ name: '@lzear/forge' }),
+      )
+      write(dir, '.github/workflows/ci.yml', 'on: workflow_call\njobs: {}')
       expect(await check('ci-workflow', dir)).toBe(true)
     })
   })

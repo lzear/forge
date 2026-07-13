@@ -83,7 +83,7 @@ const report = await runUpdate({ dry: true })
 | `readme-npm-badge`    | README has an npm badge                                   |
 | `codacy`              | Codacy grade & coverage badges in README, `.codacy.yml`   |
 | `license`             | `LICENSE` exists                                          |
-| `ci-workflow`         | `.github/workflows/ci.yml` exists                         |
+| `ci-workflow`         | a workflow calls the forge reusable CI workflow           |
 | `renovate`            | `renovate.json` exists                                    |
 | `pkg-publint`         | All published packages pass `publint`                     |
 | `pkg-attw`            | All published packages pass `attw` (ESM-only profile)     |

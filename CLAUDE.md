@@ -46,7 +46,7 @@ Async default export `configGenerator(options)`. Options: `node | react | typesc
 
 ### `@lzear/repo-lint`
 
-Defines `LOCAL_CHECKS` (13) and `REMOTE_CHECKS` (1). Local checks verify: required files (README, .codacy.yml, LICENSE, CI workflow, renovate.json), README badges (Codacy grade/coverage, npm), and package quality (`publint`, `attw`, `knip`, `sherif` for monorepos, audit, no deprecated deps, fresh deps). Remote check verifies the CODACY_PROJECT_TOKEN GitHub secret. Also home of `runUpdate()`/`detectPackageManager()` (`src/update.ts`) powering `forge update`.
+Defines `LOCAL_CHECKS` (13) and `REMOTE_CHECKS` (1). Local checks verify: required files (README, .codacy.yml, LICENSE, renovate.json), CI calling the forge reusable workflow (`lzear/forge/.github/workflows/ci.yml`), README badges (Codacy grade/coverage, npm), and package quality (`publint`, `attw`, `knip`, `sherif` for monorepos, audit, no deprecated deps, fresh deps). Remote check verifies the CODACY_PROJECT_TOKEN GitHub secret. Also home of `runUpdate()`/`detectPackageManager()` (`src/update.ts`) powering `forge update`.
 
 `eachPublishedPkg(dir)` walks workspaces, skipping private packages.
 
