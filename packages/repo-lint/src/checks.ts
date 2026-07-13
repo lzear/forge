@@ -216,61 +216,61 @@ const findDeprecated = async (
 export const LOCAL_CHECKS: LocalCheck[] = [
   {
     id: 'readme-exists',
-    desc: 'README.md exists',
+    desc: 'README',
     type: 'local',
     check: (dir) => existsSync(path.join(dir, 'README.md')),
   },
   {
-    id: 'readme-codacy-grade-badge',
-    desc: 'README has Codacy grade badge',
-    type: 'local',
-    publishedOnly: true,
-    check: (dir) => readmeIncludes(dir, 'project/badge/Grade/'),
-  },
-  {
-    id: 'readme-codacy-coverage-badge',
-    desc: 'README has Codacy coverage badge',
-    type: 'local',
-    publishedOnly: true,
-    check: (dir) => readmeIncludes(dir, 'project/badge/Coverage/'),
-  },
-  {
     id: 'readme-npm-badge',
-    desc: 'README has npm badge',
+    desc: 'npm badge',
     type: 'local',
     publishedOnly: true,
     check: (dir) => readmeIncludes(dir, 'shields.io/npm/v/'),
   },
   {
-    id: 'codacy-config',
-    desc: '.codacy.yml exists',
+    id: 'codacy',
+    desc: 'Codacy',
     type: 'local',
     publishedOnly: true,
-    check: (dir) => existsSync(path.join(dir, '.codacy.yml')),
+    check: (dir) => {
+      const missing = [
+        readmeIncludes(dir, 'project/badge/Grade/')
+          ? null
+          : 'grade badge missing in README',
+        readmeIncludes(dir, 'project/badge/Coverage/')
+          ? null
+          : 'coverage badge missing in README',
+        existsSync(path.join(dir, '.codacy.yml'))
+          ? null
+          : '.codacy.yml missing',
+      ].filter((m): m is string => m !== null)
+      if (missing.length === 0) return true
+      return { pass: false, detail: missing.join('\n') }
+    },
   },
   {
     id: 'license',
-    desc: 'LICENSE exists',
+    desc: 'LICENSE',
     type: 'local',
     publishedOnly: true,
     check: (dir) => existsSync(path.join(dir, 'LICENSE')),
   },
   {
     id: 'ci-workflow',
-    desc: 'CI workflow exists',
+    desc: 'CI workflow',
     type: 'local',
     publishedOnly: true,
     check: (dir) => existsSync(path.join(dir, '.github/workflows/ci.yml')),
   },
   {
     id: 'renovate',
-    desc: 'renovate.json exists',
+    desc: 'renovate.json',
     type: 'local',
     check: (dir) => existsSync(path.join(dir, 'renovate.json')),
   },
   {
     id: 'pkg-publint',
-    desc: 'publint (all published packages)',
+    desc: 'publint',
     type: 'local',
     publishedOnly: true,
     check: (dir) =>
@@ -288,7 +288,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
   },
   {
     id: 'pkg-attw',
-    desc: 'attw (all published packages)',
+    desc: 'attw',
     type: 'local',
     check: (dir) => {
       const bin = findBin('attw', _dirname)
@@ -310,7 +310,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
   },
   {
     id: 'pkg-knip',
-    desc: 'knip (no unused exports/deps)',
+    desc: 'knip',
     type: 'local',
     check: (dir) => {
       const bin = findBin('knip', _dirname)
@@ -328,7 +328,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
   },
   {
     id: 'monorepo-lint',
-    desc: 'workspace consistency (sherif)',
+    desc: 'sherif (workspaces)',
     type: 'local',
     check: (dir) => {
       const package_ = readPackage(dir)
@@ -353,7 +353,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
   },
   {
     id: 'deps-audit',
-    desc: 'no known vulnerabilities (audit)',
+    desc: 'audit',
     type: 'local',
     check: (dir) => {
       const pm = detectPackageManager(dir)
@@ -375,7 +375,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
   },
   {
     id: 'deps-deprecated',
-    desc: 'no deprecated dependencies',
+    desc: 'no deprecated deps',
     type: 'local',
     check: async (dir) => {
       const dependencies = collectDependencies(dir)
@@ -399,7 +399,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
   },
   {
     id: 'deps-fresh',
-    desc: 'dependencies up to date (ncu)',
+    desc: 'deps up to date',
     type: 'local',
     check: async (dir) => {
       const package_ = readPackage(dir)
@@ -449,7 +449,7 @@ const listSecrets = (repo: string): string[] | null => {
 export const REMOTE_CHECKS: RemoteCheck[] = [
   {
     id: 'secret-codacy-token',
-    desc: 'Secret CODACY_PROJECT_TOKEN set',
+    desc: 'Codacy secret',
     type: 'remote',
     publishedOnly: true,
     check: (repo) => {

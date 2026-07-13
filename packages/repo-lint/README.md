@@ -77,25 +77,22 @@ const report = await runUpdate({ dry: true })
 
 ## Checks performed
 
-| Check                          | Description                                           |
-|--------------------------------|-------------------------------------------------------|
-| `readme-exists`                | `README.md` exists                                    |
-| `readme-npm-badge`             | README has an npm badge                               |
-| `readme-codacy-grade-badge`    | README has Codacy grade badge                         |
-| `readme-codacy-coverage-badge` | README has Codacy coverage badge                      |
-| `codacy-config`                | `.codacy.yml` exists                                  |
-| `license`                      | `LICENSE` exists                                      |
-| `ci-workflow`                  | `.github/workflows/ci.yml` exists                     |
-| `renovate`                     | `renovate.json` exists                                |
-| `pkg-publint`                  | All published packages pass `publint`                 |
-| `pkg-attw`                     | All published packages pass `attw` (ESM-only profile) |
-| `pkg-knip`                     | No unused exports or dependencies (`knip`)            |
-| `monorepo-lint`                | Workspace consistency (`sherif`, monorepos only)      |
-| `deps-audit`                   | No known vulnerabilities (PM-native `audit`, prod, high+) |
-| `deps-deprecated`              | No direct dependency resolves to a deprecated version |
-| `deps-fresh`                   | All dependencies up to date (`ncu`)                   |
-| `secret-npm-token`             | GitHub secret `NPM_TOKEN` is set                      |
-| `secret-codacy-token`          | GitHub secret `CODACY_PROJECT_TOKEN` is set           |
+| Check                 | Description                                               |
+|-----------------------|-----------------------------------------------------------|
+| `readme-exists`       | `README.md` exists                                        |
+| `readme-npm-badge`    | README has an npm badge                                   |
+| `codacy`              | Codacy grade & coverage badges in README, `.codacy.yml`   |
+| `license`             | `LICENSE` exists                                          |
+| `ci-workflow`         | `.github/workflows/ci.yml` exists                         |
+| `renovate`            | `renovate.json` exists                                    |
+| `pkg-publint`         | All published packages pass `publint`                     |
+| `pkg-attw`            | All published packages pass `attw` (ESM-only profile)     |
+| `pkg-knip`            | No unused exports or dependencies (`knip`)                |
+| `monorepo-lint`       | Workspace consistency (`sherif`, monorepos only)          |
+| `deps-audit`          | No known vulnerabilities (PM-native `audit`, prod, high+) |
+| `deps-deprecated`     | No direct dependency resolves to a deprecated version     |
+| `deps-fresh`          | All dependencies up to date (`ncu`)                       |
+| `secret-codacy-token` | GitHub secret `CODACY_PROJECT_TOKEN` is set               |
 
 ## Part of forge
 

@@ -91,36 +91,6 @@ describe('LOCAL_CHECKS', () => {
     })
   })
 
-  describe('readme-codacy-grade-badge', () => {
-    it('fails when missing', async () => {
-      write(dir, 'README.md', '# hi')
-      expect(await check('readme-codacy-grade-badge', dir)).toBe(false)
-    })
-    it('passes when present', async () => {
-      write(
-        dir,
-        'README.md',
-        '![Grade](https://app.codacy.com/project/badge/Grade/abc)',
-      )
-      expect(await check('readme-codacy-grade-badge', dir)).toBe(true)
-    })
-  })
-
-  describe('readme-codacy-coverage-badge', () => {
-    it('fails when missing', async () => {
-      write(dir, 'README.md', '# hi')
-      expect(await check('readme-codacy-coverage-badge', dir)).toBe(false)
-    })
-    it('passes when present', async () => {
-      write(
-        dir,
-        'README.md',
-        '![Coverage](https://app.codacy.com/project/badge/Coverage/abc)',
-      )
-      expect(await check('readme-codacy-coverage-badge', dir)).toBe(true)
-    })
-  })
-
   describe('readme-npm-badge', () => {
     it('fails when missing', async () => {
       write(dir, 'README.md', '# hi')
@@ -132,13 +102,29 @@ describe('LOCAL_CHECKS', () => {
     })
   })
 
-  describe('codacy-config', () => {
-    it('fails when missing', async () => {
-      expect(await check('codacy-config', dir)).toBe(false)
-    })
-    it('passes when present', async () => {
+  describe('codacy', () => {
+    it('passes when both badges and config are present', async () => {
+      write(
+        dir,
+        'README.md',
+        '![Grade](https://app.codacy.com/project/badge/Grade/abc)\n' +
+          '![Coverage](https://app.codacy.com/project/badge/Coverage/abc)',
+      )
       write(dir, '.codacy.yml', 'engines:')
-      expect(await check('codacy-config', dir)).toBe(true)
+      expect(await check('codacy', dir)).toBe(true)
+    })
+    it('fails listing every missing piece', async () => {
+      write(
+        dir,
+        'README.md',
+        '![Grade](https://app.codacy.com/project/badge/Grade/abc)',
+      )
+      const result = await check('codacy', dir)
+      expect(result).toMatchObject({ pass: false })
+      const { detail } = result as { detail: string }
+      expect(detail).toContain('coverage badge missing')
+      expect(detail).toContain('.codacy.yml missing')
+      expect(detail).not.toContain('grade badge')
     })
   })
 
