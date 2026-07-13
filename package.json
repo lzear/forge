@@ -22,15 +22,17 @@
     "@commitlint/cli": "^21",
     "@lzear/configs": "workspace:*",
     "@lzear/forge": "workspace:*",
+    "@typescript/native": "npm:typescript@^7",
     "concurrently": "^10",
     "eslint": "^10",
     "lefthook": "^2",
     "npm-check-updates": "^22",
-    "typescript": "^6"
+    "typescript": "npm:@typescript/typescript6@^6"
   },
   "resolutions": {
+    "eslint-plugin-sonarjs/typescript": "npm:typescript@^6",
     "fflate": "0.8.2"
   },
   "type": "commonjs",
-  "packageManager": "yarn@4.14.1"
+  "packageManager": "yarn@4.17.1"
 }

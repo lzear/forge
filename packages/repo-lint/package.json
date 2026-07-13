@@ -39,7 +39,6 @@
     "@types/node": "^25",
     "@vitest/coverage-v8": "^4",
     "tsup": "^8",
-    "typescript": "^6",
     "vitest": "^4"
   },
   "engines": {
