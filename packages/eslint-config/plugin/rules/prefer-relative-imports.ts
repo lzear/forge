@@ -26,12 +26,12 @@ const toRelative = (
   // If the original had no extension but the resolved path does,
   // strip the extension (and /index suffix) to match import style
   if (!path.extname(importPath)) {
-    const ext = path.extname(rel)
-    if (ext) {
-      const withoutExt = rel.slice(0, -ext.length)
-      rel = withoutExt.endsWith('/index')
-        ? withoutExt.slice(0, -'/index'.length) || '.'
-        : withoutExt
+    const extension = path.extname(rel)
+    if (extension) {
+      const withoutExtension = rel.slice(0, -extension.length)
+      rel = withoutExtension.endsWith('/index')
+        ? withoutExtension.slice(0, -'/index'.length) || '.'
+        : withoutExtension
       if (!rel.startsWith('.')) rel = `./${rel}`
     }
   }
@@ -65,8 +65,8 @@ export const preferRelativeImports: Rule.RuleModule = {
   },
 
   create: (context) => {
-    const opts = (context.options as Options)[0]
-    const maxParentPrefixes = opts?.maxParentPrefixes ?? 1
+    const options = (context.options as Options)[0]
+    const maxParentPrefixes = options?.maxParentPrefixes ?? 1
     const filename = context.physicalFilename
 
     const check = (source: SourceNode) => {

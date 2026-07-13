@@ -15,24 +15,24 @@ const { values } = parseArgs({
 })
 
 const printReport = (result: RepoReport): boolean => {
-  let anyFail = false
+  let isAnyFail = false
   const pass = result.results.filter((r) => r.pass).length
   const total = result.results.length
   for (const r of result.results) {
     console.log(`  ${r.pass ? '✓' : '✗'} ${r.desc}`)
-    if (!r.pass) anyFail = true
+    if (!r.pass) isAnyFail = true
   }
   console.log(`\n  ${pass}/${total} checks passed`)
-  return anyFail
+  return isAnyFail
 }
 
 const main = async (): Promise<void> => {
-  let anyFail = false
+  let isAnyFail = false
 
   if (values.local) {
     console.log(`\n── ${process.cwd()}`)
     const result = await checkLocal({ skipRemote: values['skip-remote'] })
-    anyFail = printReport(result)
+    isAnyFail = printReport(result)
   } else {
     if (!values.repos) {
       console.error(
@@ -48,7 +48,9 @@ const main = async (): Promise<void> => {
 
     mkdirSync(values.dir, { recursive: true })
 
-    for (const repo of values.repos.split(',').map((r) => r.trim())) {
+    const repos = values.repos.split(',').map((r) => r.trim())
+
+    for (const repo of repos) {
       console.log(`\n── ${repo}`)
       try {
         const result = await checkRepo(repo, {
@@ -56,15 +58,15 @@ const main = async (): Promise<void> => {
           baseDir: values.dir,
           skipRemote: values['skip-remote'],
         })
-        if (printReport(result)) anyFail = true
+        if (printReport(result)) isAnyFail = true
       } catch {
         console.log('  ✗ could not clone repo')
-        anyFail = true
+        isAnyFail = true
       }
     }
   }
 
-  process.exit(anyFail ? 1 : 0)
+  process.exit(isAnyFail ? 1 : 0)
 }
 
-void main()
+await main()

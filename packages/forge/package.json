@@ -67,7 +67,7 @@
     "picocolors": "^1"
   },
   "devDependencies": {
-    "@types/node": "^25",
+    "@types/node": "^26",
     "@vitejs/plugin-react": "^6",
     "eslint": "^10",
     "tsup": "^8",

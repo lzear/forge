@@ -61,19 +61,19 @@ const SKIP_PREFIXES = [
 const filterCommits = (raw) =>
   raw
     .split('\n')
-    .filter((l) => l && !SKIP_PREFIXES.some((p) => l.slice(9).startsWith(p)))
+    .filter((l) => l && SKIP_PREFIXES.every((p) => !l.slice(9).startsWith(p)))
     .join('\n')
 
 export const getReleaseLine = async (changeset, type) => {
   if (written.has(changeset.id)) return ''
   written.add(changeset.id)
-  const pkg = JSON.parse(
+  const package_ = JSON.parse(
     await fs.readFile(
       path.resolve(ROOT, 'packages/forge/package.json'),
       'utf8',
     ),
   )
-  const version = bump(pkg.version, type)
+  const version = bump(package_.version, type)
   const commits = filterCommits(getCommits())
   const commitSection = commits
     ? `### Commits\n\n${commits

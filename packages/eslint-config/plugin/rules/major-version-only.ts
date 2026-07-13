@@ -27,9 +27,11 @@ const simplify = (version: string): string | null => {
   return target === version ? null : target
 }
 
-const isIgnored = (pkgName: string, ignore: (string | RegExp)[]): boolean =>
+const isIgnored = (packageName: string, ignore: (string | RegExp)[]): boolean =>
   ignore.some((pattern) =>
-    pattern instanceof RegExp ? pattern.test(pkgName) : pattern === pkgName,
+    pattern instanceof RegExp
+      ? pattern.test(packageName)
+      : pattern === packageName,
   )
 
 interface JsonKey {
@@ -43,9 +45,9 @@ interface JsonLiteral {
 }
 interface JsonObject {
   type: 'JSONObjectExpression'
-  properties: JsonProp[]
+  properties: JsonProperty[]
 }
-interface JsonProp {
+interface JsonProperty {
   key: JsonKey
   value: JsonLiteral | JsonObject
 }
@@ -89,14 +91,14 @@ export const majorVersionOnly: Rule.RuleModule = {
   },
 
   create: (context) => {
-    const opts = context.options[0] as Options | undefined
-    const ignore: (string | RegExp)[] = (opts?.ignore ?? []).map((item) =>
+    const options = context.options[0] as Options | undefined
+    const ignore: (string | RegExp)[] = (options?.ignore ?? []).map((item) =>
       typeof item === 'string' ? item : new RegExp(item.regex),
     )
 
     return {
       JSONProperty: (rawNode: Rule.Node) => {
-        const node = rawNode as unknown as JsonProp
+        const node = rawNode as unknown as JsonProperty
         const keyName =
           node.key.type === 'JSONLiteral'
             ? String(node.key.value)
@@ -104,18 +106,18 @@ export const majorVersionOnly: Rule.RuleModule = {
 
         if (!DEP_FIELDS.has(keyName)) return
 
-        const depsNode = node.value
-        if (depsNode.type !== 'JSONObjectExpression') return
+        const dependenciesNode = node.value
+        if (dependenciesNode.type !== 'JSONObjectExpression') return
 
-        for (const prop of depsNode.properties) {
-          const pkgName =
-            prop.key.type === 'JSONLiteral'
-              ? String(prop.key.value)
-              : (prop.key.name ?? '')
+        for (const property of dependenciesNode.properties) {
+          const packageName =
+            property.key.type === 'JSONLiteral'
+              ? String(property.key.value)
+              : (property.key.name ?? '')
 
-          if (isIgnored(pkgName, ignore)) continue
+          if (isIgnored(packageName, ignore)) continue
 
-          const versionNode = prop.value
+          const versionNode = property.value
           if (versionNode.type !== 'JSONLiteral') continue
 
           const version = versionNode.value

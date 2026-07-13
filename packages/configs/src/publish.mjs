@@ -15,12 +15,12 @@ const workspaces = execSync('yarn workspaces list --json', { cwd: root })
   .filter(({ location }) => location !== '.')
 
 for (const { location } of workspaces) {
-  const pkg = JSON.parse(
+  const package_ = JSON.parse(
     readFileSync(path.join(root, location, 'package.json'), 'utf8'),
   )
-  if (pkg.private) continue
+  if (package_.private) continue
 
-  const { name, version } = pkg
+  const { name, version } = package_
 
   try {
     const published = execSync(

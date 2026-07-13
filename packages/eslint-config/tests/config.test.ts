@@ -5,8 +5,7 @@ describe('@lzear/eslint-config', () => {
     let lzearConfig = await config()
     lzearConfig = lzearConfig.map((item) => {
       const parserOptions = item.languageOptions?.parserOptions as
-        | Record<string, unknown>
-        | undefined
+        Record<string, unknown> | undefined
       return parserOptions?.tsconfigRootDir
         ? {
             ...item,

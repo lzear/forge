@@ -2,7 +2,11 @@ import { execSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { hasPublishedPkg, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.js'
+import {
+  hasPublishedPkg as hasPublishedPackage,
+  LOCAL_CHECKS,
+  REMOTE_CHECKS,
+} from './checks.js'
 
 export type { Check, CheckDetail, LocalCheck, RemoteCheck } from './checks.js'
 
@@ -50,20 +54,22 @@ export const checkLocal = async (
       }
     })()
 
-  const published = hasPublishedPkg(dir)
+  const isPublished = hasPublishedPackage(dir)
 
   const localResults = await Promise.all(
-    LOCAL_CHECKS.filter((c) => !c.publishedOnly || published).map(async (c) => {
-      const raw = await c.check(dir)
-      return typeof raw === 'boolean'
-        ? { id: c.id, desc: c.desc, pass: raw }
-        : { id: c.id, desc: c.desc, ...raw }
-    }),
+    LOCAL_CHECKS.filter((c) => !c.publishedOnly || isPublished).map(
+      async (c) => {
+        const raw = await c.check(dir)
+        return typeof raw === 'boolean'
+          ? { id: c.id, desc: c.desc, pass: raw }
+          : { id: c.id, desc: c.desc, ...raw }
+      },
+    ),
   )
 
   const remoteResults = skipRemote
     ? []
-    : REMOTE_CHECKS.filter((c) => !c.publishedOnly || published).map((c) => ({
+    : REMOTE_CHECKS.filter((c) => !c.publishedOnly || isPublished).map((c) => ({
         id: c.id,
         desc: c.desc,
         pass: c.check(repo),

@@ -16,35 +16,35 @@ const { version } = require('../package.json') as { version: string }
 const isTTY = process.stdout.isTTY
 const isDebug = process.env.DEBUG?.includes('forge') ?? false
 
-const debug = (...args: unknown[]) => {
-  if (isDebug) console.error(pc.dim(`[debug] ${args.join(' ')}`))
+const debug = (...arguments_: unknown[]) => {
+  if (isDebug) console.error(pc.dim(`[debug] ${arguments_.join(' ')}`))
 }
 
 const log = {
-  intro: (msg: string) => {
-    isTTY ? clack.intro(msg) : console.log(msg)
+  intro: (message: string) => {
+    isTTY ? clack.intro(message) : console.log(message)
   },
-  outro: (msg: string) => {
-    isTTY ? clack.outro(msg) : console.log(msg)
+  outro: (message: string) => {
+    isTTY ? clack.outro(message) : console.log(message)
   },
-  success: (msg: string) => {
-    isTTY ? clack.log.success(msg) : console.log(`✓ ${msg}`)
+  success: (message: string) => {
+    isTTY ? clack.log.success(message) : console.log(`✓ ${message}`)
   },
-  error: (msg: string) => {
-    isTTY ? clack.log.error(msg) : console.error(`✗ ${msg}`)
+  error: (message: string) => {
+    isTTY ? clack.log.error(message) : console.error(`✗ ${message}`)
   },
-  warn: (msg: string) => {
-    isTTY ? clack.log.warn(msg) : console.warn(`! ${msg}`)
+  warn: (message: string) => {
+    isTTY ? clack.log.warn(message) : console.warn(`! ${message}`)
   },
   spinner: () =>
     isTTY
       ? clack.spinner()
       : {
-          start: (msg: string) => {
-            debug(msg)
+          start: (message: string) => {
+            debug(message)
           },
-          stop: (msg: string) => {
-            debug(msg)
+          stop: (message: string) => {
+            debug(message)
           },
         },
 }
@@ -60,16 +60,16 @@ program
 const DEFAULT_DIR = path.join(homedir(), '.cache', 'forge')
 
 const printResults = (report: RepoReport, json: boolean): boolean => {
-  const anyFail = report.results.some((r) => !r.pass)
+  const isAnyFail = report.results.some((r) => !r.pass)
   if (json) {
     console.log(
       JSON.stringify(
-        { repo: report.repo, results: report.results, pass: !anyFail },
+        { repo: report.repo, results: report.results, pass: !isAnyFail },
         null,
         2,
       ),
     )
-    return anyFail
+    return isAnyFail
   }
   const pass = report.results.filter((r) => r.pass).length
   const total = report.results.length
@@ -86,42 +86,42 @@ const printResults = (report: RepoReport, json: boolean): boolean => {
       ? pc.green(`${pass}/${total}`)
       : pc.yellow(`${pass}/${total}`)
   process.stdout.write(`\n  ${score} checks passed\n`)
-  return anyFail
+  return isAnyFail
 }
 
 const runCheck = async (
   repos: string | undefined,
-  opts: { skipRemote: boolean; dir: string; json: boolean },
+  options: { skipRemote: boolean; dir: string; json: boolean },
 ): Promise<void> => {
-  if (!opts.json) process.stdout.write(`\n  ${pc.bold('forge check')}\n\n`)
+  if (!options.json) process.stdout.write(`\n  ${pc.bold('forge check')}\n\n`)
 
   if (!repos) {
     debug('checkLocal', process.cwd())
-    const result = await checkLocal({ skipRemote: opts.skipRemote })
-    process.exit(printResults(result, opts.json) ? 1 : 0)
+    const result = await checkLocal({ skipRemote: options.skipRemote })
+    process.exit(printResults(result, options.json) ? 1 : 0)
   }
 
   const repoList = repos.split(',').map((r) => r.trim())
-  let anyFail = false
+  let isAnyFail = false
 
   for (const repo of repoList) {
-    if (!opts.json)
+    if (!options.json)
       process.stdout.write(`  ${pc.dim('checking ' + repo + '…')}\n`)
     debug('checkRepo', repo)
     try {
       const result = await checkRepo(repo, {
-        baseDir: opts.dir,
-        skipRemote: opts.skipRemote,
+        baseDir: options.dir,
+        skipRemote: options.skipRemote,
       })
-      if (printResults(result, opts.json)) anyFail = true
+      if (printResults(result, options.json)) isAnyFail = true
     } catch (error) {
       debug(String(error))
       process.stderr.write(`  ${pc.red('✗ ' + repo + ' — could not clone')}\n`)
-      anyFail = true
+      isAnyFail = true
     }
   }
 
-  process.exit(anyFail ? 1 : 0)
+  process.exit(isAnyFail ? 1 : 0)
 }
 
 program
@@ -135,12 +135,12 @@ program
   .option('--dir <dir>', 'cache dir for cloned repos', DEFAULT_DIR)
   .option('--json', 'output results as JSON', false)
   .action(
-    (opts: {
+    (options: {
       repos?: string
       skipRemote: boolean
       dir: string
       json: boolean
-    }) => runCheck(opts.repos, opts),
+    }) => runCheck(options.repos, options),
   )
 
 const promptAndSet = async (
@@ -192,13 +192,13 @@ program
   .option('--repo <repo>', 'repo to set up (e.g. lzear/my-repo)')
   .option('--dry', 'check only, do not prompt for values', false)
   .option('--json', 'output results as JSON', false)
-  .action(async (opts: { repo?: string; dry: boolean; json: boolean }) => {
-    const repo = opts.repo ?? detectRepo()
+  .action(async (options: { repo?: string; dry: boolean; json: boolean }) => {
+    const repo = options.repo ?? detectRepo()
     if (!repo) {
       log.error('Could not detect repo. Pass --repo <owner/repo>.')
       process.exit(1)
     }
-    const { dry, json } = opts
+    const { dry, json } = options
 
     if (!json) log.intro(pc.bold(`forge setup · ${pc.cyan(repo)}`))
 
@@ -272,29 +272,29 @@ program
   .command('sync')
   .description('sync template files from forge into this repo')
   .option('--dry', 'print what would change, do not write', false)
-  .action(async (opts: { dry: boolean }) => {
+  .action(async (options: { dry: boolean }) => {
     log.intro(pc.bold('forge sync'))
-    let anyFail = false
+    let isAnyFail = false
     for (const { src, dest } of SYNC_FILES) {
       const url = `${RAW_BASE}/${src}`
-      const destPath = path.join(process.cwd(), dest)
+      const destinationPath = path.join(process.cwd(), dest)
       try {
         const res = await fetch(url)
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const content = await res.text()
-        if (opts.dry) log.success(`${dest} ${pc.dim('(dry)')}`)
+        if (options.dry) log.success(`${dest} ${pc.dim('(dry)')}`)
         else {
-          await mkdir(path.dirname(destPath), { recursive: true })
-          await writeFile(destPath, content, 'utf8')
+          await mkdir(path.dirname(destinationPath), { recursive: true })
+          await writeFile(destinationPath, content, 'utf8')
           log.success(dest)
         }
       } catch (error) {
         log.error(`${dest} — ${String(error)}`)
-        anyFail = true
+        isAnyFail = true
       }
     }
-    log.outro(anyFail ? pc.red('Done with errors.') : pc.green('Done.'))
-    if (anyFail) process.exit(1)
+    log.outro(isAnyFail ? pc.red('Done with errors.') : pc.green('Done.'))
+    if (isAnyFail) process.exit(1)
   })
 
 const handleSignal = () => {

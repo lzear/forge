@@ -8,7 +8,7 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
   const [
     reactCompilerPlugin,
     reactHooksPlugin,
-    reactPerfPlugin,
+    reactPerformancePlugin,
     reactPlugin,
     reactXPlugin,
     reactDomPlugin,
@@ -37,7 +37,7 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
       'react-compiler': reactCompilerPlugin,
       'react-dom': reactDomPlugin,
       'react-hooks': reactHooksPlugin,
-      'react-perf': reactPerfPlugin,
+      'react-perf': reactPerformancePlugin,
       'react-web-api': reactWebApiPlugin,
       'react-x': reactXPlugin,
     },
@@ -47,7 +47,7 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
 
       ...reactHooksPlugin.configs.recommended.rules,
 
-      ...reactPerfPlugin.configs.recommended.rules,
+      ...reactPerformancePlugin.configs.recommended.rules,
       'react-perf/jsx-no-new-function-as-prop': 0,
       'react-perf/jsx-no-new-object-as-prop': 0,
 
@@ -56,9 +56,9 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
       'react/react-in-jsx-scope': 0,
       'react/no-unknown-property': [2, { ignore: ['jsx', 'global'] }],
 
-      ...(config.typescript
-        ? reactXPlugin.configs['recommended-typescript'].rules
-        : reactXPlugin.configs.recommended.rules),
+      ...reactXPlugin.configs[
+        config.typescript ? 'recommended-typescript' : 'recommended'
+      ].rules,
 
       ...reactDomPlugin.configs.recommended.rules,
 

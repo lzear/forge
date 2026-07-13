@@ -31,7 +31,7 @@ export interface RemoteCheck {
 
 export type Check = LocalCheck | RemoteCheck
 
-const readPkg = (dir: string): Record<string, unknown> | null => {
+const readPackage = (dir: string): Record<string, unknown> | null => {
   const f = path.join(dir, 'package.json')
   if (!existsSync(f)) return null
   try {
@@ -41,11 +41,11 @@ const readPkg = (dir: string): Record<string, unknown> | null => {
   }
 }
 
-const getWorkspacePatterns = (pkg: Record<string, unknown>): string[] => {
-  const ws = pkg.workspaces
+const getWorkspacePatterns = (package_: Record<string, unknown>): string[] => {
+  const ws = package_.workspaces
   if (Array.isArray(ws)) return ws as string[]
-  const wsPkg = ws as Record<string, unknown> | undefined
-  if (Array.isArray(wsPkg?.packages)) return wsPkg.packages as string[]
+  const wsPackage = ws as Record<string, unknown> | undefined
+  if (Array.isArray(wsPackage?.packages)) return wsPackage.packages as string[]
   return []
 }
 
@@ -57,17 +57,18 @@ const patternToBase = (rootDir: string, pattern: string): string | null => {
   return null
 }
 
-const getWorkspaceDirs = (rootDir: string): string[] => {
-  const pkg = readPkg(rootDir)
-  if (!pkg) return []
-  const dirs: string[] = []
-  for (const pattern of getWorkspacePatterns(pkg)) {
+const getWorkspaceDirectories = (rootDir: string): string[] => {
+  const package_ = readPackage(rootDir)
+  if (!package_) return []
+  const directories: string[] = []
+  for (const pattern of getWorkspacePatterns(package_)) {
     const base = patternToBase(rootDir, pattern)
     if (!base || !existsSync(base)) continue
-    for (const entry of readdirSync(base, { withFileTypes: true }))
-      if (entry.isDirectory()) dirs.push(path.join(base, entry.name))
+    const entries = readdirSync(base, { withFileTypes: true })
+    for (const entry of entries)
+      if (entry.isDirectory()) directories.push(path.join(base, entry.name))
   }
-  return dirs
+  return directories
 }
 
 const findBin = (name: string, startDir: string): string | null => {
@@ -81,17 +82,17 @@ const findBin = (name: string, startDir: string): string | null => {
   }
 }
 
-const eachPublishedPkg = async (
+const eachPublishedPackage = async (
   dir: string,
-  fn: (pkgDir: string) => CheckDetail | Promise<CheckDetail>,
+  function_: (pkgDir: string) => CheckDetail | Promise<CheckDetail>,
 ): Promise<CheckDetail> => {
-  const pkg = readPkg(dir)
-  if (!pkg) return { pass: true }
-  if (pkg.private === true) {
-    const wsDirs = getWorkspaceDirs(dir)
-    if (wsDirs.length === 0) return { pass: true }
+  const package_ = readPackage(dir)
+  if (!package_) return { pass: true }
+  if (package_.private === true) {
+    const wsDirectories = getWorkspaceDirectories(dir)
+    if (wsDirectories.length === 0) return { pass: true }
     const results = await Promise.all(
-      wsDirs.map((d) => eachPublishedPkg(d, fn)),
+      wsDirectories.map((d) => eachPublishedPackage(d, function_)),
     )
     const failures = results.filter((r) => !r.pass)
     if (failures.length === 0) return { pass: true }
@@ -100,14 +101,14 @@ const eachPublishedPkg = async (
       .join('\n')
     return { pass: false, ...(detail && { detail }) }
   }
-  return fn(dir)
+  return function_(dir)
 }
 
 export const hasPublishedPkg = (dir: string): boolean => {
-  const pkg = readPkg(dir)
-  if (!pkg) return false
-  if (pkg.private !== true) return true
-  return getWorkspaceDirs(dir).some((d) => hasPublishedPkg(d))
+  const package_ = readPackage(dir)
+  if (!package_) return false
+  if (package_.private !== true) return true
+  return getWorkspaceDirectories(dir).some((d) => hasPublishedPkg(d))
 }
 
 const readmeIncludes = (dir: string, needle: string): boolean => {
@@ -176,7 +177,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     type: 'local',
     publishedOnly: true,
     check: (dir) =>
-      eachPublishedPkg(dir, async (pkgDir) => {
+      eachPublishedPackage(dir, async (pkgDir) => {
         const { messages } = await publint({ pkgDir })
         const failures = messages.filter(
           (m) => m.type === 'error' || m.type === 'warning',
@@ -195,7 +196,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     check: (dir) => {
       const bin = findBin('attw', _dirname)
       if (!bin) return { pass: false, detail: 'attw not available' }
-      return eachPublishedPkg(dir, (pkgDir) => {
+      return eachPublishedPackage(dir, (pkgDir) => {
         const r = spawnSync(
           process.execPath,
           [bin, '--pack', '--profile', 'esm-only'],
@@ -233,14 +234,14 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     desc: 'dependencies up to date (ncu)',
     type: 'local',
     check: async (dir) => {
-      const pkg = readPkg(dir)
+      const package_ = readPackage(dir)
       const hasWorkspaces =
-        Array.isArray(pkg?.workspaces) &&
-        (pkg.workspaces as unknown[]).length > 0
+        Array.isArray(package_?.workspaces) &&
+        (package_.workspaces as unknown[]).length > 0
       try {
         const result = (await ncuRun({
           packageFile: path.join(dir, 'package.json'),
-          ...(hasWorkspaces ? { workspaces: true } : {}),
+          ...(hasWorkspaces && { workspaces: true }),
           silent: true,
         })) as Record<string, string> | Record<string, Record<string, string>>
 
@@ -252,10 +253,10 @@ export const LOCAL_CHECKS: LocalCheck[] = [
 
         if (entries.length === 0) return true
         const lines = entries.map(([k, v]) => `${k}  →  ${v}`).join('\n')
-        const cmd = hasWorkspaces
+        const command = hasWorkspaces
           ? 'yarn dlx npm-check-updates --dep dev,optional,peer,prod,packageManager -u --workspaces && yarn install'
           : 'yarn dlx npm-check-updates --dep dev,optional,peer,prod,packageManager -u && yarn install'
-        return { pass: false, detail: `${lines}\n\nRun: ${cmd}` }
+        return { pass: false, detail: `${lines}\n\nRun: ${command}` }
       } catch (error) {
         return { pass: false, detail: String(error) }
       }

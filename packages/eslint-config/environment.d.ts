@@ -21,7 +21,7 @@ declare module 'eslint-module-utils/moduleVisitor' {
   import type { Rule } from 'eslint'
 
   type SourceNode = Rule.Node & { value: string }
-  type CheckFn = (source: SourceNode, node: Rule.Node) => void
+  type CheckFunction = (source: SourceNode, node: Rule.Node) => void
   interface Options {
     amd?: boolean
     commonjs?: boolean
@@ -29,7 +29,7 @@ declare module 'eslint-module-utils/moduleVisitor' {
   }
 
   export default function moduleVisitor(
-    fn: CheckFn,
+    function_: CheckFunction,
     options?: Options,
   ): Rule.RuleListener
 }

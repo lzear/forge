@@ -10,11 +10,11 @@ import { type CheckDetail, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.js'
 vi.mock('publint', () => ({ publint: vi.fn() }))
 vi.mock('npm-check-updates', () => ({ run: vi.fn() }))
 vi.mock('node:child_process', async (importOriginal) => {
-  const mod = await importOriginal<typeof import('node:child_process')>()
+  const module_ = await importOriginal<typeof import('node:child_process')>()
   return {
-    ...mod,
-    spawnSync: vi.fn((...args: Parameters<typeof mod.spawnSync>) =>
-      mod.spawnSync(...args),
+    ...module_,
+    spawnSync: vi.fn((...arguments_: Parameters<typeof module_.spawnSync>) =>
+      module_.spawnSync(...arguments_),
     ),
   }
 })

@@ -62,8 +62,8 @@ export const core = (local?: string): Linter.Config => {
         groups: [
           [
             '^node:',
-            l && String.raw`^@?(?!` + l + String.raw`\/)\w`,
-            l && String.raw`^@` + l + String.raw`\/`,
+            l && '^@?(?!' + l + String.raw`\/)\w`,
+            l && '^@' + l + String.raw`\/`,
             '^',
             String.raw`^\.`,
             String.raw`^.+\.s?css$`,
@@ -102,8 +102,11 @@ export const core = (local?: string): Linter.Config => {
     'sonarjs/void-use': 0,
 
     ...unicornPlugin.configs.recommended.rules,
+    'unicorn/consistent-boolean-name': 0, // a bit annoying
+    'unicorn/name-replacements': 0, // i like my abbreviations
     'unicorn/no-abusive-eslint-disable': 0,
     'unicorn/no-null': 0,
+    'unicorn/prefer-await': 0, // await fn().catch() is convenient
     'unicorn/prevent-abbreviations': 0,
     'unicorn/switch-case-braces': [2, 'avoid'],
   } satisfies Linter.RulesRecord
