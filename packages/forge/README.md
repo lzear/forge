@@ -19,6 +19,7 @@ Requires Node ≥ 20.
 
 ```sh
 yarn forge check          # audit this repo against forge standards
+yarn forge update         # update deps, packageManager & version files
 yarn forge setup          # check and set required GitHub secrets
 yarn forge sync           # pull shared files from forge into this repo
 ```
@@ -33,6 +34,24 @@ forge check --repos lzear/votes     # remote repo (clones via gh)
 forge check --repos lzear/a,lzear/b # multiple repos
 forge check --json                  # machine-readable output
 forge check --skip-remote           # skip GitHub secret checks
+```
+
+### `forge update`
+
+One-stop repo freshening. Detects the package manager (npm, yarn, pnpm, or bun — from the `packageManager` field or the lockfile) and updates everything that needs regular bumping:
+
+- dependency ranges in all workspaces (via `npm-check-updates`; honors `.ncurc{,.json,.js,.cjs,.mjs}` — e.g. `reject` to pin packages)
+- the `packageManager` field (yarn ≥ 2 resolved from `@yarnpkg/cli-dist`)
+- `.nvmrc` / `.node-version` → latest Node LTS
+- `.bun-version` → latest Bun
+- LICENSE copyright year (extends `2023` → `2023-2026`)
+- then installs, refreshes the lockfile, and dedupes with the detected package manager (`yarn up -R '*' && yarn dedupe`, `pnpm update -r && pnpm dedupe`, `npm update && npm dedupe`, or `bun update`)
+
+```sh
+forge update               # update everything, then install
+forge update --dry         # preview changes without writing
+forge update --no-install  # write updates but skip install
+forge update --json        # machine-readable output
 ```
 
 ### `forge setup`

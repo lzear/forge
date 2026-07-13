@@ -46,11 +46,13 @@
     "@arethetypeswrong/cli": "^0.18",
     "knip": "^6",
     "npm-check-updates": "^22",
-    "publint": "^0.3"
+    "publint": "^0.3",
+    "semver": "^7"
   },
   "devDependencies": {
     "@lzear/configs": "workspace:*",
     "@types/node": "^26",
+    "@types/semver": "^7",
     "@vitest/coverage-v8": "^4",
     "tsup": "^8",
     "vitest": "^4"

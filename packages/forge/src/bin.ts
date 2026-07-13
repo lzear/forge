@@ -8,7 +8,15 @@ import path from 'node:path'
 import * as clack from '@clack/prompts'
 import { Command } from 'commander'
 import pc from 'picocolors'
-import { checkLocal, checkRepo, type RepoReport } from '@lzear/repo-lint'
+import {
+  checkLocal,
+  checkRepo,
+  type PackageManager,
+  type RepoReport,
+  runUpdate,
+  type UpdateReport,
+  type UpdateResult,
+} from '@lzear/repo-lint'
 
 const require = createRequire(import.meta.url)
 const { version } = require('../package.json') as { version: string }
@@ -259,6 +267,52 @@ program
 
     log.outro(pc.green('Done.'))
   })
+
+const formatPackageManager = (pm: PackageManager): string => {
+  const version = pm.version ? `@${pm.version}` : ''
+  return `package manager: ${pm.name}${version} (${pm.source})`
+}
+
+const updateMark = (r: UpdateResult): string => {
+  if (!r.pass) return pc.red('✗')
+  return r.changed ? pc.yellow('↑') : pc.green('✓')
+}
+
+const printUpdateReport = (report: UpdateReport): void => {
+  process.stdout.write(
+    `  ${pc.dim(formatPackageManager(report.packageManager))}\n\n`,
+  )
+  for (const r of report.results) {
+    process.stdout.write(`  ${updateMark(r)}  ${r.desc}\n`)
+    if (r.detail && (r.changed || !r.pass))
+      for (const line of r.detail.split('\n'))
+        process.stdout.write(`       ${pc.dim(line)}\n`)
+  }
+  process.stdout.write('\n')
+}
+
+program
+  .command('update')
+  .description('update dependencies, packageManager, and runtime version files')
+  .option('--dry', 'preview changes, do not write', false)
+  .option('--no-install', 'skip install & lockfile refresh')
+  .option('--json', 'output results as JSON', false)
+  .action(
+    async (options: { dry: boolean; install: boolean; json: boolean }) => {
+      const { dry: isDry, install: isInstall, json: isJson } = options
+      if (!isJson)
+        process.stdout.write(
+          `\n  ${pc.bold('forge update')}${isDry ? pc.dim(' (dry run)') : ''}\n\n`,
+        )
+      debug('runUpdate', process.cwd())
+      const report = await runUpdate({ dry: isDry, install: isInstall })
+      const isAnyFail = report.results.some((r) => !r.pass)
+      if (isJson)
+        console.log(JSON.stringify({ ...report, pass: !isAnyFail }, null, 2))
+      else printUpdateReport(report)
+      process.exit(isAnyFail ? 1 : 0)
+    },
+  )
 
 const SYNC_FILES: { src: string; dest: string }[] = [
   { src: 'template/.editorconfig', dest: '.editorconfig' },

@@ -4,6 +4,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { run as ncuRun } from 'npm-check-updates'
 import { publint } from 'publint'
+import { maxSatisfying, satisfies } from 'semver'
+import { detectPackageManager, type PackageManager } from './update.js'
 
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -114,6 +116,101 @@ export const hasPublishedPkg = (dir: string): boolean => {
 const readmeIncludes = (dir: string, needle: string): boolean => {
   const f = path.join(dir, 'README.md')
   return existsSync(f) && readFileSync(f, 'utf8').includes(needle)
+}
+
+const auditCommand = (pm: PackageManager): [string, ...string[]] => {
+  switch (pm.name) {
+    case 'npm':
+      return ['npm', 'audit', '--omit', 'dev', '--audit-level', 'high']
+    case 'pnpm':
+      return ['pnpm', 'audit', '--prod', '--audit-level', 'high']
+    case 'bun':
+      return ['bun', 'audit']
+    case 'yarn':
+      return pm.version?.startsWith('1.')
+        ? ['yarn', 'audit', '--level', 'high']
+        : [
+            'yarn',
+            'npm',
+            'audit',
+            '--environment',
+            'production',
+            '--severity',
+            'high',
+          ]
+  }
+}
+
+const DEP_FIELDS = [
+  'dependencies',
+  'devDependencies',
+  'optionalDependencies',
+  'peerDependencies',
+] as const
+
+// Ranges that don't resolve against the npm registry
+const NON_REGISTRY_RANGE_RE =
+  /^(?:workspace:|file:|link:|portal:|catalog:|git|https?:)/
+
+const collectEntry = (
+  dependencies: Map<string, string>,
+  name: string,
+  range: unknown,
+): void => {
+  if (typeof range !== 'string' || NON_REGISTRY_RANGE_RE.test(range)) return
+  // npm alias: "foo": "npm:real-pkg@^1"
+  const alias = /^npm:(.+)@([^@]+)$/.exec(range)
+  const target = alias?.[1] ?? name
+  const targetRange = alias?.[2] ?? range
+  if (!dependencies.has(target)) dependencies.set(target, targetRange)
+}
+
+const collectFromPackage = (
+  dependencies: Map<string, string>,
+  packageDir: string,
+): void => {
+  const package_ = readPackage(packageDir)
+  for (const field of DEP_FIELDS) {
+    const section = package_?.[field]
+    if (typeof section !== 'object' || section === null) continue
+    for (const [name, range] of Object.entries(section))
+      collectEntry(dependencies, name, range)
+  }
+}
+
+const collectDependencies = (dir: string): Map<string, string> => {
+  const dependencies = new Map<string, string>()
+  for (const packageDir of [dir, ...getWorkspaceDirectories(dir)])
+    collectFromPackage(dependencies, packageDir)
+  return dependencies
+}
+
+const findDeprecated = async (
+  name: string,
+  range: string,
+): Promise<string | null> => {
+  const response = await fetch(
+    `https://registry.npmjs.org/${name.replace('/', '%2F')}`,
+    {
+      headers: { accept: 'application/vnd.npm.install-v1+json' },
+      signal: AbortSignal.timeout(10_000),
+    },
+  )
+  if (!response.ok) throw new Error(`HTTP ${response.status}`)
+  const data = (await response.json()) as {
+    versions: Record<string, { deprecated?: string }>
+    'dist-tags'?: Record<string, string>
+  }
+  // Prefer the `latest` dist-tag when it satisfies the range — strict semver
+  // maxSatisfying can pick a junk prerelease no package manager would install.
+  const latest = data['dist-tags']?.latest
+  const resolved =
+    latest && satisfies(latest, range)
+      ? latest
+      : maxSatisfying(Object.keys(data.versions), range)
+  if (!resolved) return null
+  const deprecated = data.versions[resolved]?.deprecated
+  return deprecated ? `${name}@${resolved} — ${deprecated.slice(0, 120)}` : null
 }
 
 export const LOCAL_CHECKS: LocalCheck[] = [
@@ -230,6 +327,52 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     },
   },
   {
+    id: 'deps-audit',
+    desc: 'no known vulnerabilities (audit)',
+    type: 'local',
+    check: (dir) => {
+      const pm = detectPackageManager(dir)
+      const [command, ...arguments_] = auditCommand(pm)
+      const r = spawnSync(command, arguments_, {
+        cwd: dir,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      })
+      if (r.error) return { pass: false, detail: String(r.error) }
+      if (r.status === 0) return true
+      const detail = (r.stdout + r.stderr)
+        .trim()
+        .split('\n')
+        .slice(0, 20)
+        .join('\n')
+      return { pass: false, detail: detail || `audit exited ${r.status}` }
+    },
+  },
+  {
+    id: 'deps-deprecated',
+    desc: 'no deprecated dependencies',
+    type: 'local',
+    check: async (dir) => {
+      const dependencies = collectDependencies(dir)
+      const failures: string[] = []
+      await Promise.all(
+        [...dependencies].map(async ([name, range]) => {
+          try {
+            const deprecated = await findDeprecated(name, range)
+            if (deprecated) failures.push(deprecated)
+          } catch (error) {
+            failures.push(`${name} — check failed: ${String(error)}`)
+          }
+        }),
+      )
+      if (failures.length === 0) return true
+      return {
+        pass: false,
+        detail: failures.toSorted((a, b) => a.localeCompare(b)).join('\n'),
+      }
+    },
+  },
+  {
     id: 'deps-fresh',
     desc: 'dependencies up to date (ncu)',
     type: 'local',
@@ -253,10 +396,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
 
         if (entries.length === 0) return true
         const lines = entries.map(([k, v]) => `${k}  →  ${v}`).join('\n')
-        const command = hasWorkspaces
-          ? 'yarn dlx npm-check-updates --dep dev,optional,peer,prod,packageManager -u --workspaces && yarn install'
-          : 'yarn dlx npm-check-updates --dep dev,optional,peer,prod,packageManager -u && yarn install'
-        return { pass: false, detail: `${lines}\n\nRun: ${command}` }
+        return { pass: false, detail: `${lines}\n\nRun: forge update` }
       } catch (error) {
         return { pass: false, detail: String(error) }
       }

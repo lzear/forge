@@ -119,3 +119,11 @@ export const checkRepo = async (
 }
 
 export { CHECKS, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.js'
+export type {
+  PackageManager,
+  PackageManagerName,
+  UpdateOptions,
+  UpdateReport,
+  UpdateResult,
+} from './update.js'
+export { detectPackageManager, runUpdate } from './update.js'

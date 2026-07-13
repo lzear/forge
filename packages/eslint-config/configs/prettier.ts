@@ -1,4 +1,4 @@
-import { Linter } from 'eslint'
+import type { Linter } from 'eslint'
 import prettierConfig from 'eslint-plugin-prettier/recommended'
 
 const { curly: _curly, ...prettierRules } = prettierConfig.rules ?? {}

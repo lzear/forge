@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/@lzear/repo-lint)](https://www.npmjs.com/package/@lzear/repo-lint)
 [![license](https://img.shields.io/npm/l/@lzear/repo-lint)](../../LICENSE)
 
-Checks lzear repos against forge standards. Used internally by `forge check`.
+Checks lzear repos against forge standards and keeps them fresh. Used internally by `forge check` and `forge update`.
 
 ## Install
 
@@ -58,6 +58,23 @@ interface RepoReport {
 }
 ```
 
+### `runUpdate(options?)`
+
+Powers `forge update`. Detects the package manager (npm, yarn, pnpm, bun) and updates dependency ranges (ncu, honoring `.ncurc{,.json,.js,.cjs,.mjs}`), the `packageManager` field, `.nvmrc`/`.node-version` (latest Node LTS), and `.bun-version`, then installs & refreshes the lockfile.
+
+```ts
+import { detectPackageManager, runUpdate } from '@lzear/repo-lint'
+
+const report = await runUpdate({ dry: true })
+// { dir, packageManager: { name: 'yarn', version: '4.17.1', … }, results: [...] }
+```
+
+| Option    | Type      | Default         | Description                        |
+|-----------|-----------|-----------------|------------------------------------|
+| `dir`     | `string`  | `process.cwd()` | Repo to update                     |
+| `dry`     | `boolean` | `false`         | Report changes without writing     |
+| `install` | `boolean` | `true`          | Run install/lockfile refresh after |
+
 ## Checks performed
 
 | Check                          | Description                                           |
@@ -73,6 +90,8 @@ interface RepoReport {
 | `pkg-publint`                  | All published packages pass `publint`                 |
 | `pkg-attw`                     | All published packages pass `attw` (ESM-only profile) |
 | `pkg-knip`                     | No unused exports or dependencies (`knip`)            |
+| `deps-audit`                   | No known vulnerabilities (PM-native `audit`, prod, high+) |
+| `deps-deprecated`              | No direct dependency resolves to a deprecated version |
 | `deps-fresh`                   | All dependencies up to date (`ncu`)                   |
 | `secret-npm-token`             | GitHub secret `NPM_TOKEN` is set                      |
 | `secret-codacy-token`          | GitHub secret `CODACY_PROJECT_TOKEN` is set           |

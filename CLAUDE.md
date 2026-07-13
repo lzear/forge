@@ -46,14 +46,15 @@ Async default export `configGenerator(options)`. Options: `node | react | typesc
 
 ### `@lzear/repo-lint`
 
-Defines `LOCAL_CHECKS` (13) and `REMOTE_CHECKS` (2). Local checks verify: required files (README, .codacy.yml, LICENSE, CI workflow, renovate.json), README badges (Codacy grade/coverage, npm), and package quality (`publint`, `attw`, `knip`, fresh deps). Remote checks verify GitHub secrets (NPM_TOKEN, CODACY_PROJECT_TOKEN).
+Defines `LOCAL_CHECKS` (14) and `REMOTE_CHECKS` (1). Local checks verify: required files (README, .codacy.yml, LICENSE, CI workflow, renovate.json), README badges (Codacy grade/coverage, npm), and package quality (`publint`, `attw`, `knip`, audit, no deprecated deps, fresh deps). Remote check verifies the CODACY_PROJECT_TOKEN GitHub secret. Also home of `runUpdate()`/`detectPackageManager()` (`src/update.ts`), which power `forge update`.
 
 `eachPublishedPkg(dir)` walks workspaces, skipping private packages.
 
 ### `forge` CLI
 
-`packages/forge/src/bin.ts` — three subcommands via commander:
+`packages/forge/src/bin.ts` — four subcommands via commander:
 - `check` — runs `checkLocal()` + `checkRepo()` from `@lzear/repo-lint`
+- `update` — runs `runUpdate()` from `@lzear/repo-lint`: bumps dependency ranges (ncu), the `packageManager` field, `.nvmrc`/`.node-version`/`.bun-version`, then installs with the detected package manager (npm/yarn/pnpm/bun); `--dry`, `--no-install`
 - `setup` — interactive prompt to set GitHub secrets (uses `@clack/prompts`)
 - `sync` — fetches `.editorconfig` and `.codacy.yml` from forge `main` branch; `--dry` to preview
 

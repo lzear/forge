@@ -21,6 +21,27 @@ vi.mock('node:child_process', async (importOriginal) => {
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
+const fetchMock = vi.fn()
+vi.stubGlobal('fetch', fetchMock)
+
+interface RegistryPackage {
+  versions: Record<string, { deprecated?: string }>
+  'dist-tags'?: Record<string, string>
+}
+
+const mockRegistry = (packages: Record<string, RegistryPackage>): void => {
+  fetchMock.mockImplementation((url: string) => {
+    const entry = Object.entries(packages).find(([name]) =>
+      url.endsWith(name.replace('/', '%2F')),
+    )
+    if (!entry) return Promise.resolve({ ok: false, status: 404 })
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(entry[1]),
+    })
+  })
+}
+
 const tmpDir = (): string => mkdtempSync(path.join(tmpdir(), 'repo-lint-test-'))
 
 const write = (dir: string, file: string, content = ''): void => {
@@ -250,6 +271,117 @@ describe('LOCAL_CHECKS', () => {
       expect(result).toMatchObject({ pass: false })
       expect((result as { detail: string }).detail).toContain('Unused')
       expect((result as { detail: string }).detail).toContain('npx knip')
+    })
+  })
+
+  describe('deps-audit', () => {
+    it('passes when audit exits 0', async () => {
+      write(dir, 'package.json', JSON.stringify({}))
+      mockSpawn(0)
+      expect(await check('deps-audit', dir)).toBe(true)
+      expect(vi.mocked(childProcess.spawnSync)).toHaveBeenCalledWith(
+        'npm',
+        expect.arrayContaining(['audit']),
+        expect.objectContaining({ cwd: dir }),
+      )
+    })
+    it('uses the detected package manager', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ packageManager: 'yarn@4.17.1' }),
+      )
+      mockSpawn(0)
+      await check('deps-audit', dir)
+      expect(vi.mocked(childProcess.spawnSync)).toHaveBeenCalledWith(
+        'yarn',
+        expect.arrayContaining(['npm', 'audit']),
+        expect.objectContaining({ cwd: dir }),
+      )
+    })
+    it('fails with output when audit exits non-zero', async () => {
+      write(dir, 'package.json', JSON.stringify({}))
+      mockSpawn(1, '3 high severity vulnerabilities')
+      const result = await check('deps-audit', dir)
+      expect(result).toMatchObject({ pass: false })
+      expect((result as { detail: string }).detail).toContain('high severity')
+    })
+  })
+
+  describe('deps-deprecated', () => {
+    it('passes when no dependency is deprecated', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ dependencies: { alive: '^1' } }),
+      )
+      mockRegistry({ alive: { versions: { '1.2.0': {} } } })
+      expect(await check('deps-deprecated', dir)).toBe(true)
+    })
+
+    it('fails when the resolved version is deprecated', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ devDependencies: { dead: '^2' } }),
+      )
+      mockRegistry({
+        dead: { versions: { '2.4.0': { deprecated: 'use other-pkg' } } },
+      })
+      const result = await check('deps-deprecated', dir)
+      expect(result).toMatchObject({ pass: false })
+      expect((result as { detail: string }).detail).toContain(
+        'dead@2.4.0 — use other-pkg',
+      )
+    })
+
+    it('prefers the latest dist-tag over junk prereleases', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ dependencies: { rc: '^19.1.0-rc.2' } }),
+      )
+      mockRegistry({
+        rc: {
+          versions: {
+            '19.1.0-rc.2': {},
+            '19.1.0-rc.1-junk-build': { deprecated: 'wrong version' },
+          },
+          'dist-tags': { latest: '19.1.0-rc.2' },
+        },
+      })
+      expect(await check('deps-deprecated', dir)).toBe(true)
+    })
+
+    it('ignores non-registry ranges and resolves npm aliases', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({
+          dependencies: {
+            local: 'workspace:*',
+            aliased: 'npm:real-pkg@^3',
+          },
+        }),
+      )
+      mockRegistry({ 'real-pkg': { versions: { '3.1.0': {} } } })
+      expect(await check('deps-deprecated', dir)).toBe(true)
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(fetchMock.mock.calls[0]?.[0]).toContain('real-pkg')
+    })
+
+    it('collects dependencies from workspaces', async () => {
+      write(dir, 'package.json', JSON.stringify({ workspaces: ['packages/*'] }))
+      write(
+        dir,
+        'packages/a/package.json',
+        JSON.stringify({ dependencies: { dead: '^1' } }),
+      )
+      mockRegistry({
+        dead: { versions: { '1.0.0': { deprecated: 'gone' } } },
+      })
+      const result = await check('deps-deprecated', dir)
+      expect(result).toMatchObject({ pass: false })
     })
   })
 

@@ -11,7 +11,7 @@
   "scripts": {
     "build": "yarn workspaces foreach -A --topological run build",
     "lint": "eslint .",
-    "ncu": "npx npm-check-updates --workspaces --upgrade --root --dep dev,optional,peer,prod,packageManager  && yarn && yarn up --recursive '*'",
+    "ncu": "forge update",
     "prepare": "lefthook install",
     "qa": "yarn install --immutable && yarn build && concurrently -g 'yarn typecheck' 'yarn lint' 'yarn test' && yarn forge check",
     "setup-repo": "forge setup",
@@ -31,7 +31,6 @@
     "concurrently": "^10",
     "eslint": "^10",
     "lefthook": "^2",
-    "npm-check-updates": "^22",
     "typescript": "npm:@typescript/typescript6@^6"
   },
   "resolutions": {
