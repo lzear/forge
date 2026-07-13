@@ -90,6 +90,7 @@ const report = await runUpdate({ dry: true })
 | `pkg-publint`                  | All published packages pass `publint`                 |
 | `pkg-attw`                     | All published packages pass `attw` (ESM-only profile) |
 | `pkg-knip`                     | No unused exports or dependencies (`knip`)            |
+| `monorepo-lint`                | Workspace consistency (`sherif`, monorepos only)      |
 | `deps-audit`                   | No known vulnerabilities (PM-native `audit`, prod, high+) |
 | `deps-deprecated`              | No direct dependency resolves to a deprecated version |
 | `deps-fresh`                   | All dependencies up to date (`ncu`)                   |

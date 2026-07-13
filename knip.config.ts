@@ -1,12 +1,11 @@
 import type { KnipConfig } from 'knip'
 
 const config = {
-  ignore: ['.ncurc.js'],
-  ignoreBinaries: ['gh'],
   workspaces: {
     'packages/repo-lint': {
       entry: ['src/index.ts', 'src/bin.ts'],
-      ignoreDependencies: ['@arethetypeswrong/cli'],
+      // spawned via node_modules/.bin, invisible to knip
+      ignoreDependencies: ['@arethetypeswrong/cli', 'sherif'],
     },
     'packages/eslint-config': {
       ignoreDependencies: ['eslint-import-resolver-typescript'],

@@ -12,6 +12,12 @@ on:
       run-check:
         type: boolean
         default: true
+      run-preview:
+        type: boolean
+        default: true
+      preview-packages:
+        type: string
+        default: './packages/*'
     secrets:
       CODACY_PROJECT_TOKEN:
         required: false
@@ -52,3 +58,29 @@ jobs:
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: ${{ steps.coverage.outputs.paths }}
+
+  zizmor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: zizmorcore/zizmor-action@v0.5.7
+        with:
+          advanced-security: false
+
+  preview:
+    if: github.event_name == 'pull_request' && inputs.run-preview
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn build
+      - run: yarn dlx pkg-pr-new publish ${{ inputs.preview-packages }}

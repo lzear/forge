@@ -327,6 +327,31 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     },
   },
   {
+    id: 'monorepo-lint',
+    desc: 'workspace consistency (sherif)',
+    type: 'local',
+    check: (dir) => {
+      const package_ = readPackage(dir)
+      if (!package_ || getWorkspacePatterns(package_).length === 0)
+        return { pass: true, detail: 'not a monorepo' }
+      const bin = findBin('sherif', _dirname)
+      if (!bin) return { pass: false, detail: 'sherif not available' }
+      const r = spawnSync(process.execPath, [bin], {
+        cwd: dir,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+        env: { ...process.env, NO_COLOR: '1' },
+      })
+      if (r.status === 0) return true
+      const detail = (r.stdout + r.stderr)
+        .trim()
+        .split('\n')
+        .slice(0, 20)
+        .join('\n')
+      return { pass: false, detail }
+    },
+  },
+  {
     id: 'deps-audit',
     desc: 'no known vulnerabilities (audit)',
     type: 'local',

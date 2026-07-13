@@ -274,6 +274,27 @@ describe('LOCAL_CHECKS', () => {
     })
   })
 
+  describe('monorepo-lint', () => {
+    it('skips non-monorepos', async () => {
+      write(dir, 'package.json', JSON.stringify({}))
+      expect(await check('monorepo-lint', dir)).toMatchObject({ pass: true })
+    })
+    it('passes when sherif exits 0', async () => {
+      write(dir, 'package.json', JSON.stringify({ workspaces: ['packages/*'] }))
+      mockSpawn(0)
+      expect(await check('monorepo-lint', dir)).toBe(true)
+    })
+    it('fails with output when sherif finds issues', async () => {
+      write(dir, 'package.json', JSON.stringify({ workspaces: ['packages/*'] }))
+      mockSpawn(1, 'multiple versions of eslint')
+      const result = await check('monorepo-lint', dir)
+      expect(result).toMatchObject({ pass: false })
+      expect((result as { detail: string }).detail).toContain(
+        'multiple versions',
+      )
+    })
+  })
+
   describe('deps-audit', () => {
     it('passes when audit exits 0', async () => {
       write(dir, 'package.json', JSON.stringify({}))

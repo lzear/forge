@@ -47,7 +47,8 @@
     "knip": "^6",
     "npm-check-updates": "^22",
     "publint": "^0.3",
-    "semver": "^7"
+    "semver": "^7",
+    "sherif": "^1"
   },
   "devDependencies": {
     "@lzear/configs": "workspace:*",
