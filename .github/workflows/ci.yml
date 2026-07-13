@@ -25,15 +25,19 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     env:
       HAS_CODACY_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN != '' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ inputs.node-version }}
       - run: corepack enable
-      - uses: actions/cache@v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             node_modules
@@ -43,7 +47,9 @@ jobs:
       - run: yarn build
       - run: yarn typecheck
       - run: yarn lint
-      - run: ${{ inputs.coverage-command }}
+      - run: ${COVERAGE_COMMAND}
+        env:
+          COVERAGE_COMMAND: ${{ inputs.coverage-command }}
       - run: yarn forge check --skip-remote
         if: ${{ inputs.run-check }}
         continue-on-error: true
@@ -52,7 +58,7 @@ jobs:
         run: |
           paths=$(find packages -name 'lcov.info' 2>/dev/null | tr '\n' ',' | sed 's/,$//')
           echo "paths=$paths" >> $GITHUB_OUTPUT
-      - uses: codacy/codacy-coverage-reporter-action@v1
+      - uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
         if: env.HAS_CODACY_TOKEN == 'true' && steps.coverage.outputs.paths != ''
         continue-on-error: true
         with:
@@ -64,23 +70,29 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           persist-credentials: false
-      - uses: zizmorcore/zizmor-action@v0.5.7
+      - uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa # v0.5.7
         with:
           advanced-security: false
 
   preview:
     if: github.event_name == 'pull_request' && inputs.run-preview
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ inputs.node-version }}
       - run: corepack enable
       - run: yarn install --immutable
       - run: yarn build
-      - run: yarn dlx pkg-pr-new publish ${{ inputs.preview-packages }}
+      - run: yarn dlx pkg-pr-new publish ${PREVIEW_PACKAGES}
+        env:
+          PREVIEW_PACKAGES: ${{ inputs.preview-packages }}
