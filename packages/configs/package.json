@@ -2,18 +2,14 @@
   "name": "@lzear/configs",
   "version": "4.2.2",
   "description": "Shared configs for lzear repos — tsconfig, vitest, tsup, vite",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lzear/forge.git",
     "directory": "packages/configs"
   },
   "author": "lzear",
-  "license": "MIT",
-  "sideEffects": false,
   "type": "module",
-  "bin": {
-    "lzear-publish": "./src/publish.mjs"
-  },
   "exports": {
     "./changelog": {
       "types": "./src/changelog.d.ts",
@@ -48,17 +44,35 @@
       "default": "./dist/vitest.react.js"
     }
   },
+  "bin": {
+    "lzear-publish": "./src/publish.mjs"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
   "files": [
     "dist",
     "src/changelog.d.ts",
     "src/changelog.mjs",
     "tsconfig"
   ],
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "typecheck": "tsc --noEmit"
-  },
+  "keywords": [
+    "config",
+    "tsconfig",
+    "tsup",
+    "vite",
+    "vitest"
+  ],
   "dependencies": {
     "@commitlint/config-conventional": "^21"
   },
@@ -93,12 +107,5 @@
     "vitest": {
       "optional": true
     }
-  },
-  "engines": {
-    "node": ">=24"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

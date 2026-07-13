@@ -2,14 +2,13 @@
   "name": "@lzear/repo-lint",
   "version": "4.2.2",
   "description": "Checks lzear repos against forge standards",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lzear/forge.git",
     "directory": "packages/repo-lint"
   },
   "author": "lzear",
-  "license": "MIT",
-  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -18,9 +17,14 @@
     }
   },
   "bin": "./dist/bin.js",
-  "files": [
-    "dist"
-  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -28,6 +32,16 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "checks",
+    "ci",
+    "compliance",
+    "lint",
+    "repo"
+  ],
   "dependencies": {
     "@arethetypeswrong/cli": "^0.18",
     "knip": "^6",
@@ -40,12 +54,5 @@
     "@vitest/coverage-v8": "^4",
     "tsup": "^8",
     "vitest": "^4"
-  },
-  "engines": {
-    "node": ">=24"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

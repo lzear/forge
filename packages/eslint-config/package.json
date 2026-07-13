@@ -2,14 +2,13 @@
   "name": "@lzear/eslint-config",
   "version": "4.2.2",
   "description": "Shared ESLint flat config for lzear repos",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lzear/forge.git",
     "directory": "packages/eslint-config"
   },
   "author": "lzear",
-  "license": "MIT",
-  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -17,15 +16,30 @@
       "default": "./dist/index.js"
     }
   },
-  "files": [
-    "dist"
-  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "eslint",
+    "eslint-config",
+    "eslintconfig",
+    "flat-config",
+    "lint"
+  ],
   "dependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "^4",
     "@eslint/js": "^10",
@@ -34,11 +48,11 @@
     "eslint-config-prettier": "^10",
     "eslint-import-resolver-typescript": "^4",
     "eslint-module-utils": "^2",
+    "eslint-package-json": "^0.1",
     "eslint-plugin-de-morgan": "^2",
     "eslint-plugin-import-x": "^4",
     "eslint-plugin-jsx-a11y": "^6",
     "eslint-plugin-n": "^18",
-    "eslint-plugin-package-json": "^1",
     "eslint-plugin-prefer-arrow": "^1",
     "eslint-plugin-prettier": "^5",
     "eslint-plugin-promise": "^7",
@@ -54,7 +68,6 @@
     "eslint-plugin-sonarjs": "^4",
     "eslint-plugin-unicorn": "^71",
     "globals": "^17",
-    "jsonc-eslint-parser": "^3",
     "prettier": "^3",
     "typescript-eslint": "^8"
   },
@@ -67,12 +80,5 @@
   },
   "peerDependencies": {
     "eslint": "^10"
-  },
-  "engines": {
-    "node": ">=24"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

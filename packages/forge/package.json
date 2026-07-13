@@ -2,14 +2,13 @@
   "name": "@lzear/forge",
   "version": "4.2.2",
   "description": "Umbrella package for all lzear dev tooling",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lzear/forge.git",
     "directory": "packages/forge"
   },
   "author": "lzear",
-  "license": "MIT",
-  "sideEffects": false,
   "type": "module",
   "exports": {
     "./commitlint": {
@@ -49,15 +48,30 @@
     }
   },
   "bin": "./dist/bin.js",
-  "files": [
-    "dist",
-    "tsconfig"
-  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit"
   },
+  "files": [
+    "dist",
+    "tsconfig"
+  ],
+  "keywords": [
+    "cli",
+    "dev-tools",
+    "eslint-config",
+    "monorepo",
+    "tooling"
+  ],
   "dependencies": {
     "@clack/prompts": "^1",
     "@lzear/configs": "workspace:*",
@@ -97,12 +111,5 @@
     "vitest": {
       "optional": true
     }
-  },
-  "engines": {
-    "node": ">=24"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

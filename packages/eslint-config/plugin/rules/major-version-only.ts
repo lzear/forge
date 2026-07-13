@@ -34,22 +34,22 @@ const isIgnored = (packageName: string, ignore: (string | RegExp)[]): boolean =>
       : pattern === packageName,
   )
 
-interface JsonKey {
-  type: string
-  value?: unknown
-  name?: string
-}
-interface JsonLiteral {
-  type: 'JSONLiteral'
-  value: unknown
+// Momoa AST (@eslint/json)
+interface JsonString {
+  type: 'String'
+  value: string
 }
 interface JsonObject {
-  type: 'JSONObjectExpression'
-  properties: JsonProperty[]
+  type: 'Object'
+  members: JsonMember[]
 }
-interface JsonProperty {
-  key: JsonKey
-  value: JsonLiteral | JsonObject
+interface JsonOther {
+  type: 'Array' | 'Number' | 'Boolean' | 'Null'
+}
+interface JsonMember {
+  type: 'Member'
+  name: JsonString
+  value: JsonString | JsonObject | JsonOther
 }
 
 interface Options {
@@ -97,37 +97,26 @@ export const majorVersionOnly: Rule.RuleModule = {
     )
 
     return {
-      JSONProperty: (rawNode: Rule.Node) => {
-        const node = rawNode as unknown as JsonProperty
-        const keyName =
-          node.key.type === 'JSONLiteral'
-            ? String(node.key.value)
-            : (node.key.name ?? '')
+      Member: (rawNode: Rule.Node) => {
+        const node = rawNode as unknown as JsonMember
 
-        if (!DEP_FIELDS.has(keyName)) return
+        if (!DEP_FIELDS.has(node.name.value)) return
 
         const dependenciesNode = node.value
-        if (dependenciesNode.type !== 'JSONObjectExpression') return
+        if (dependenciesNode.type !== 'Object') return
 
-        for (const property of dependenciesNode.properties) {
-          const packageName =
-            property.key.type === 'JSONLiteral'
-              ? String(property.key.value)
-              : (property.key.name ?? '')
+        for (const member of dependenciesNode.members) {
+          if (isIgnored(member.name.value, ignore)) continue
 
-          if (isIgnored(packageName, ignore)) continue
-
-          const versionNode = property.value
-          if (versionNode.type !== 'JSONLiteral') continue
+          const versionNode = member.value
+          if (versionNode.type !== 'String') continue
 
           const version = versionNode.value
-          if (typeof version !== 'string') continue
-
           const suggested = simplify(version)
           if (!suggested) continue
 
           context.report({
-            node: versionNode,
+            node: versionNode as unknown as Rule.Node,
             messageId: 'useMajorOnly',
             data: { current: version, suggested },
             fix: (fixer) =>

@@ -94,7 +94,7 @@ export default config
 
 ## Included plugins
 
-`@eslint/js` · `typescript-eslint` · `eslint-plugin-unicorn` · `eslint-plugin-sonarjs` · `eslint-plugin-import-x` · `eslint-plugin-promise` · `eslint-plugin-regexp` · `eslint-plugin-react` · `eslint-plugin-react-hooks` · `eslint-plugin-jsx-a11y` · `eslint-plugin-n` · `@vitest/eslint-plugin` · `eslint-plugin-package-json` · `eslint-config-prettier` · and more.
+`@eslint/js` · `typescript-eslint` · `eslint-plugin-unicorn` · `eslint-plugin-sonarjs` · `eslint-plugin-import-x` · `eslint-plugin-promise` · `eslint-plugin-regexp` · `eslint-plugin-react` · `eslint-plugin-react-hooks` · `eslint-plugin-jsx-a11y` · `eslint-plugin-n` · `@vitest/eslint-plugin` · `eslint-package-json` · `eslint-config-prettier` · and more.
 
 ## Part of forge
 
