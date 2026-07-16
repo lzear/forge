@@ -10,12 +10,7 @@
   },
   "author": "lzear",
   "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
-  },
+  "exports": "./dist/index.js",
   "sideEffects": false,
   "engines": {
     "node": ">=24"
@@ -48,7 +43,7 @@
     "eslint-config-prettier": "^10",
     "eslint-import-resolver-typescript": "^4",
     "eslint-module-utils": "^2",
-    "eslint-package-json": "^0.1",
+    "eslint-package-json": "^0.2",
     "eslint-plugin-de-morgan": "^2",
     "eslint-plugin-import-x": "^4",
     "eslint-plugin-jsx-a11y": "^6",
@@ -66,7 +61,7 @@
     "eslint-plugin-regexp": "^3",
     "eslint-plugin-simple-import-sort": "^13",
     "eslint-plugin-sonarjs": "^4",
-    "eslint-plugin-unicorn": "^71",
+    "eslint-plugin-unicorn": "^72",
     "globals": "^17",
     "prettier": "^3",
     "typescript-eslint": "^8"

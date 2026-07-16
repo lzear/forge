@@ -61,9 +61,9 @@
     "typecheck": "tsc --noEmit"
   },
   "files": [
-    "dist",
-    "src/changelog.d.ts",
     "src/changelog.mjs",
+    "src/changelog.d.ts",
+    "dist",
     "tsconfig"
   ],
   "keywords": [
