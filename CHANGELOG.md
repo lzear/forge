@@ -1,3 +1,13 @@
+## 4.4.0
+
+`forge sync` now also writes `.github/zizmor.yml` (shared zizmor policy: hash-pin all action refs)
+
+### Commits
+
+- 5e69f1d chore: ncu
+- 07da081 feat: composite setup action, uniform hash-pin zizmor policy
+- eec9976 feat: ci-workflow
+
 ## 4.3.0
 
 More maintenance automation. `forge check` gains two checks: `deps-audit` (package-manager-native security audit — prod deps, high severity and up) and `deps-deprecated` (flags direct dependencies whose resolved version is deprecated on npm, including workspaces and `npm:` aliases). `forge update` gains a LICENSE copyright-year bump (`2023` → `2023-2026`) and a dedupe pass after install (`yarn dedupe` / `pnpm dedupe` / `npm dedupe`). `@lzear/configs` tsconfig target bumped ES2022 → ES2023 (node ≥ 24 everywhere).
@@ -91,6 +101,11 @@ Update eslint peer to version 10, and minor fixes.
 
 - 3ad0b75 chore: extract configuration files into repo
 - d55cee2 chore: add typecheck
+- dfbe2ff chore: update TS ESLint configurations with strictTypeChecked
+- 4755eb7 fix: publish script
+rations with strictTypeChecked
+- 4755eb7 fix: publish script
+2 chore: add typecheck
 - dfbe2ff chore: update TS ESLint configurations with strictTypeChecked
 - 4755eb7 fix: publish script
 rations with strictTypeChecked
