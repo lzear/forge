@@ -286,7 +286,8 @@ export const LOCAL_CHECKS: LocalCheck[] = [
           'no workflow calls the forge reusable CI — replace the local ci.yml copy with:\n' +
           '  jobs:\n' +
           '    ci:\n' +
-          '      uses: lzear/forge/.github/workflows/ci.yml@main',
+          '      uses: lzear/forge/.github/workflows/ci.yml@<sha> # vX.Y.Z\n' +
+          '(pin to a commit SHA; renovate keeps it fresh)',
       }
     },
   },

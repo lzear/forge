@@ -318,6 +318,8 @@ const SYNC_FILES: { src: string; dest: string }[] = [
   { src: 'template/.editorconfig', dest: '.editorconfig' },
   { src: 'template/.codacy.yml', dest: '.codacy.yml' },
   { src: 'template/lefthook.yml', dest: 'lefthook.yml' },
+  // shared as-is: allows @main refs to forge, hash-pins everything else
+  { src: '.github/zizmor.yml', dest: '.github/zizmor.yml' },
 ]
 
 const RAW_BASE = 'https://raw.githubusercontent.com/lzear/forge/main'

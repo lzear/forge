@@ -69,7 +69,7 @@ forge setup --dry                   # check only, do not prompt
 Fetches shared template files from the forge `main` branch and writes them locally.
 
 ```sh
-forge sync        # write .editorconfig, .codacy.yml, lefthook.yml
+forge sync        # write .editorconfig, .codacy.yml, lefthook.yml, .github/zizmor.yml
 forge sync --dry  # preview without writing
 ```
 

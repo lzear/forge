@@ -56,7 +56,11 @@ Defines `LOCAL_CHECKS` (13) and `REMOTE_CHECKS` (1). Local checks verify: requir
 - `check` — runs `checkLocal()` + `checkRepo()` from `@lzear/repo-lint`
 - `update` — runs `runUpdate()` from `@lzear/repo-lint`: bumps dependency ranges (ncu), the `packageManager` field, `.nvmrc`/`.node-version`/`.bun-version`, then installs with the detected package manager (npm/yarn/pnpm/bun); `--dry`, `--no-install`
 - `setup` — interactive prompt to set GitHub secrets (uses `@clack/prompts`)
-- `sync` — fetches `.editorconfig` and `.codacy.yml` from forge `main` branch; `--dry` to preview
+- `sync` — fetches `.editorconfig`, `.codacy.yml`, `lefthook.yml`, `.github/zizmor.yml` from forge `main` branch; `--dry` to preview
+
+### CI reuse
+
+`.github/workflows/ci.yml` is a reusable workflow (`workflow_call`) consumers call as `lzear/forge/.github/workflows/ci.yml@<sha>` (SHA-pinned, renovate bumps). `actions/setup/action.yml` is a composite action (`lzear/forge/actions/setup@<sha>`) for custom consumer jobs: corepack + setup-node (pm cache) + install.
 
 ### Versioning & Publishing
 

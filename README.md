@@ -164,10 +164,11 @@ export default {
 
 Writes the following files (fetched from `main`):
 
-| File           | Purpose                              |
-|----------------|--------------------------------------|
-| `.codacy.yml`  | Codacy analysis config               |
-| `lefthook.yml` | Git hooks (commitlint on commit-msg) |
+| File                 | Purpose                                        |
+|----------------------|------------------------------------------------|
+| `.codacy.yml`        | Codacy analysis config                         |
+| `lefthook.yml`       | Git hooks (commitlint on commit-msg)           |
+| `.github/zizmor.yml` | zizmor policy (hash-pin all action refs)       |
 
 Run with `--dry` to preview without writing.
 
@@ -179,7 +180,30 @@ Run with `--dry` to preview without writing.
 | Push to `main`              | `ci` then `release` — changesets opens/updates a **"Version Packages"** PR |
 | Merge "Version Packages" PR | `release` publishes changed packages to npm                                |
 
-The CI and release workflows are reusable (`workflow_call`) and can be consumed by other lzear repos.
+### Consuming CI from other repos
+
+Default: call the reusable workflow — zizmor, pkg.pr.new previews, and future jobs come along automatically. Pin to a commit SHA (renovate's `github-actions` manager keeps it fresh):
+
+```yaml
+jobs:
+  ci:
+    uses: lzear/forge/.github/workflows/ci.yml@<sha> # v4.3.0
+    secrets:
+      CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+```
+
+Inputs: `node-version`, `coverage-command`, `run-check`, `run-preview`, `preview-packages`. Extra repo-specific jobs live alongside the `ci:` job in the caller.
+
+Custom pipelines: skip the workflow and compose steps with the setup action (node + corepack + package-manager cache + immutable install):
+
+```yaml
+steps:
+  - uses: actions/checkout@<sha> # v4.3.1
+  - uses: lzear/forge/actions/setup@<sha> # v4.3.0
+  - run: yarn do-your-thing
+```
+
+Inputs: `node-version` (default `24`), `cache` (default `yarn`), `install-command` (default `yarn install --immutable`).
 
 ## Development
 

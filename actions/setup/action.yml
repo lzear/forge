@@ -1,0 +1,32 @@
+name: forge setup
+description: Node.js + corepack + package-manager cache + immutable install
+
+inputs:
+  node-version:
+    description: Node.js version
+    required: false
+    default: '24'
+  cache:
+    description: Package manager cache for setup-node (yarn, npm, pnpm; empty to disable)
+    required: false
+    default: 'yarn'
+  install-command:
+    description: Dependency install command
+    required: false
+    default: 'yarn install --immutable'
+
+runs:
+  using: composite
+  steps:
+    # corepack first so setup-node's cache detection resolves the
+    # packageManager-pinned yarn/pnpm, not the runner's preinstalled one
+    - run: corepack enable
+      shell: bash
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: ${{ inputs.cache }}
+    - run: ${INSTALL_COMMAND}
+      shell: bash
+      env:
+        INSTALL_COMMAND: ${{ inputs.install-command }}

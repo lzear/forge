@@ -143,7 +143,7 @@ describe('LOCAL_CHECKS', () => {
       const result = await check('ci-workflow', dir)
       expect(result).toMatchObject({ pass: false })
       expect((result as CheckDetail).detail).toContain(
-        'lzear/forge/.github/workflows/ci.yml@main',
+        'lzear/forge/.github/workflows/ci.yml@',
       )
     })
     it('fails on a local ci.yml copy that never calls forge', async () => {
@@ -154,7 +154,7 @@ describe('LOCAL_CHECKS', () => {
       write(
         dir,
         '.github/workflows/main.yml',
-        'jobs:\n  ci:\n    uses: lzear/forge/.github/workflows/ci.yml@main\n',
+        'jobs:\n  ci:\n    uses: lzear/forge/.github/workflows/ci.yml@0d0f417 # v4.3.0\n',
       )
       expect(await check('ci-workflow', dir)).toBe(true)
     })

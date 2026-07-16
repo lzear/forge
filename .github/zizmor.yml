@@ -1,4 +1,8 @@
 rules:
+  unpinned-uses:
+    config:
+      policies:
+        '*': hash-pin
   use-trusted-publishing:
     # pkg-pr-new previews don't support npm trusted publishing
     ignore:
