@@ -182,7 +182,7 @@ Run with `--dry` to preview without writing.
 
 ### Consuming CI from other repos
 
-Default: call the reusable workflow — zizmor, pkg.pr.new previews, and future jobs come along automatically. Pin to a commit SHA (renovate's `github-actions` manager keeps it fresh):
+Default: call the reusable workflow — zizmor and future jobs come along automatically. Pin to a commit SHA (renovate's `github-actions` manager keeps it fresh):
 
 ```yaml
 jobs:
@@ -192,7 +192,7 @@ jobs:
       CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
 ```
 
-Inputs: `node-version`, `coverage-command`, `run-check`, `run-preview`, `preview-packages`. Extra repo-specific jobs live alongside the `ci:` job in the caller.
+Inputs: `node-version`, `coverage-command`, `run-check`. Extra repo-specific jobs live alongside the `ci:` job in the caller.
 
 Custom pipelines: skip the workflow and compose steps with the setup action (node + corepack + package-manager cache + immutable install):
 
