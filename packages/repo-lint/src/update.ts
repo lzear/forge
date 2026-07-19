@@ -387,7 +387,8 @@ export const installCommands = (
           ]
         : [
             ['yarn', 'install'],
-            ['yarn', 'up', '--recursive', '*'],
+            // '*' alone skips scoped packages (@foo/bar) — needs '@*/*' too
+            ['yarn', 'up', '--recursive', '*', '@*/*'],
             ['yarn', 'dedupe'],
           ]
     case 'npm':

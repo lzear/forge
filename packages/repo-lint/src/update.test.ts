@@ -124,7 +124,7 @@ describe('installCommands', () => {
       }),
     ).toEqual([
       ['yarn', 'install'],
-      ['yarn', 'up', '--recursive', '*'],
+      ['yarn', 'up', '--recursive', '*', '@*/*'],
       ['yarn', 'dedupe'],
     ])
   })

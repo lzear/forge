@@ -45,7 +45,7 @@ One-stop repo freshening. Detects the package manager (npm, yarn, pnpm, or bun �
 - `.nvmrc` / `.node-version` → latest Node LTS
 - `.bun-version` → latest Bun
 - LICENSE copyright year (extends `2023` → `2023-2026`)
-- then installs, refreshes the lockfile, and dedupes with the detected package manager (`yarn up -R '*' && yarn dedupe`, `pnpm update -r && pnpm dedupe`, `npm update && npm dedupe`, or `bun update`)
+- then installs, refreshes the lockfile, and dedupes with the detected package manager (`yarn up -R '*' '@*/*' && yarn dedupe`, `pnpm update -r && pnpm dedupe`, `npm update && npm dedupe`, or `bun update`)
 
 ```sh
 forge update               # update everything, then install
