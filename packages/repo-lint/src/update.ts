@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -398,11 +399,18 @@ export const installCommands = (
   }
 }
 
+const lockfileHash = (dir: string): string =>
+  LOCKFILES.map(([f]) => path.join(dir, f))
+    .filter((f) => existsSync(f))
+    .map((f) => createHash('sha256').update(readFileSync(f)).digest('hex'))
+    .join('|')
+
 const stepInstall = (dir: string, pm: PackageManager): UpdateResult => {
   const base = {
     id: 'install',
     desc: `install & refresh lockfile (${pm.name})`,
   }
+  const before = lockfileHash(dir)
   const lines: string[] = []
   for (const [command, ...arguments_] of installCommands(pm)) {
     lines.push(`$ ${[command, ...arguments_].join(' ')}`)
@@ -414,11 +422,17 @@ const stepInstall = (dir: string, pm: PackageManager): UpdateResult => {
       return {
         ...base,
         pass: false,
-        changed: true,
+        changed: lockfileHash(dir) !== before,
         detail: `${lines.join('\n')}\nexited with ${result.status ?? 'signal'}`,
       }
   }
-  return { ...base, pass: true, changed: true, detail: lines.join('\n') }
+  const changed = lockfileHash(dir) !== before
+  return {
+    ...base,
+    pass: true,
+    changed,
+    detail: changed ? lines.join('\n') : 'lockfile unchanged',
+  }
 }
 
 export const runUpdate = async (
