@@ -86510,7 +86510,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
         },
         "meta": {
           "name": "vitest",
-          "version": "1.6.16",
+          "version": "1.6.23",
         },
         "rules": {
           "consistent-each-for": {
@@ -87060,6 +87060,8 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                           "beforeEach",
                           "afterAll",
                           "afterEach",
+                          "aroundAll",
+                          "aroundEach",
                         ],
                         "type": "string",
                       },
@@ -87172,7 +87174,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                       "additionalProperties": {
                         "type": "array",
                       },
-                      "description": "Allowed snapshot names by absolute snapshot file path.",
+                      "description": "A map of snapshot absolute file paths to arrays of snapshot names that are allowed to exceed the size limit. Snapshot names can be specified as regular expressions.",
                       "type": "object",
                     },
                     "inlineMaxSize": {
@@ -87576,7 +87578,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               },
               "fixable": "code",
               "messages": {
-                "preferCalledWith": "Prefer {{ matcherName }}With(/* expected args */)",
+                "preferCalledWith": "Prefer {{ matcherName }}(/* expected args */)",
               },
               "schema": [],
               "type": "suggestion",
@@ -87661,6 +87663,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
             "meta": {
               "defaultOptions": [
                 {
+                  "disallowHasAssertions": false,
                   "onlyFunctionsWithAsyncKeyword": false,
                   "onlyFunctionsWithExpectInCallback": false,
                   "onlyFunctionsWithExpectInLoop": false,
@@ -87677,14 +87680,20 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "assertionsRequiresOneArgument": "`expect.assertions` excepts a single argument of type number",
                 "hasAssertionsTakesNoArguments": "`expect.hasAssertions` expects no arguments",
                 "haveExpectAssertions": "Every test should have either `expect.assertions(<number of assertions>)` or `expect.hasAssertions()` as its first expression",
+                "preferAssertionsOverHasAssertions": "Prefer `expect.assertions(<number of assertions>)` over `expect.hasAssertions()`",
                 "suggestAddingAssertions": "Add `expect.assertions(<number of assertions>)`",
                 "suggestAddingHasAssertions": "Add `expect.hasAssertions()`",
                 "suggestRemovingExtraArguments": "Remove extra arguments",
+                "suggestReplacingWithAssertions": "Replace with `expect.assertions(<number of assertions>)`",
               },
               "schema": [
                 {
                   "additionalProperties": false,
                   "properties": {
+                    "disallowHasAssertions": {
+                      "description": "Warn when `expect.hasAssertions()` is used instead of `expect.assertions()`.",
+                      "type": "boolean",
+                    },
                     "onlyFunctionsWithAsyncKeyword": {
                       "description": "Only check test functions declared with the async keyword.",
                       "type": "boolean",
@@ -87728,13 +87737,13 @@ If a function does not access `this`, it can be annotated with `this: void`.",
             "defaultOptions": undefined,
             "meta": {
               "docs": {
-                "description": "enforce using `expectTypeOf` instead of `expect(typeof ...)`",
+                "description": "enforce using `expect(...).toBeTypeOf(...)` instead of `expect(typeof ...).toBe(...)`",
                 "recommended": false,
                 "url": "https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/prefer-expect-type-of.md",
               },
               "fixable": "code",
               "messages": {
-                "preferExpectTypeOf": "Use `expectTypeOf({{ value }}).{{ matcher }}()` instead of `expect(typeof {{ value }}).toBe("{{ type }}")`",
+                "preferExpectTypeOf": "Use `expect({{ value }}).toBeTypeOf({{ type }})` instead of `expect(typeof {{ value }}).toBe({{ type }})`",
               },
               "schema": [],
               "type": "suggestion",
@@ -88164,7 +88173,6 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               "docs": {
                 "description": "require `vi.mocked()` over `fn as Mock`",
                 "recommended": false,
-                "requiresTypeChecking": true,
                 "url": "https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/prefer-vi-mocked.md",
               },
               "fixable": "code",
