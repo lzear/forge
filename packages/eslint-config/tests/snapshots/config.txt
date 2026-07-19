@@ -15689,7 +15689,7 @@
       "simple-import-sort": {
         "meta": {
           "name": "eslint-plugin-simple-import-sort",
-          "version": "13.0.0",
+          "version": "14.0.0",
         },
         "rules": {
           "exports": {
@@ -48459,7 +48459,7 @@
               "react-dom": {
                 "meta": {
                   "name": "eslint-plugin-react-dom",
-                  "version": "5.16.1",
+                  "version": "5.17.2",
                 },
                 "rules": {
                   "no-dangerously-set-innerhtml": {
@@ -48780,7 +48780,7 @@
               "react-dom": {
                 "meta": {
                   "name": "eslint-plugin-react-dom",
-                  "version": "5.16.1",
+                  "version": "5.17.2",
                 },
                 "rules": {
                   "no-dangerously-set-innerhtml": {
@@ -49101,7 +49101,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-dom",
-          "version": "5.16.1",
+          "version": "5.17.2",
         },
         "rules": {
           "no-dangerously-set-innerhtml": {
@@ -50282,7 +50282,7 @@
               "react-web-api": {
                 "meta": {
                   "name": "eslint-plugin-react-web-api",
-                  "version": "5.16.1",
+                  "version": "5.17.2",
                 },
                 "rules": {
                   "no-leaked-event-listener": {
@@ -50411,7 +50411,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-web-api",
-          "version": "5.16.1",
+          "version": "5.17.2",
         },
         "rules": {
           "no-leaked-event-listener": {
@@ -50616,7 +50616,7 @@
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.16.1",
+                  "version": "5.17.2",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -51632,7 +51632,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.16.1",
+                  "version": "5.17.2",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -52649,7 +52649,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.16.1",
+                  "version": "5.17.2",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -53665,7 +53665,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.16.1",
+                  "version": "5.17.2",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -54685,7 +54685,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.16.1",
+                  "version": "5.17.2",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -55707,7 +55707,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.16.1",
+                  "version": "5.17.2",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -56724,7 +56724,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         },
         "meta": {
           "name": "eslint-plugin-react-x",
-          "version": "5.16.1",
+          "version": "5.17.2",
         },
         "rules": {
           "error-boundaries": {
