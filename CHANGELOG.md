@@ -1,3 +1,15 @@
+## 4.4.1
+
+`forge update`'s yarn-berry install step now upgrades scoped packages too — `yarn up -R '*'` alone silently skips `@scope/name` deps, leaving them stale in the lockfile even when a newer version satisfies the existing range.
+
+### Commits
+
+- a19f4d8 chore: drop pkg.pr.new preview job
+- 2d42655 chore: remove resolutions
+- 1af934e fix: include scoped packages in yarn up
+- 9fe969a chore: forge update
+- b35f2b3 fix: use lockfile hash for install status comparison
+
 ## 4.4.0
 
 `forge sync` now also writes `.github/zizmor.yml` (shared zizmor policy: hash-pin all action refs)
@@ -110,3 +122,4 @@ rations with strictTypeChecked
 - 4755eb7 fix: publish script
 rations with strictTypeChecked
 - 4755eb7 fix: publish script
+script
