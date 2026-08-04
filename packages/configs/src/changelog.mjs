@@ -50,6 +50,8 @@ const getCommits = () => {
     .trim()
 }
 
+const REPO_URL = 'https://github.com/lzear/forge'
+
 const SKIP_PREFIXES = [
   'ci:',
   'chore: ncu',
@@ -78,7 +80,10 @@ export const getReleaseLine = async (changeset, type) => {
   const commitSection = commits
     ? `### Commits\n\n${commits
         .split('\n')
-        .map((l) => `- ${l}`)
+        .map((l) => {
+          const [sha, ...rest] = l.split(' ')
+          return `- [\`${sha}\`](${REPO_URL}/commit/${sha}) ${rest.join(' ')}`
+        })
         .join('\n')}\n\n`
     : ''
   const existing = await fs.readFile(ROOT_CHANGELOG, 'utf8').catch(() => '')
