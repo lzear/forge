@@ -1,3 +1,12 @@
+## 4.4.2
+
+Update dependencies
+
+### Commits
+
+- [`4f54646`](https://github.com/lzear/forge/commit/4f54646) fix: add commit hash links
+- [`c3ceece`](https://github.com/lzear/forge/commit/c3ceece) chore: forge update
+
 ## 4.4.1
 
 `forge update`'s yarn-berry install step now upgrades scoped packages too — `yarn up -R '*'` alone silently skips `@scope/name` deps, leaving them stale in the lockfile even when a newer version satisfies the existing range.
