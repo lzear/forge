@@ -85,7 +85,7 @@ export const detectPackageManager = (dir: string): PackageManager => {
           }
       }
     } catch {
-      /* fall through to lockfile detection */
+      // fall through to lockfile detection
     }
 
   for (const [file, name] of LOCKFILES)

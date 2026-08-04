@@ -79,14 +79,14 @@
   "devDependencies": {
     "@commitlint/types": "^21",
     "@vitejs/plugin-react": "^6",
-    "jsdom": "~29",
+    "jsdom": "~30",
     "tsup": "^8",
     "vite": "^8",
     "vitest": "^4"
   },
   "peerDependencies": {
     "@vitejs/plugin-react": "^6",
-    "jsdom": "~29",
+    "jsdom": "~30",
     "tsup": "^8",
     "vite": "^8",
     "vitest": "^4"
