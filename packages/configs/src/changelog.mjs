@@ -2,7 +2,7 @@ import { execSync } from 'node:child_process'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 
-const ROOT = path.resolve(import.meta.dirname, '../../..')
+const ROOT = process.cwd()
 const ROOT_CHANGELOG = path.resolve(ROOT, 'CHANGELOG.md')
 const written = new Set()
 
@@ -50,8 +50,6 @@ const getCommits = () => {
     .trim()
 }
 
-const REPO_URL = 'https://github.com/lzear/forge'
-
 const SKIP_PREFIXES = [
   'ci:',
   'chore: ncu',
@@ -66,23 +64,78 @@ const filterCommits = (raw) =>
     .filter((l) => l && SKIP_PREFIXES.every((p) => !l.slice(9).startsWith(p)))
     .join('\n')
 
+// Depth-first search for the package.json of the package being released,
+// skipping node_modules/dist/.git — packages are typically <5 dirs deep.
+// eslint-disable-next-line sonarjs/cognitive-complexity
+const findPackageJson = async (dir, name) => {
+  try {
+    const entries = await fs.readdir(dir, { withFileTypes: true })
+    for (const entry of entries) {
+      if (
+        entry.name === 'node_modules' ||
+        entry.name === 'dist' ||
+        entry.name.startsWith('.')
+      )
+        continue
+      const full = path.join(dir, entry.name)
+      if (entry.isDirectory())
+        try {
+          const found = await findPackageJson(full, name)
+          if (found) return found
+        } catch {
+          // skip directories we can't traverse
+        }
+      else if (entry.name === 'package.json')
+        try {
+          const pkg = JSON.parse(await fs.readFile(full, 'utf8'))
+          if (pkg.name === name) return full
+        } catch {
+          // not valid JSON, skip
+        }
+    }
+  } catch {
+    // skip unreadable directories
+  }
+}
+
+const getRepoUrl = async () => {
+  const package_ = JSON.parse(
+    await fs.readFile(path.resolve(ROOT, 'package.json'), 'utf8'),
+  )
+  let repo = package_.repository
+  if (!repo) return ''
+  if (typeof repo === 'object') repo = repo.url
+  repo = repo.replace(/^git\+/, '').replace(/\.git$/, '')
+  if (!repo.includes('://'))
+    repo = `https://github.com/${repo.replace(/^github:/, '')}`
+  return repo
+}
+
 export const getReleaseLine = async (changeset, type) => {
   if (written.has(changeset.id)) return ''
   written.add(changeset.id)
+  const packageName = changeset.releases[0]?.name
+  const packageJsonPath = packageName
+    ? await findPackageJson(ROOT, packageName)
+    : undefined
   const package_ = JSON.parse(
     await fs.readFile(
-      path.resolve(ROOT, 'packages/forge/package.json'),
+      packageJsonPath ?? path.resolve(ROOT, 'package.json'),
       'utf8',
     ),
   )
   const version = bump(package_.version, type)
   const commits = filterCommits(getCommits())
+  const repoUrl = await getRepoUrl()
   const commitSection = commits
     ? `### Commits\n\n${commits
         .split('\n')
         .map((l) => {
           const [sha, ...rest] = l.split(' ')
-          return `- [\`${sha}\`](${REPO_URL}/commit/${sha}) ${rest.join(' ')}`
+          const label = repoUrl
+            ? `[\`${sha}\`](${repoUrl}/commit/${sha})`
+            : `\`${sha}\``
+          return `- ${label} ${rest.join(' ')}`
         })
         .join('\n')}\n\n`
     : ''
