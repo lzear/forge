@@ -13477,7 +13477,7 @@
         },
         "meta": {
           "name": "eslint-plugin-regexp",
-          "version": "3.1.1",
+          "version": "3.2.0",
         },
         "rules": {
           "confusing-quantifier": {
@@ -48789,7 +48789,7 @@
               "react-dom": {
                 "meta": {
                   "name": "eslint-plugin-react-dom",
-                  "version": "5.18.2",
+                  "version": "5.18.6",
                 },
                 "rules": {
                   "no-dangerously-set-innerhtml": {
@@ -49110,7 +49110,7 @@
               "react-dom": {
                 "meta": {
                   "name": "eslint-plugin-react-dom",
-                  "version": "5.18.2",
+                  "version": "5.18.6",
                 },
                 "rules": {
                   "no-dangerously-set-innerhtml": {
@@ -49431,7 +49431,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-dom",
-          "version": "5.18.2",
+          "version": "5.18.6",
         },
         "rules": {
           "no-dangerously-set-innerhtml": {
@@ -50612,7 +50612,7 @@
               "react-web-api": {
                 "meta": {
                   "name": "eslint-plugin-react-web-api",
-                  "version": "5.18.2",
+                  "version": "5.18.6",
                 },
                 "rules": {
                   "no-leaked-event-listener": {
@@ -50741,7 +50741,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-web-api",
-          "version": "5.18.2",
+          "version": "5.18.6",
         },
         "rules": {
           "no-leaked-event-listener": {
@@ -50946,7 +50946,7 @@
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.18.2",
+                  "version": "5.18.6",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -51962,7 +51962,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.18.2",
+                  "version": "5.18.6",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -52979,7 +52979,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.18.2",
+                  "version": "5.18.6",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -53995,7 +53995,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.18.2",
+                  "version": "5.18.6",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -55015,7 +55015,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.18.2",
+                  "version": "5.18.6",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -56037,7 +56037,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "react-x": {
                 "meta": {
                   "name": "eslint-plugin-react-x",
-                  "version": "5.18.2",
+                  "version": "5.18.6",
                 },
                 "rules": {
                   "error-boundaries": {
@@ -57054,7 +57054,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         },
         "meta": {
           "name": "eslint-plugin-react-x",
-          "version": "5.18.2",
+          "version": "5.18.6",
         },
         "rules": {
           "error-boundaries": {
@@ -58334,7 +58334,9 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "n/prefer-global/timers": "error",
               "n/prefer-global/url": "error",
               "n/prefer-global/url-search-params": "error",
+              "n/prefer-import/assert-strict": "error",
               "n/prefer-node-protocol": "error",
+              "n/prefer-process-get-builtin-module": "error",
               "n/prefer-promises/dns": "error",
               "n/prefer-promises/fs": "error",
               "n/process-exit-as-throw": "error",
@@ -59884,7 +59886,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         },
         "meta": {
           "name": "eslint-plugin-n",
-          "version": "18.2.2",
+          "version": "18.3.0",
         },
         "rules": {
           "callback-return": {
@@ -60821,13 +60823,14 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
             "create": [Function],
             "meta": {
               "docs": {
-                "description": "disallow string concatenation with `__dirname` and `__filename`",
+                "description": "disallow string concatenation with `__dirname`, `__filename`, and `import.meta` paths",
                 "recommended": false,
                 "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/no-path-concat.md",
               },
               "fixable": undefined,
               "messages": {
                 "usePathFunctions": "Use path.join() or path.resolve() instead of string concatenation.",
+                "useUrl": "Use new URL() instead of string concatenation.",
               },
               "schema": [],
               "type": "suggestion",
@@ -64330,6 +64333,21 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "type": "suggestion",
             },
           },
+          "prefer-import/assert-strict": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "enforce using `node:assert/strict` instead of `node:assert`.",
+                "recommended": false,
+                "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-import/assert-strict.md",
+              },
+              "messages": {
+                "preferAssertStrict": "Prefer `node:assert/strict` over `node:assert`.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
           "prefer-node-protocol": {
             "create": [Function],
             "meta": {
@@ -64341,6 +64359,31 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "fixable": "code",
               "messages": {
                 "preferNodeProtocol": "Prefer `node:{{moduleName}}` over `{{moduleName}}`.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "version": {
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "suggestion",
+            },
+          },
+          "prefer-process-get-builtin-module": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "enforce using `process.getBuiltinModule()` to load Node.js built-in modules",
+                "recommended": false,
+                "url": "https://github.com/eslint-community/eslint-plugin-n/blob/HEAD/docs/rules/prefer-process-get-builtin-module.md",
+              },
+              "messages": {
+                "preferProcessGetBuiltinModule": "Prefer `process.getBuiltinModule()` over `{{method}}()` for Node.js built-in modules.",
               },
               "schema": [
                 {
@@ -64555,7 +64598,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.66.0",
+          "version": "8.67.0",
         },
         "parseForESLint": [Function],
       },
@@ -64844,7 +64887,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65049,7 +65092,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "parser": {
                 "meta": {
                   "name": "typescript-eslint/parser",
-                  "version": "8.66.0",
+                  "version": "8.67.0",
                 },
                 "parseForESLint": [Function],
               },
@@ -65173,7 +65216,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65253,7 +65296,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65360,7 +65403,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65444,7 +65487,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65538,7 +65581,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65697,7 +65740,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65821,7 +65864,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65892,7 +65935,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65972,7 +66015,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -66520,7 +66563,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         "meta": {
           "name": "@typescript-eslint/eslint-plugin",
           "namespace": "@typescript-eslint",
-          "version": "8.66.0",
+          "version": "8.67.0",
         },
         "rules": {
           "adjacent-overload-signatures": {
@@ -75574,7 +75617,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.66.0",
+          "version": "8.67.0",
         },
         "parseForESLint": [Function],
       },
@@ -75863,7 +75906,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76068,7 +76111,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               "parser": {
                 "meta": {
                   "name": "typescript-eslint/parser",
-                  "version": "8.66.0",
+                  "version": "8.67.0",
                 },
                 "parseForESLint": [Function],
               },
@@ -76192,7 +76235,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76272,7 +76315,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76379,7 +76422,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76463,7 +76506,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76557,7 +76600,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76718,7 +76761,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76842,7 +76885,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76913,7 +76956,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76991,7 +77034,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.66.0",
+                    "version": "8.67.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -77539,7 +77582,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
         "meta": {
           "name": "@typescript-eslint/eslint-plugin",
           "namespace": "@typescript-eslint",
-          "version": "8.66.0",
+          "version": "8.67.0",
         },
         "rules": {
           "adjacent-overload-signatures": {
@@ -86512,7 +86555,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.66.0",
+          "version": "8.67.0",
         },
         "parseForESLint": [Function],
       },
@@ -86858,7 +86901,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
         },
         "meta": {
           "name": "vitest",
-          "version": "1.6.26",
+          "version": "1.6.27",
         },
         "rules": {
           "consistent-each-for": {
