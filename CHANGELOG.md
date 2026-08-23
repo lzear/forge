@@ -1,3 +1,12 @@
+## 4.4.3
+
+`@lzear/configs/changelog` no longer hardcodes forge's own repo — repo URL is read from the consumer's root `package.json.repository`, and the released package's version is looked up by name instead of assuming `packages/forge/package.json`. Commits in generated changelogs are now linked. Any repo can use `"changelog": "@lzear/configs/changelog"` in `.changeset/config.json`.
+
+### Commits
+
+- `106e661` chore: forge update
+- `01c5480` feat: dynamic repo url
+
 ## 4.4.2
 
 Update dependencies
