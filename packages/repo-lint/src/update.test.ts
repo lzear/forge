@@ -13,7 +13,7 @@ import {
 
 vi.mock('npm-check-updates', () => ({ run: vi.fn() }))
 vi.mock('node:child_process', async (importOriginal) => {
-  const module_ = await importOriginal<typeof import('node:child_process')>()
+  const module_ = await importOriginal<typeof childProcess>()
   return { ...module_, spawnSync: vi.fn() }
 })
 

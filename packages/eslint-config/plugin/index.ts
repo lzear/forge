@@ -1,4 +1,4 @@
-import type { ESLint } from 'eslint'
+import { type ESLint } from 'eslint'
 import { majorVersionOnly } from './rules/major-version-only'
 import { preferRelativeImports } from './rules/prefer-relative-imports'
 

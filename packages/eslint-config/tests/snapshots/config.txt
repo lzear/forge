@@ -24,6 +24,13 @@
     "name": "lzear/ignores",
   },
   {
+    "linterOptions": {
+      "reportUnusedDisableDirectives": 2,
+      "reportUnusedInlineConfigs": 2,
+    },
+    "name": "lzear/linter-options",
+  },
+  {
     "files": [
       "**/*.js",
       "**/*.cjs",
@@ -64590,15 +64597,15 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
   {
     "files": [
       "**/*.ts",
-      "**/*.tsx",
       "**/*.cts",
       "**/*.mts",
+      "**/*.tsx",
     ],
     "languageOptions": {
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.67.0",
+          "version": "8.68.0",
         },
         "parseForESLint": [Function],
       },
@@ -64887,7 +64894,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65092,7 +65099,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "parser": {
                 "meta": {
                   "name": "typescript-eslint/parser",
-                  "version": "8.67.0",
+                  "version": "8.68.0",
                 },
                 "parseForESLint": [Function],
               },
@@ -65216,7 +65223,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65296,7 +65303,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65403,7 +65410,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65487,7 +65494,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65581,7 +65588,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65740,7 +65747,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65864,7 +65871,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65935,7 +65942,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -66015,7 +66022,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -66563,7 +66570,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         "meta": {
           "name": "@typescript-eslint/eslint-plugin",
           "namespace": "@typescript-eslint",
-          "version": "8.67.0",
+          "version": "8.68.0",
         },
         "rules": {
           "adjacent-overload-signatures": {
@@ -75096,10 +75103,13 @@ You can try to fix this by turning on the `noImplicitThis` compiler option, or a
                 "requiresTypeChecking": true,
                 "url": "https://typescript-eslint.io/rules/strict-void-return",
               },
+              "hasSuggestions": true,
               "messages": {
                 "asyncFunc": "Async function used in a context where a void function is expected.",
                 "nonVoidFunc": "Value-returning function used in a context where a void function is expected.",
                 "nonVoidReturn": "Value returned in a context where a void return is expected.",
+                "suggestAddVoidOp": "Add a void operator to discard the return value.",
+                "suggestWrapInAsyncIIFE": "Wrap the function body in an async IIFE.",
               },
               "schema": [
                 {
@@ -75344,9 +75354,10 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "url": "https://typescript-eslint.io/rules/unified-signatures",
               },
               "messages": {
+                "allParametersAreSame": "{{failureStringStart}} with identical parameters.",
                 "omittingRestParameter": "{{failureStringStart}} with a rest parameter.",
                 "omittingSingleParameter": "{{failureStringStart}} with an optional parameter.",
-                "singleParameterDifference": "{{failureStringStart}} taking `{{type1}} | {{type2}}`.",
+                "singleParameterDifference": "{{failureStringStart}} taking `{{types}}`.",
               },
               "schema": [
                 {
@@ -75416,22 +75427,6 @@ If a function does not access `this`, it can be annotated with `this: void`.",
         "**/*.cts",
       ],
       [
-        "**/*.tsx",
-        "**/*.ts",
-      ],
-      [
-        "**/*.tsx",
-        "**/*.tsx",
-      ],
-      [
-        "**/*.tsx",
-        "**/*.mts",
-      ],
-      [
-        "**/*.tsx",
-        "**/*.cts",
-      ],
-      [
         "**/*.cts",
         "**/*.ts",
       ],
@@ -75461,6 +75456,22 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       ],
       [
         "**/*.mts",
+        "**/*.cts",
+      ],
+      [
+        "**/*.tsx",
+        "**/*.ts",
+      ],
+      [
+        "**/*.tsx",
+        "**/*.tsx",
+      ],
+      [
+        "**/*.tsx",
+        "**/*.mts",
+      ],
+      [
+        "**/*.tsx",
         "**/*.cts",
       ],
     ],
@@ -75494,9 +75505,9 @@ If a function does not access `this`, it can be annotated with `this: void`.",
   {
     "files": [
       "**/*.ts",
-      "**/*.tsx",
       "**/*.cts",
       "**/*.mts",
+      "**/*.tsx",
     ],
     "name": "lzear/typescript > typescript-eslint/strict-type-checked",
     "rules": {
@@ -75609,15 +75620,15 @@ If a function does not access `this`, it can be annotated with `this: void`.",
   {
     "files": [
       "**/*.ts",
-      "**/*.tsx",
       "**/*.cts",
       "**/*.mts",
+      "**/*.tsx",
     ],
     "languageOptions": {
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.67.0",
+          "version": "8.68.0",
         },
         "parseForESLint": [Function],
       },
@@ -75906,7 +75917,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76111,7 +76122,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               "parser": {
                 "meta": {
                   "name": "typescript-eslint/parser",
-                  "version": "8.67.0",
+                  "version": "8.68.0",
                 },
                 "parseForESLint": [Function],
               },
@@ -76235,7 +76246,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76315,7 +76326,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76422,7 +76433,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76506,7 +76517,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76600,7 +76611,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76761,7 +76772,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76885,7 +76896,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -76956,7 +76967,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -77034,7 +77045,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.67.0",
+                    "version": "8.68.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -77582,7 +77593,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
         "meta": {
           "name": "@typescript-eslint/eslint-plugin",
           "namespace": "@typescript-eslint",
-          "version": "8.67.0",
+          "version": "8.68.0",
         },
         "rules": {
           "adjacent-overload-signatures": {
@@ -86115,10 +86126,13 @@ You can try to fix this by turning on the `noImplicitThis` compiler option, or a
                 "requiresTypeChecking": true,
                 "url": "https://typescript-eslint.io/rules/strict-void-return",
               },
+              "hasSuggestions": true,
               "messages": {
                 "asyncFunc": "Async function used in a context where a void function is expected.",
                 "nonVoidFunc": "Value-returning function used in a context where a void function is expected.",
                 "nonVoidReturn": "Value returned in a context where a void return is expected.",
+                "suggestAddVoidOp": "Add a void operator to discard the return value.",
+                "suggestWrapInAsyncIIFE": "Wrap the function body in an async IIFE.",
               },
               "schema": [
                 {
@@ -86363,9 +86377,10 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "url": "https://typescript-eslint.io/rules/unified-signatures",
               },
               "messages": {
+                "allParametersAreSame": "{{failureStringStart}} with identical parameters.",
                 "omittingRestParameter": "{{failureStringStart}} with a rest parameter.",
                 "omittingSingleParameter": "{{failureStringStart}} with an optional parameter.",
-                "singleParameterDifference": "{{failureStringStart}} taking `{{type1}} | {{type2}}`.",
+                "singleParameterDifference": "{{failureStringStart}} taking `{{types}}`.",
               },
               "schema": [
                 {
@@ -86435,22 +86450,6 @@ If a function does not access `this`, it can be annotated with `this: void`.",
         "**/*.cts",
       ],
       [
-        "**/*.tsx",
-        "**/*.ts",
-      ],
-      [
-        "**/*.tsx",
-        "**/*.tsx",
-      ],
-      [
-        "**/*.tsx",
-        "**/*.mts",
-      ],
-      [
-        "**/*.tsx",
-        "**/*.cts",
-      ],
-      [
         "**/*.cts",
         "**/*.ts",
       ],
@@ -86480,6 +86479,22 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       ],
       [
         "**/*.mts",
+        "**/*.cts",
+      ],
+      [
+        "**/*.tsx",
+        "**/*.ts",
+      ],
+      [
+        "**/*.tsx",
+        "**/*.tsx",
+      ],
+      [
+        "**/*.tsx",
+        "**/*.mts",
+      ],
+      [
+        "**/*.tsx",
         "**/*.cts",
       ],
     ],
@@ -86513,9 +86528,9 @@ If a function does not access `this`, it can be annotated with `this: void`.",
   {
     "files": [
       "**/*.ts",
-      "**/*.tsx",
       "**/*.cts",
       "**/*.mts",
+      "**/*.tsx",
     ],
     "name": "lzear/typescript > typescript-eslint/stylistic-type-checked",
     "rules": {
@@ -86547,15 +86562,15 @@ If a function does not access `this`, it can be annotated with `this: void`.",
   {
     "files": [
       "**/*.ts",
-      "**/*.tsx",
       "**/*.cts",
       "**/*.mts",
+      "**/*.tsx",
     ],
     "languageOptions": {
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.67.0",
+          "version": "8.68.0",
         },
         "parseForESLint": [Function],
       },
@@ -86571,6 +86586,12 @@ If a function does not access `this`, it can be annotated with `this: void`.",
     },
     "name": "lzear/typescript",
     "rules": {
+      "@typescript-eslint/consistent-type-imports": [
+        2,
+        {
+          "fixStyle": "inline-type-imports",
+        },
+      ],
       "@typescript-eslint/no-misused-promises": [
         2,
         {
@@ -86603,6 +86624,10 @@ If a function does not access `this`, it can be annotated with `this: void`.",
         {
           "allowNumber": true,
         },
+      ],
+      "import-x/consistent-type-specifier-style": [
+        2,
+        "prefer-inline",
       ],
     },
   },
@@ -89008,6 +89033,13 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       },
     },
     "rules": {
+      "@typescript-eslint/no-non-null-assertion": 0,
+      "@typescript-eslint/no-unsafe-argument": 0,
+      "@typescript-eslint/no-unsafe-assignment": 0,
+      "@typescript-eslint/no-unsafe-call": 0,
+      "@typescript-eslint/no-unsafe-member-access": 0,
+      "@typescript-eslint/no-unsafe-return": 0,
+      "sonarjs/no-duplicate-string": 0,
       "vitest/consistent-test-it": [
         2,
         {

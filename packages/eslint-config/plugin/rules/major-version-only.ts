@@ -1,4 +1,4 @@
-import type { Rule } from 'eslint'
+import { type Rule } from 'eslint'
 
 const DEP_FIELDS = new Set([
   'dependencies',

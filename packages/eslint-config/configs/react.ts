@@ -1,6 +1,7 @@
-import type { Linter } from 'eslint'
-import type { ConfigOptions } from '../index'
+import { type Linter } from 'eslint'
+import { type ConfigOptions } from '../index'
 import { interopDefault } from '../utils'
+import * as FILES from './files'
 
 export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
   if (!config.react) return {}
@@ -23,9 +24,7 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
     interopDefault(import('eslint-plugin-react-web-api')),
   ] as const)
 
-  const files = ['**/*.jsx']
-
-  if (config.typescript) files.push('**/*.tsx')
+  const files = config.typescript ? FILES.REACT : FILES.JSX
 
   return {
     name: 'lzear/react',

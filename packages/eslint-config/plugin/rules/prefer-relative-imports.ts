@@ -1,5 +1,6 @@
+import fs from 'node:fs'
 import path from 'node:path'
-import type { Rule } from 'eslint'
+import { type Rule } from 'eslint'
 import { interopDefault } from '../../utils'
 
 const moduleVisitor = await interopDefault(
@@ -10,6 +11,18 @@ const resolve = await interopDefault(import('eslint-module-utils/resolve'))
 
 type SourceNode = Rule.Node & { value: string }
 
+const findPackageRoot = (filePath: string): string | null => {
+  let current = path.dirname(filePath)
+  const root = path.parse(current).root
+
+  while (current && current !== root) {
+    if (fs.existsSync(path.join(current, 'package.json'))) return current
+
+    current = path.dirname(current)
+  }
+  return null
+}
+
 const toRelative = (
   from: string,
   importPath: string,
@@ -17,6 +30,18 @@ const toRelative = (
 ): string | null => {
   const resolved = resolve(importPath, context)
   if (!resolved) return null
+
+  // Ensure resolved path stays within current package and doesn't target node_modules
+  const pkgRoot = findPackageRoot(from)
+  if (pkgRoot) {
+    const relToPkg = path.relative(pkgRoot, resolved)
+    if (
+      relToPkg.startsWith('..') ||
+      path.isAbsolute(relToPkg) ||
+      relToPkg.split(path.sep).includes('node_modules')
+    )
+      return null
+  }
 
   let rel = path.relative(path.dirname(from), resolved)
   if (!rel) return null

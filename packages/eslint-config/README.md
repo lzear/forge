@@ -92,6 +92,35 @@ const config: Linter.Config[] = [
 export default config
 ```
 
+Unused `eslint-disable`/`eslint-enable` comments (`reportUnusedDisableDirectives`) and unused
+inline rule-override comments like `/* eslint no-console: "error" */` (`reportUnusedInlineConfigs`)
+are both reported as errors — neither is configurable via options.
+
+**Reuse the file globs forge lints against**, so your overrides stay in sync instead of
+hardcoding patterns by hand:
+
+```ts
+import { FILES } from '@lzear/eslint-config'
+
+// e.g. FILES.TESTS, FILES.REACT, FILES.TS, FILES.JS, FILES.CORE, FILES.PACKAGE_JSON, ...
+```
+
+**Import an individual rule layer** to inspect or replace it wholesale instead of only
+appending overrides on top:
+
+```ts
+import { react } from '@lzear/eslint-config'
+
+const reactConfig = await react({ react: true, typescript: true } /* ...ConfigOptions */)
+```
+
+Every builder (`core`, `react`, `node`, `typescript`, `vitest`, `a11y`, `packageJson`,
+`prettier`, `ignores`) is exported alongside the default `configGenerator`.
+
+In test files (`vitest: true`, the default), a few strict-typing/style rules that fight mocking
+and fixtures are turned off: `@typescript-eslint/no-non-null-assertion`, the
+`@typescript-eslint/no-unsafe-*` family, and `sonarjs/no-duplicate-string`.
+
 ## Included plugins
 
 `@eslint/js` · `typescript-eslint` · `eslint-plugin-unicorn` · `eslint-plugin-sonarjs` · `eslint-plugin-import-x` · `eslint-plugin-promise` · `eslint-plugin-regexp` · `eslint-plugin-react` · `eslint-plugin-react-hooks` · `eslint-plugin-jsx-a11y` · `eslint-plugin-n` · `@vitest/eslint-plugin` · `eslint-package-json` · `eslint-config-prettier` · and more.
