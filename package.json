@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "lzear dev tooling monorepo",
+  "repository": "github:lzear/forge",
   "type": "module",
   "engines": {
     "node": ">=24"

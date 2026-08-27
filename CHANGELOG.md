@@ -4,8 +4,8 @@
 
 ### Commits
 
-- `106e661` chore: forge update
-- `01c5480` feat: dynamic repo url
+- [`106e661`](https://github.com/lzear/forge/commit/106e661) chore: forge update
+- [`01c5480`](https://github.com/lzear/forge/commit/01c5480) feat: dynamic repo url
 
 ## 4.4.2
 
