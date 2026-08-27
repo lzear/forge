@@ -1,3 +1,12 @@
+## 4.4.4
+
+Enable `reportUnusedDisableDirectives` and `reportUnusedInlineConfigs`, add `@typescript-eslint/consistent-type-imports` (inline style) and `import-x/consistent-type-specifier-style` (prefer-inline), export shared file-glob constants (`FILES.TESTS`, `FILES.REACT`, `FILES.TS`, `FILES.JS`, `FILES.CORE`, `FILES.PACKAGE_JSON`, and their atoms), and export the individual config builders (`core`, `react`, `node`, `typescript`, `vitest`, `a11y`, `packageJson`, `prettier`, `ignores`) so consumers can inspect, reuse, or replace a single layer instead of only appending overrides on top, and turn off `@typescript-eslint/no-non-null-assertion`, the `@typescript-eslint/no-unsafe-*` rules, and `sonarjs/no-duplicate-string` in test files, where they mostly fight mocks and fixtures.
+
+### Commits
+
+- [`9ccc90e`](https://github.com/lzear/forge/commit/9ccc90e) chore: add repo url
+- [`8228579`](https://github.com/lzear/forge/commit/8228579) feat: update eslint config
+
 ## 4.4.3
 
 `@lzear/configs/changelog` no longer hardcodes forge's own repo — repo URL is read from the consumer's root `package.json.repository`, and the released package's version is looked up by name instead of assuming `packages/forge/package.json`. Commits in generated changelogs are now linked. Any repo can use `"changelog": "@lzear/configs/changelog"` in `.changeset/config.json`.
