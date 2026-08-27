@@ -1,6 +1,6 @@
 {
   "name": "@lzear/configs",
-  "version": "4.4.3",
+  "version": "4.4.4",
   "description": "Shared configs for lzear repos — tsconfig, vitest, tsup, vite",
   "license": "MIT",
   "repository": {
