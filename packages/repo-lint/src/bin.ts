@@ -2,7 +2,7 @@
 
 import { mkdirSync } from 'node:fs'
 import { parseArgs } from 'node:util'
-import { checkLocal, checkRepo, type RepoReport } from './index.js'
+import { checkLocal, checkRepo, type RepoReport } from './index.ts'
 
 const { values } = parseArgs({
   options: {

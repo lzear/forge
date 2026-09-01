@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { run as ncuRun } from 'npm-check-updates'
 import { publint } from 'publint'
 import { maxSatisfying, satisfies } from 'semver'
-import { detectPackageManager, type PackageManager } from './update.js'
+import { detectPackageManager, type PackageManager } from './update.ts'
 
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
 

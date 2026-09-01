@@ -9,7 +9,7 @@ import {
   installCommands,
   runUpdate,
   type UpdateResult,
-} from './update.js'
+} from './update.ts'
 
 vi.mock('npm-check-updates', () => ({ run: vi.fn() }))
 vi.mock('node:child_process', async (importOriginal) => {

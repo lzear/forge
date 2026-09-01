@@ -6,9 +6,9 @@ import {
   hasPublishedPkg as hasPublishedPackage,
   LOCAL_CHECKS,
   REMOTE_CHECKS,
-} from './checks.js'
+} from './checks.ts'
 
-export type { Check, CheckDetail, LocalCheck, RemoteCheck } from './checks.js'
+export type { Check, CheckDetail, LocalCheck, RemoteCheck } from './checks.ts'
 
 export interface CheckResult {
   id: string
@@ -118,12 +118,12 @@ export const checkRepo = async (
   return { repo, results: [...localResults, ...remoteResults] }
 }
 
-export { CHECKS, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.js'
+export { CHECKS, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.ts'
 export type {
   PackageManager,
   PackageManagerName,
   UpdateOptions,
   UpdateReport,
   UpdateResult,
-} from './update.js'
-export { detectPackageManager, runUpdate } from './update.js'
+} from './update.ts'
+export { detectPackageManager, runUpdate } from './update.ts'
