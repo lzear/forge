@@ -1432,6 +1432,7 @@ __metadata:
       optional: true
   bin:
     lzear-publish: ./src/publish.mjs
+    lzear-sync-jsr: ./src/sync-jsr.mjs
   languageName: unknown
   linkType: soft
 
@@ -4955,6 +4956,7 @@ __metadata:
     "@commitlint/cli": "npm:^21"
     "@lzear/configs": "workspace:*"
     "@lzear/forge": "workspace:*"
+    "@types/node": "npm:^26"
     "@typescript/native": "npm:typescript@^7"
     concurrently: "npm:^10"
     eslint: "npm:^10"

@@ -45,7 +45,8 @@
     }
   },
   "bin": {
-    "lzear-publish": "./src/publish.mjs"
+    "lzear-publish": "./src/publish.mjs",
+    "lzear-sync-jsr": "./src/sync-jsr.mjs"
   },
   "sideEffects": false,
   "engines": {

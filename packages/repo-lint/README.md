@@ -1,6 +1,7 @@
 # @lzear/repo-lint
 
 [![npm](https://img.shields.io/npm/v/@lzear/repo-lint)](https://www.npmjs.com/package/@lzear/repo-lint)
+[![jsr](https://jsr.io/badges/@lzear/repo-lint)](https://jsr.io/@lzear/repo-lint)
 [![license](https://img.shields.io/npm/l/@lzear/repo-lint)](../../LICENSE)
 
 Checks lzear repos against forge standards and keeps them fresh. Used internally by `forge check` and `forge update`.

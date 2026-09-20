@@ -1,6 +1,7 @@
 # @lzear/configs
 
 [![npm](https://img.shields.io/npm/v/@lzear/configs)](https://www.npmjs.com/package/@lzear/configs)
+[![jsr](https://jsr.io/badges/@lzear/configs)](https://jsr.io/@lzear/configs)
 [![license](https://img.shields.io/npm/l/@lzear/configs)](../../LICENSE)
 
 Shared configs for lzear repos: tsconfig, vitest, tsup, vite, and commitlint.

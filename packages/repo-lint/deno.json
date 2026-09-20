@@ -1,0 +1,19 @@
+{
+  "name": "@lzear/repo-lint",
+  "version": "4.4.3",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./bin": "./src/bin.ts"
+  },
+  "publish": {
+    "include": [
+      "package.json",
+      "README.md",
+      "src"
+    ],
+    "exclude": [
+      "src/**/*.test.ts"
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "workspace": ["packages/configs", "packages/forge", "packages/repo-lint"],
+  "nodeModulesDir": "manual"
+}

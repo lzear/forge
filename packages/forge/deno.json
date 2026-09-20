@@ -1,0 +1,26 @@
+{
+  "name": "@lzear/forge",
+  "version": "4.4.3",
+  "license": "MIT",
+  "exports": {
+    "./bin": "./src/bin.ts",
+    "./commitlint": "./src/commitlint.ts",
+    "./commitlint/emoji": "./src/commitlint-emoji.ts",
+    "./repo-lint": "./src/repo-lint.ts",
+    "./tsup": "./src/tsup.ts",
+    "./vite": "./src/vite.ts",
+    "./vitest": "./src/vitest.ts",
+    "./vitest/react": "./src/vitest.react.ts"
+  },
+  "publish": {
+    "include": [
+      "package.json",
+      "README.md",
+      "src",
+      "tsconfig"
+    ],
+    "exclude": [
+      "src/eslint.ts"
+    ]
+  }
+}

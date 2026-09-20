@@ -1,6 +1,7 @@
 # @lzear/forge
 
 [![npm](https://img.shields.io/npm/v/@lzear/forge)](https://www.npmjs.com/package/@lzear/forge)
+[![jsr](https://jsr.io/badges/@lzear/forge)](https://jsr.io/@lzear/forge)
 [![license](https://img.shields.io/npm/l/@lzear/forge)](../../LICENSE)
 
 Umbrella package for lzear dev tooling. One dependency gives you ESLint config, shared build configs, commitlint config, repo compliance checks, and the `forge` CLI.

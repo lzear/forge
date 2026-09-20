@@ -7,6 +7,7 @@
 # forge
 
 [![npm](https://img.shields.io/npm/v/@lzear/forge)](https://www.npmjs.com/package/@lzear/forge)
+[![jsr](https://jsr.io/badges/@lzear/forge)](https://jsr.io/@lzear/forge)
 [![last commit](https://img.shields.io/github/last-commit/lzear/forge)](https://github.com/lzear/forge/commits/main)
 [![Codacy grade](https://app.codacy.com/project/badge/Grade/e9dcbdfc5611478d81981841c10d42fa)](https://app.codacy.com/gh/lzear/forge)
 [![Codacy coverage](https://app.codacy.com/project/badge/Coverage/e9dcbdfc5611478d81981841c10d42fa)](https://app.codacy.com/gh/lzear/forge)
@@ -25,6 +26,14 @@
   
 - **[`@lzear/repo-lint`](packages/repo-lint)** — Repo compliance checker
   
+
+All but `@lzear/eslint-config` also publish to [JSR](https://jsr.io/@lzear); it
+stays npm-only because several ESLint plugins it wraps ship no types, and JSR
+cannot resolve the ambient `declare module` shims in `environment.d.ts`. A
+package opts into JSR by having a `deno.json`; its contents are generated from
+`package.json` and the tsup entries by `yarn lzear-sync-jsr`, never edited by
+hand.
+
 
 ## Usage
 

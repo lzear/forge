@@ -1,0 +1,21 @@
+{
+  "name": "@lzear/configs",
+  "version": "4.4.3",
+  "license": "MIT",
+  "exports": {
+    "./commitlint": "./src/commitlint.ts",
+    "./commitlint/emoji": "./src/commitlint-emoji.ts",
+    "./tsup": "./src/tsup.ts",
+    "./vite": "./src/vite.ts",
+    "./vitest": "./src/vitest.ts",
+    "./vitest/react": "./src/vitest.react.ts"
+  },
+  "publish": {
+    "include": [
+      "package.json",
+      "README.md",
+      "src",
+      "tsconfig"
+    ]
+  }
+}
