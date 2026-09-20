@@ -47,7 +47,7 @@ for (const { location } of workspaces) {
     cwd: root,
     stdio: 'inherit',
   })
-  execSync('npm publish /tmp/pkg.tgz --access public --provenance', {
+  execSync('npm stage publish /tmp/pkg.tgz --access public --provenance', {
     cwd: root,
     stdio: 'inherit',
   })
