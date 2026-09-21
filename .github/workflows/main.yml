@@ -35,6 +35,8 @@ jobs:
       pull-requests: write
       id-token: write
     steps:
+      # persist-credentials stays on: changesets/action pushes the
+      # "Version Packages" branch with the checked-out credentials
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
@@ -42,8 +44,7 @@ jobs:
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-
-      - uses: denoland/setup-deno@v2
+      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: v2.x
       - run: corepack enable
@@ -58,14 +59,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - if: steps.changesets.outputs.hasChangesets == 'false'
-        run: yarn sync-jsr-versions
-
-      - if: steps.changesets.outputs.hasChangesets == 'false'
         run: yarn lzear-publish --publish
         env:
           NPM_CONFIG_PROVENANCE: 'true'
           NPM_TOKEN: '' # Empty string forces OIDC instead of token auth
 
+      # publishes every member of the deno.json workspace; versions come from
+      # the Version Packages PR, which runs lzear-sync-jsr after changeset version
       - if: steps.changesets.outputs.hasChangesets == 'false'
         run: deno publish
-        working-directory: packages/forge # Repeat for each package
