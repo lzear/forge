@@ -274,6 +274,35 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     check: (dir) => existsSync(path.join(dir, 'LICENSE')),
   },
   {
+    id: 'jsr-config',
+    desc: 'deno.json in sync',
+    type: 'local',
+    publishedOnly: true,
+    check: (dir) =>
+      eachPublishedPackage(dir, (pkgDir) => {
+        const denoPath = path.join(pkgDir, 'deno.json')
+        if (!existsSync(denoPath)) return { pass: true }
+        const package_ = readPackage(pkgDir)
+        let deno: { name?: string; version?: string }
+        try {
+          deno = JSON.parse(readFileSync(denoPath, 'utf8')) as typeof deno
+        } catch {
+          return { pass: false, detail: 'deno.json is not valid JSON' }
+        }
+        const mismatches = [
+          deno.name === package_?.name
+            ? null
+            : `name ${deno.name} does not match package.json`,
+          deno.version === package_?.version
+            ? null
+            : `version ${deno.version} != ${package_?.version as string}`,
+        ].filter((m): m is string => m !== null)
+        return mismatches.length === 0
+          ? { pass: true }
+          : { pass: false, detail: mismatches.join('\n') }
+      }),
+  },
+  {
     id: 'ci-workflow',
     desc: 'CI calls forge workflow',
     type: 'local',
