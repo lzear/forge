@@ -83,14 +83,14 @@
     "jsdom": "~30",
     "tsup": "^8",
     "vite": "^8",
-    "vitest": "^4"
+    "vitest": "^5"
   },
   "peerDependencies": {
     "@vitejs/plugin-react": "^6",
     "jsdom": "~30",
     "tsup": "^8",
     "vite": "^8",
-    "vitest": "^4"
+    "vitest": "^5"
   },
   "peerDependenciesMeta": {
     "@vitejs/plugin-react": {
