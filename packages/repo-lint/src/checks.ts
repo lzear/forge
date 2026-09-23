@@ -47,16 +47,16 @@ const getWorkspacePatterns = (package_: Record<string, unknown>): string[] => {
   const ws = package_.workspaces
   if (Array.isArray(ws)) return ws as string[]
   const wsPackage = ws as Record<string, unknown> | undefined
-  if (Array.isArray(wsPackage?.packages)) return wsPackage.packages as string[]
-  return []
+  return Array.isArray(wsPackage?.packages)
+    ? (wsPackage.packages as string[])
+    : []
 }
 
 const patternToBase = (rootDir: string, pattern: string): string | null => {
   const parts = pattern.split('/')
   if (parts.length === 2 && parts[1] === '*')
     return path.join(rootDir, parts[0] ?? '')
-  if (parts.length === 1 && parts[0] === '*') return rootDir
-  return null
+  return parts.length === 1 && parts[0] === '*' ? rootDir : null
 }
 
 const getWorkspaceDirectories = (rootDir: string): string[] => {
@@ -111,9 +111,10 @@ const eachPublishedPackage = async (
 
 export const hasPublishedPkg = (dir: string): boolean => {
   const package_ = readPackage(dir)
-  if (!package_) return false
-  if (package_.private !== true) return true
-  return getWorkspaceDirectories(dir).some((d) => hasPublishedPkg(d))
+  return package_
+    ? package_.private !== true ||
+        getWorkspaceDirectories(dir).some((d) => hasPublishedPkg(d))
+    : false
 }
 
 const readmeIncludes = (dir: string, needle: string): boolean => {
@@ -131,12 +132,14 @@ const isForgeRepo = (dir: string): boolean =>
 
 const callsForgeWorkflow = (dir: string): boolean => {
   const wfDir = path.join(dir, '.github', 'workflows')
-  if (!existsSync(wfDir)) return false
-  return readdirSync(wfDir)
-    .filter((f) => /\.ya?ml$/.test(f))
-    .some((f) =>
-      FORGE_WORKFLOW_RE.test(readFileSync(path.join(wfDir, f), 'utf8')),
-    )
+  return (
+    existsSync(wfDir) &&
+    readdirSync(wfDir)
+      .filter((f) => /\.ya?ml$/.test(f))
+      .some((f) =>
+        FORGE_WORKFLOW_RE.test(readFileSync(path.join(wfDir, f), 'utf8')),
+      )
+  )
 }
 
 const auditCommand = (pm: PackageManager): [string, ...string[]] => {
@@ -265,8 +268,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
           ? null
           : '.codacy.yml missing',
       ].filter((m): m is string => m !== null)
-      if (missing.length === 0) return true
-      return { pass: false, detail: missing.join('\n') }
+      return missing.length === 0 || { pass: false, detail: missing.join('\n') }
     },
   },
   {
@@ -364,8 +366,9 @@ export const LOCAL_CHECKS: LocalCheck[] = [
             stdio: ['ignore', 'pipe', 'pipe'],
           },
         )
-        if (r.status === 0) return { pass: true }
-        return { pass: false, detail: (r.stdout + r.stderr).trim() }
+        return r.status === 0
+          ? { pass: true }
+          : { pass: false, detail: (r.stdout + r.stderr).trim() }
       })
     },
   },
@@ -496,8 +499,9 @@ const listSecrets = (repo: string): string[] | null => {
         stdio: ['ignore', 'pipe', 'ignore'],
       },
     )
-    if (result.status !== 0) return null
-    return (JSON.parse(result.stdout) as { name: string }[]).map((s) => s.name)
+    return result.status === 0
+      ? (JSON.parse(result.stdout) as { name: string }[]).map((s) => s.name)
+      : null
   } catch {
     return null
   }

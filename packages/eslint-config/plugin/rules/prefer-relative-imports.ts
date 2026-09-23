@@ -96,9 +96,12 @@ export const preferRelativeImports: Rule.RuleModule = {
       if (typeof importPath !== 'string' || importPath.startsWith('.')) return
 
       const relative = toRelative(filename, importPath, context)
-      if (!relative || relative.length >= importPath.length) return
-
-      if (countParentPrefixes(relative) > maxParentPrefixes) return
+      if (
+        !relative ||
+        relative.length >= importPath.length ||
+        countParentPrefixes(relative) > maxParentPrefixes
+      )
+        return
 
       context.report({
         node: source,
