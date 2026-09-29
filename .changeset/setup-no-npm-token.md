@@ -2,4 +2,4 @@
 '@lzear/forge': patch
 ---
 
-`forge setup` no longer asks for an `NPM_TOKEN` secret: packages publish through trusted publishing.
+`forge setup` no longer asks for `NPM_TOKEN`.
