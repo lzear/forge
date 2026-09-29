@@ -2,11 +2,13 @@
 
 import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { listWorkspaces } from './workspaces.mjs'
 
 const publish = process.argv.includes('--publish')
 const root = process.cwd()
+const tarball = path.join(tmpdir(), 'lzear-publish.tgz')
 
 const workspaces = listWorkspaces(root)
 
@@ -39,11 +41,11 @@ for (const { location } of workspaces) {
   }
 
   console.log(`Publishing ${name}@${version}...`)
-  execSync(`yarn workspace "${name}" pack --out /tmp/pkg.tgz`, {
+  execSync(`yarn workspace "${name}" pack --out ${tarball}`, {
     cwd: root,
     stdio: 'inherit',
   })
-  execSync('npm stage publish /tmp/pkg.tgz --access public --provenance', {
+  execSync(`npm stage publish ${tarball} --access public`, {
     cwd: root,
     stdio: 'inherit',
   })
