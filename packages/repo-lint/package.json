@@ -44,7 +44,7 @@
   ],
   "dependencies": {
     "@arethetypeswrong/cli": "^0.18",
-    "knip": "^6",
+    "fallow": "^3",
     "npm-check-updates": "^23",
     "publint": "^0.3",
     "semver": "^7",

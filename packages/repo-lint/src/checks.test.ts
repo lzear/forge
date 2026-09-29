@@ -272,17 +272,17 @@ describe('LOCAL_CHECKS', () => {
     })
   })
 
-  describe('pkg-knip', () => {
-    it('passes when knip exits 0', async () => {
+  describe('pkg-fallow', () => {
+    it('passes when fallow exits 0', async () => {
       mockSpawn(0)
-      expect(await check('pkg-knip', dir)).toMatchObject({ pass: true })
+      expect(await check('pkg-fallow', dir)).toMatchObject({ pass: true })
     })
-    it('fails when knip exits 1', async () => {
-      mockSpawn(1, 'Unused exports\nsrc/foo.ts: bar')
-      const result = await check('pkg-knip', dir)
+    it('fails when fallow exits 1', async () => {
+      mockSpawn(1, 'unused-export:src/foo.ts:1:bar')
+      const result = await check('pkg-fallow', dir)
       expect(result).toMatchObject({ pass: false })
-      expect((result as { detail: string }).detail).toContain('Unused')
-      expect((result as { detail: string }).detail).toContain('npx knip')
+      expect((result as { detail: string }).detail).toContain('unused-export')
+      expect((result as { detail: string }).detail).toContain('npx fallow')
     })
   })
 

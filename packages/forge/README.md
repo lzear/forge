@@ -27,7 +27,7 @@ yarn forge sync           # pull shared files from forge into this repo
 
 ### `forge check`
 
-Audits the current repo (or a list of remote repos) against forge standards: README, badges, license, CI workflow, package hygiene (`publint`, `attw`, `knip`), and up-to-date dependencies.
+Audits the current repo (or a list of remote repos) against forge standards: README, badges, license, CI workflow, package hygiene (`publint`, `attw`, `fallow`), and up-to-date dependencies.
 
 ```sh
 forge check                         # current repo

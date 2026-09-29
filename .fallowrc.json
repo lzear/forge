@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  // tsup renames it to dist/commitlint.emoji.js, so exports don't map back
+  "entry": ["packages/*/src/commitlint-emoji.ts"],
+  "ignoreDependencies": [
+    // spawned via node_modules/.bin, invisible to static analysis
+    "@arethetypeswrong/cli",
+    "fallow",
+    "sherif",
+    // provides the tsc bin
+    "@typescript/native",
+    // peer of eslint-plugin-prettier/recommended
+    "eslint-config-prettier",
+    "eslint-import-resolver-typescript"
+  ]
+}

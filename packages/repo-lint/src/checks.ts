@@ -367,21 +367,25 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     },
   },
   {
-    id: 'pkg-knip',
-    desc: 'knip',
+    id: 'pkg-fallow',
+    desc: 'fallow',
     type: 'local',
     check: (dir) => {
-      const bin = findBin('knip', _dirname)
-      if (!bin) return { pass: false, detail: 'knip not available' }
-      const r = spawnSync(process.execPath, [bin], {
-        cwd: dir,
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'pipe'],
-        env: { ...process.env, NO_COLOR: '1' },
-      })
+      const bin = findBin('fallow', _dirname)
+      if (!bin) return { pass: false, detail: 'fallow not available' }
+      const r = spawnSync(
+        process.execPath,
+        [bin, 'dead-code', '--format', 'compact'],
+        {
+          cwd: dir,
+          encoding: 'utf8',
+          stdio: ['ignore', 'pipe', 'pipe'],
+          env: { ...process.env, NO_COLOR: '1' },
+        },
+      )
       if (r.status === 0) return { pass: true }
       const detail = (r.stdout + r.stderr).trim()
-      return { pass: false, detail: `${detail}\n\nRun: npx knip` }
+      return { pass: false, detail: `${detail}\n\nRun: npx fallow dead-code` }
     },
   },
   {
