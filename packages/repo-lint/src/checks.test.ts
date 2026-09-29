@@ -138,6 +138,40 @@ describe('LOCAL_CHECKS', () => {
     })
   })
 
+  describe('jsr-config', () => {
+    const package_ = JSON.stringify({ name: '@x/a', version: '1.0.0' })
+
+    it('passes without deno.json', async () => {
+      write(dir, 'package.json', package_)
+      expect(await check('jsr-config', dir)).toMatchObject({ pass: true })
+    })
+    it('passes when name and version match', async () => {
+      write(dir, 'package.json', package_)
+      write(dir, 'deno.json', package_)
+      expect(await check('jsr-config', dir)).toMatchObject({ pass: true })
+    })
+    it('fails on invalid JSON', async () => {
+      write(dir, 'package.json', package_)
+      write(dir, 'deno.json', '{')
+      expect(await check('jsr-config', dir)).toMatchObject({
+        pass: false,
+        detail: 'deno.json is not valid JSON',
+      })
+    })
+    it('lists name and version drift', async () => {
+      write(dir, 'package.json', package_)
+      write(
+        dir,
+        'deno.json',
+        JSON.stringify({ name: '@x/b', version: '0.9.0' }),
+      )
+      expect(await check('jsr-config', dir)).toMatchObject({
+        pass: false,
+        detail: 'name @x/b does not match package.json\nversion 0.9.0 != 1.0.0',
+      })
+    })
+  })
+
   describe('ci-workflow', () => {
     it('fails when no workflows exist', async () => {
       const result = await check('ci-workflow', dir)
