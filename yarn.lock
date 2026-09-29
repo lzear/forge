@@ -1558,6 +1558,7 @@ __metadata:
     "@lzear/repo-lint": "workspace:*"
     "@types/node": "npm:^26"
     "@vitejs/plugin-react": "npm:^6"
+    "@vitest/coverage-v8": "npm:^5"
     commander: "npm:^15"
     eslint: "npm:^10"
     picocolors: "npm:^1"

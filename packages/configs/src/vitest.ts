@@ -5,7 +5,7 @@ const config: ViteUserConfig = defineConfig({
     globals: true,
     coverage: {
       provider: 'v8',
-      reporter: ['lcov', 'text'],
+      reporter: ['json', 'lcov', 'text'],
     },
   },
 })

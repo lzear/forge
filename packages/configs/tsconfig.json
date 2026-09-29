@@ -1,5 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@lzear/configs/tsconfig/lib",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "allowJs": true
+  },
   "include": ["src", "*.ts"]
 }

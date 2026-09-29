@@ -16,6 +16,9 @@
       "README.md",
       "src",
       "tsconfig"
+    ],
+    "exclude": [
+      "src/**/*.test.ts"
     ]
   }
 }
