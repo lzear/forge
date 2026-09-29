@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import {
+  type Check,
   hasPublishedPkg as hasPublishedPackage,
   LOCAL_CHECKS,
   REMOTE_CHECKS,
@@ -26,6 +27,32 @@ export interface CheckRepoOptions {
   token?: string
   baseDir?: string
   skipRemote?: boolean
+}
+
+const runChecks = async (
+  dir: string,
+  repo: string,
+  skipRemote: boolean,
+  isApplicable: (c: Check) => boolean,
+): Promise<RepoReport> => {
+  const localResults = await Promise.all(
+    LOCAL_CHECKS.filter((c) => isApplicable(c)).map(async (c) => {
+      const raw = await c.check(dir)
+      return typeof raw === 'boolean'
+        ? { id: c.id, desc: c.desc, pass: raw }
+        : { id: c.id, desc: c.desc, ...raw }
+    }),
+  )
+
+  const remoteResults = skipRemote
+    ? []
+    : REMOTE_CHECKS.filter((c) => isApplicable(c)).map((c) => ({
+        id: c.id,
+        desc: c.desc,
+        pass: c.check(repo),
+      }))
+
+  return { repo, results: [...localResults, ...remoteResults] }
 }
 
 export interface CheckLocalOptions {
@@ -55,27 +82,12 @@ export const checkLocal = async (
     })()
 
   const isPublished = hasPublishedPackage(dir)
-
-  const localResults = await Promise.all(
-    LOCAL_CHECKS.filter((c) => !c.publishedOnly || isPublished).map(
-      async (c) => {
-        const raw = await c.check(dir)
-        return typeof raw === 'boolean'
-          ? { id: c.id, desc: c.desc, pass: raw }
-          : { id: c.id, desc: c.desc, ...raw }
-      },
-    ),
+  return runChecks(
+    dir,
+    repo,
+    skipRemote,
+    (c) => !c.publishedOnly || isPublished,
   )
-
-  const remoteResults = skipRemote
-    ? []
-    : REMOTE_CHECKS.filter((c) => !c.publishedOnly || isPublished).map((c) => ({
-        id: c.id,
-        desc: c.desc,
-        pass: c.check(repo),
-      }))
-
-  return { repo, results: [...localResults, ...remoteResults] }
 }
 
 export const checkRepo = async (
@@ -98,24 +110,7 @@ export const checkRepo = async (
     execSync(`git clone --depth 1 --quiet ${url} ${dir}`, { stdio: 'ignore' })
   }
 
-  const localResults = await Promise.all(
-    LOCAL_CHECKS.map(async (c) => {
-      const raw = await c.check(dir)
-      return typeof raw === 'boolean'
-        ? { id: c.id, desc: c.desc, pass: raw }
-        : { id: c.id, desc: c.desc, ...raw }
-    }),
-  )
-
-  const remoteResults = skipRemote
-    ? []
-    : REMOTE_CHECKS.map((c) => ({
-        id: c.id,
-        desc: c.desc,
-        pass: c.check(repo),
-      }))
-
-  return { repo, results: [...localResults, ...remoteResults] }
+  return runChecks(dir, repo, skipRemote, () => true)
 }
 
 export { CHECKS, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.ts'

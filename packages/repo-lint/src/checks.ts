@@ -84,6 +84,9 @@ const findBin = (name: string, startDir: string): string | null => {
   }
 }
 
+const head = (output: string): string =>
+  output.trim().split('\n').slice(0, 20).join('\n')
+
 const eachPublishedPackage = async (
   dir: string,
   function_: (pkgDir: string) => CheckDetail | Promise<CheckDetail>,
@@ -405,11 +408,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
         env: { ...process.env, NO_COLOR: '1' },
       })
       if (r.status === 0) return true
-      const detail = (r.stdout + r.stderr)
-        .trim()
-        .split('\n')
-        .slice(0, 20)
-        .join('\n')
+      const detail = head(r.stdout + r.stderr)
       return { pass: false, detail }
     },
   },
@@ -427,11 +426,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
       })
       if (r.error) return { pass: false, detail: String(r.error) }
       if (r.status === 0) return true
-      const detail = (r.stdout + r.stderr)
-        .trim()
-        .split('\n')
-        .slice(0, 20)
-        .join('\n')
+      const detail = head(r.stdout + r.stderr)
       return { pass: false, detail: detail || `audit exited ${r.status}` }
     },
   },
