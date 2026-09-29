@@ -51,10 +51,27 @@ jobs:
           command: dupes
           fail-on-issues: false
           branded-token: false
+      # fallow takes one coverage file; without one it scores every function
+      # as untested. Istanbul maps are keyed by file, so merging is a union.
+      - name: merge coverage for fallow
+        id: fallow-coverage
+        run: |
+          files=$(find . -path ./node_modules -prune -o -name coverage-final.json -print)
+          [ -z "$files" ] && exit 0
+          out="$RUNNER_TEMP/coverage-final.json"
+          echo "$files" | xargs node -e '
+            const fs = require("node:fs")
+            const [out, ...files] = process.argv.slice(1)
+            const merged = {}
+            for (const f of files) Object.assign(merged, JSON.parse(fs.readFileSync(f, "utf8")))
+            fs.writeFileSync(out, JSON.stringify(merged))
+          ' "$out"
+          echo "path=$out" >> "$GITHUB_OUTPUT"
       - uses: fallow-rs/fallow@3f6d4a5f817525d322365d64953940ff47175bf2 # v3.9.1
         continue-on-error: true
         with:
           command: health
+          coverage: ${{ steps.fallow-coverage.outputs.path }}
           fail-on-issues: false
           branded-token: false
       - name: collect coverage paths
