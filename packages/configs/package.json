@@ -11,10 +11,6 @@
   "author": "lzear",
   "type": "module",
   "exports": {
-    "./changelog": {
-      "types": "./src/changelog.d.ts",
-      "default": "./src/changelog.mjs"
-    },
     "./commitlint": {
       "types": "./dist/commitlint.d.ts",
       "default": "./dist/commitlint.js"
@@ -45,6 +41,7 @@
     }
   },
   "bin": {
+    "lzear-changelog": "./src/changelog.mjs",
     "lzear-publish": "./src/publish.mjs",
     "lzear-sync-jsr": "./src/sync-jsr.mjs"
   },
@@ -64,8 +61,6 @@
     "typecheck": "tsc --noEmit"
   },
   "files": [
-    "src/changelog.mjs",
-    "src/changelog.d.ts",
     "dist",
     "src/workspaces.mjs",
     "tsconfig"

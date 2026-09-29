@@ -19,7 +19,7 @@
     "setup-repo": "forge setup",
     "test": "yarn workspaces foreach -A run test",
     "typecheck": "yarn workspaces foreach -A run typecheck",
-    "version-packages": "changeset version && yarn lzear-sync-jsr"
+    "version-packages": "yarn lzear-changelog && changeset version && yarn lzear-sync-jsr"
   },
   "workspaces": [
     "packages/*"

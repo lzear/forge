@@ -1,57 +1,38 @@
+#!/usr/bin/env node
+
+// Prepends the pending release to the root CHANGELOG.md. Runs before
+// `changeset version` consumes the changesets: `changeset status` knows every
+// summary and the final version, which is shared under a `fixed` group.
+
 import { execSync } from 'node:child_process'
-import { promises as fs } from 'node:fs'
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 
-const ROOT = process.cwd()
-const ROOT_CHANGELOG = path.resolve(ROOT, 'CHANGELOG.md')
-const written = new Set()
+const root = process.cwd()
+const changelogPath = path.join(root, 'CHANGELOG.md')
 
-const bump = (version, type) => {
-  const [major, minor, patch] = version.split('.').map(Number)
-  if (type === 'major') return `${major + 1}.0.0`
-  return type === 'minor'
-    ? `${major}.${minor + 1}.0`
-    : `${major}.${minor}.${patch + 1}`
+const run = (command) =>
+  execSync(command, { cwd: root, stdio: 'pipe' }).toString().trim()
+
+const readStatus = () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'changelog-'))
+  const file = path.join(dir, 'status.json')
+  run(`changeset status --output=${file}`)
+  return JSON.parse(readFileSync(file, 'utf8'))
 }
 
+// commits since the last release tag, else since the last Version Packages
+// commit, else the last 20
 const getCommits = () => {
+  let base
   try {
-    const lastTag = execSync('git describe --tags --abbrev=0', {
-      cwd: ROOT,
-      stdio: 'pipe',
-    })
-      .toString()
-      .trim()
-    const commits = execSync(`git log ${lastTag}..HEAD --oneline --no-merges`, {
-      cwd: ROOT,
-    })
-      .toString()
-      .trim()
-    // If commits include a "Version Packages" entry, the tag predates a prior
-    // release cycle — fall through to the Version Packages baseline instead.
-    if (!commits.includes('Version Packages')) return commits
+    base = run("git describe --tags --abbrev=0 --match 'v*'")
   } catch {
-    // tag lookup failed, fall through
+    base = run('git log --format=%H --grep="^Version Packages$" -1')
   }
-  try {
-    const base = execSync(
-      'git log --oneline --format=%H --grep="^Version Packages$" -1',
-      { cwd: ROOT },
-    )
-      .toString()
-      .trim()
-    if (base)
-      return execSync(`git log ${base}..HEAD --oneline --no-merges`, {
-        cwd: ROOT,
-      })
-        .toString()
-        .trim()
-  } catch {
-    // no Version Packages commit found
-  }
-  return execSync('git log --oneline --no-merges -20', { cwd: ROOT })
-    .toString()
-    .trim()
+  const range = base ? `${base}..HEAD` : '-20'
+  return run(`git log --oneline --no-merges ${range}`)
 }
 
 const SKIP_PREFIXES = [
@@ -63,42 +44,15 @@ const SKIP_PREFIXES = [
 ]
 
 const filterCommits = (raw) =>
-  raw
-    .split('\n')
-    .filter((l) => {
-      const subject = l.slice(l.indexOf(' ') + 1)
-      return l && SKIP_PREFIXES.every((p) => !subject.startsWith(p))
-    })
-    .join('\n')
+  raw.split('\n').filter((l) => {
+    const subject = l.slice(l.indexOf(' ') + 1)
+    return l && SKIP_PREFIXES.every((p) => !subject.startsWith(p))
+  })
 
-const SKIP_DIRS = new Set(['node_modules', 'dist'])
-
-const readName = (file) =>
-  fs
-    .readFile(file, 'utf8')
-    .then((text) => JSON.parse(text).name)
-    .catch(() => {})
-
-// Depth-first search for the package.json of the package being released,
-// skipping node_modules/dist/dotfiles — packages are typically <5 dirs deep.
-const findPackageJson = async (dir, name) => {
-  const entries = await fs.readdir(dir, { withFileTypes: true }).catch(() => [])
-  for (const entry of entries) {
-    if (SKIP_DIRS.has(entry.name) || entry.name.startsWith('.')) continue
-    const full = path.join(dir, entry.name)
-    if (entry.isDirectory()) {
-      const found = await findPackageJson(full, name)
-      if (found) return found
-    } else if (entry.name === 'package.json' && (await readName(full)) === name)
-      return full
-  }
-}
-
-const getRepoUrl = async () => {
-  const package_ = JSON.parse(
-    await fs.readFile(path.resolve(ROOT, 'package.json'), 'utf8'),
-  )
-  let repo = package_.repository
+const getRepoUrl = () => {
+  let repo = JSON.parse(
+    readFileSync(path.join(root, 'package.json'), 'utf8'),
+  ).repository
   if (!repo) return ''
   if (typeof repo === 'object') repo = repo.url
   repo = repo.replace(/^git\+/, '').replace(/\.git$/, '')
@@ -107,40 +61,28 @@ const getRepoUrl = async () => {
   return repo
 }
 
-export const getReleaseLine = async (changeset, type) => {
-  if (written.has(changeset.id)) return ''
-  written.add(changeset.id)
-  const packageName = changeset.releases[0]?.name
-  const packageJsonPath = packageName
-    ? await findPackageJson(ROOT, packageName)
-    : undefined
-  const package_ = JSON.parse(
-    await fs.readFile(
-      packageJsonPath ?? path.resolve(ROOT, 'package.json'),
-      'utf8',
-    ),
-  )
-  const version = bump(package_.version, type)
-  const commits = filterCommits(getCommits())
-  const repoUrl = await getRepoUrl()
-  const commitSection = commits
-    ? `### Commits\n\n${commits
-        .split('\n')
-        .map((l) => {
-          const [sha, ...rest] = l.split(' ')
-          const label = repoUrl
-            ? `[\`${sha}\`](${repoUrl}/commit/${sha})`
-            : `\`${sha}\``
-          return `- ${label} ${rest.join(' ')}`
-        })
-        .join('\n')}\n\n`
-    : ''
-  const existing = await fs.readFile(ROOT_CHANGELOG, 'utf8').catch(() => '')
-  await fs.writeFile(
-    ROOT_CHANGELOG,
-    `## ${version}\n\n${changeset.summary}\n\n${commitSection}${existing}`,
-  )
-  return ''
-}
+const { releases, changesets } = readStatus()
+if (releases.length === 0) process.exit(0)
 
-export const getDependencyReleaseLine = async () => ''
+const repoUrl = getRepoUrl()
+const commits = filterCommits(getCommits()).map((l) => {
+  const [sha, ...rest] = l.split(' ')
+  const label = repoUrl
+    ? `[\`${sha}\`](${repoUrl}/commit/${sha})`
+    : `\`${sha}\``
+  return `- ${label} ${rest.join(' ')}`
+})
+
+const section = [
+  `## ${releases[0].newVersion}`,
+  ...changesets.map((c) => c.summary.trim()),
+  ...(commits.length > 0 ? ['### Commits', commits.join('\n')] : []),
+].join('\n\n')
+
+let existing = ''
+try {
+  existing = readFileSync(changelogPath, 'utf8')
+} catch {
+  // first release
+}
+writeFileSync(changelogPath, `${section}\n\n${existing}`)
