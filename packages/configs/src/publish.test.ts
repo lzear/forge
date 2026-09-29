@@ -23,20 +23,37 @@ const live = new Set<string>()
 const released = new Set<string>()
 const notes = new Map<string, string>()
 
+const answers: [RegExp, (match: string[]) => string][] = [
+  [
+    /^npm view "(\S+)" version$/,
+    ([, spec = '']) => {
+      if (!live.has(spec)) throw new Error('E404')
+      return spec.slice(spec.lastIndexOf('@') + 1)
+    },
+  ],
+  [
+    /^gh release view "(.+)"$/,
+    ([, tag = '']) => {
+      if (!released.has(tag)) throw new Error('not found')
+      return ''
+    },
+  ],
+  [
+    /^gh release create "(.+)" --target \S+ --notes-file (\S+)(?: --prerelease)?$/,
+    ([, tag = '', file = '']) => {
+      notes.set(tag, readFileSync(file, 'utf8'))
+      return ''
+    },
+  ],
+  [/^git rev-parse HEAD$/, () => 'abc123'],
+]
+
 const fakeExec = (command: string): ReturnType<typeof execSync> => {
-  const spec = /^npm view "(\S+)" version$/.exec(command)?.[1]
-  if (spec) {
-    if (!live.has(spec)) throw new Error('E404')
-    return Buffer.from(spec.slice(spec.lastIndexOf('@') + 1))
+  for (const [pattern, answer] of answers) {
+    const match = pattern.exec(command)
+    if (match) return Buffer.from(answer(match))
   }
-  const release = /^gh release view "(.+)"$/.exec(command)
-  if (release && !released.has(release[1] ?? '')) throw new Error('not found')
-  const create =
-    /^gh release create "(.+)" --target \S+ --notes-file (\S+)(?: --prerelease)?$/.exec(
-      command,
-    )
-  if (create) notes.set(create[1] ?? '', readFileSync(create[2] ?? '', 'utf8'))
-  return Buffer.from(command === 'git rev-parse HEAD' ? 'abc123' : '')
+  return Buffer.from('')
 }
 
 const commands = (): string[] =>
