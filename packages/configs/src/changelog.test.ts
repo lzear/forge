@@ -110,6 +110,27 @@ describe('lzear-changelog', () => {
     expect(changelog()).not.toMatch(/before|noise|ncu/)
   })
 
+  it.each([
+    ['2.0.0', ['feat: beta', 'fix: rc']],
+    ['2.0.0-rc.1', ['fix: rc']],
+  ])(
+    'lists commits for %s since the matching tag',
+    async (version, subjects) => {
+      commit('feat: stable')
+      git('tag v1.0.0')
+      commit('feat: beta')
+      git('tag v2.0.0-beta.0')
+      commit('fix: rc')
+      release(version)
+      await run()
+      const listed = Array.from(
+        changelog().matchAll(/^- `\w+` (.+)$/gm),
+        (m) => m[1],
+      )
+      expect(listed).toEqual(subjects.toReversed())
+    },
+  )
+
   it('falls back to the last Version Packages commit', async () => {
     commit('feat: old')
     commit('Version Packages')

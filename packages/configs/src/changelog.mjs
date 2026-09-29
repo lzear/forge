@@ -23,11 +23,13 @@ const readStatus = () => {
 }
 
 // commits since the last release tag, else since the last Version Packages
-// commit, else the last 20
-const getCommits = () => {
+// commit, else the last 20. A stable release skips prerelease tags, so it
+// lists everything its betas and rcs shipped.
+const getCommits = (version) => {
+  const exclude = version.includes('-') ? '' : " --exclude 'v*-*'"
   let base
   try {
-    base = run("git describe --tags --abbrev=0 --match 'v*'")
+    base = run(`git describe --tags --abbrev=0 --match 'v*'${exclude}`)
   } catch {
     base = run('git log --format=%H --grep="^Version Packages$" -1')
   }
@@ -65,7 +67,7 @@ const { releases, changesets } = readStatus()
 if (releases.length === 0) process.exit(0)
 
 const repoUrl = getRepoUrl()
-const commits = filterCommits(getCommits()).map((l) => {
+const commits = filterCommits(getCommits(releases[0].newVersion)).map((l) => {
   const [sha, ...rest] = l.split(' ')
   const label = repoUrl
     ? `[\`${sha}\`](${repoUrl}/commit/${sha})`
