@@ -1,4 +1,4 @@
-import { type UserConfig } from '@commitlint/types'
+import { RuleConfigSeverity, type UserConfig } from '@commitlint/types'
 
 const emojiRegex = /^\p{Extended_Pictographic}/u
 
@@ -14,7 +14,7 @@ const config: UserConfig = {
     },
   ],
   rules: {
-    'start-with-emoji': [2, 'always'],
+    'start-with-emoji': [RuleConfigSeverity.Error, 'always'],
   },
 }
 

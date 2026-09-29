@@ -78,10 +78,10 @@
     "vitest"
   ],
   "dependencies": {
-    "@commitlint/config-conventional": "^21"
+    "@commitlint/config-conventional": "^21",
+    "@commitlint/types": "^21"
   },
   "devDependencies": {
-    "@commitlint/types": "^21",
     "@vitejs/plugin-react": "^6",
     "@vitest/coverage-v8": "^5",
     "jsdom": "~30",
