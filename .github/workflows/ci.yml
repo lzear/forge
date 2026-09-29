@@ -59,13 +59,7 @@ jobs:
           files=$(find . -path ./node_modules -prune -o -name coverage-final.json -print)
           [ -z "$files" ] && exit 0
           out="$RUNNER_TEMP/coverage-final.json"
-          echo "$files" | xargs node -e '
-            const fs = require("node:fs")
-            const [out, ...files] = process.argv.slice(1)
-            const merged = {}
-            for (const f of files) Object.assign(merged, JSON.parse(fs.readFileSync(f, "utf8")))
-            fs.writeFileSync(out, JSON.stringify(merged))
-          ' "$out"
+          jq -s add $files > "$out"
           echo "path=$out" >> "$GITHUB_OUTPUT"
       - uses: fallow-rs/fallow@3f6d4a5f817525d322365d64953940ff47175bf2 # v3.9.1
         continue-on-error: true
