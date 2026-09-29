@@ -61,7 +61,10 @@ const SKIP_PREFIXES = [
 const filterCommits = (raw) =>
   raw
     .split('\n')
-    .filter((l) => l && SKIP_PREFIXES.every((p) => !l.slice(9).startsWith(p)))
+    .filter((l) => {
+      const subject = l.slice(l.indexOf(' ') + 1)
+      return l && SKIP_PREFIXES.every((p) => !subject.startsWith(p))
+    })
     .join('\n')
 
 const SKIP_DIRS = new Set(['node_modules', 'dist'])
