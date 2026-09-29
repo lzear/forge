@@ -71,7 +71,7 @@ jobs:
       - name: collect coverage paths
         id: coverage
         run: |
-          paths=$(find packages -name 'lcov.info' 2>/dev/null | tr '\n' ',' | sed 's/,$//')
+          paths=$(find . -name node_modules -prune -o -name lcov.info -print | paste -sd, -)
           echo "paths=$paths" >> $GITHUB_OUTPUT
       - uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
         if: env.HAS_CODACY_TOKEN == 'true' && steps.coverage.outputs.paths != ''
