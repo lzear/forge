@@ -21,7 +21,7 @@ on:
         type: boolean
         default: false
       snapshot-branch:
-        description: stage a `<branch>` snapshot on every push to this branch
+        description: stage a snapshot (dist-tag `snapshot`) on every push to this branch
         type: string
         default: ''
 
@@ -81,7 +81,8 @@ jobs:
       - if: inputs.jsr
         run: deno publish
 
-  # snapshot versions are unique per push: no PR, no release
+  # snapshot versions are unique per push: no PR, no release. Their own
+  # dist-tag keeps them off `beta`/`rc`, which changesets pre mode publishes
   snapshot:
     if: inputs.snapshot-branch != '' && github.ref_name == inputs.snapshot-branch
     runs-on: ubuntu-latest
@@ -98,9 +99,5 @@ jobs:
           node-version: ${{ inputs.node-version }}
       - run: yarn install --immutable
       - run: yarn build
-      - run: yarn changeset version --snapshot "$BRANCH"
-        env:
-          BRANCH: ${{ inputs.snapshot-branch }}
-      - run: yarn lzear-publish --publish --tag "$BRANCH"
-        env:
-          BRANCH: ${{ inputs.snapshot-branch }}
+      - run: yarn changeset version --snapshot snapshot
+      - run: yarn lzear-publish --publish

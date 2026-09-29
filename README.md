@@ -216,7 +216,7 @@ Releases: the reusable release workflow runs changesets, stages on npm with `lze
       id-token: write
 ```
 
-Inputs: `node-version`, `version-script` (default `yarn changeset version`), `jsr` (also `deno publish`), `snapshot-branch` (stage a snapshot on every push to that branch).
+Inputs: `node-version`, `version-script` (default `yarn changeset version`), `jsr` (also `deno publish`), `snapshot-branch` (stage a `x.y.z-snapshot-<timestamp>` version under the `snapshot` dist-tag on every push to that branch).
 
 Custom pipelines: skip the workflow and compose steps with the setup action (node + corepack + package-manager cache + immutable install):
 
@@ -245,3 +245,13 @@ yarn changeset   # create a changeset on your branch
 ```
 
 Merge to `main` → CI opens a **"Version Packages"** PR. Merge that PR → CI stages the packages on npm, publishes to JSR and creates the GitHub release. Approve the staged versions with `npm stage approve` (2FA) to make them live.
+
+Prereleases use changesets pre mode on `main`; `lzear-publish` stages each one under its id (`beta`, `rc`) and marks its GitHub release as a prerelease:
+
+```sh
+yarn changeset pre enter beta                          # next Version Packages PR → x.y.z-beta.0, then beta.1 …
+yarn changeset pre exit && yarn changeset pre enter rc # → x.y.z-rc.0
+yarn changeset pre exit                                # → x.y.z on `latest`, changelog covers the whole cycle
+```
+
+While in pre mode every release from `main` is a prerelease.
