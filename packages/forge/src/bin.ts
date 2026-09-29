@@ -44,17 +44,6 @@ const log = {
   warn: (message: string) => {
     isTTY ? clack.log.warn(message) : console.warn(`! ${message}`)
   },
-  spinner: () =>
-    isTTY
-      ? clack.spinner()
-      : {
-          start: (message: string) => {
-            debug(message)
-          },
-          stop: (message: string) => {
-            debug(message)
-          },
-        },
 }
 
 const program = new Command()
@@ -359,4 +348,4 @@ const handleSignal = () => {
 process.on('SIGINT', handleSignal)
 process.on('SIGTERM', handleSignal)
 
-program.parse()
+await program.parseAsync()
