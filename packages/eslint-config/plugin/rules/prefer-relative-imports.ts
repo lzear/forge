@@ -23,45 +23,42 @@ const findPackageRoot = (filePath: string): string | null => {
   return null
 }
 
+// the resolved path leaves the current package or enters node_modules
+const leavesPackage = (from: string, resolved: string): boolean => {
+  const pkgRoot = findPackageRoot(from)
+  if (!pkgRoot) return false
+  const relToPkg = path.relative(pkgRoot, resolved)
+  return (
+    relToPkg.startsWith('..') ||
+    path.isAbsolute(relToPkg) ||
+    relToPkg.split(path.sep).includes('node_modules')
+  )
+}
+
+const dotted = (p: string) => (p.startsWith('.') ? p : `./${p}`)
+
+// drops the extension and any /index suffix, to match extensionless imports
+const stripExtension = (rel: string): string => {
+  const extension = path.extname(rel)
+  if (!extension) return rel
+  const withoutExtension = rel.slice(0, -extension.length)
+  return withoutExtension.endsWith('/index')
+    ? withoutExtension.slice(0, -'/index'.length) || '.'
+    : withoutExtension
+}
+
 const toRelative = (
   from: string,
   importPath: string,
   context: Rule.RuleContext,
 ): string | null => {
   const resolved = resolve(importPath, context)
-  if (!resolved) return null
+  if (!resolved || leavesPackage(from, resolved)) return null
 
-  // Ensure resolved path stays within current package and doesn't target node_modules
-  const pkgRoot = findPackageRoot(from)
-  if (pkgRoot) {
-    const relToPkg = path.relative(pkgRoot, resolved)
-    if (
-      relToPkg.startsWith('..') ||
-      path.isAbsolute(relToPkg) ||
-      relToPkg.split(path.sep).includes('node_modules')
-    )
-      return null
-  }
-
-  let rel = path.relative(path.dirname(from), resolved)
+  const rel = path.relative(path.dirname(from), resolved)
   if (!rel) return null
 
-  if (!rel.startsWith('.')) rel = `./${rel}`
-
-  // If the original had no extension but the resolved path does,
-  // strip the extension (and /index suffix) to match import style
-  if (!path.extname(importPath)) {
-    const extension = path.extname(rel)
-    if (extension) {
-      const withoutExtension = rel.slice(0, -extension.length)
-      rel = withoutExtension.endsWith('/index')
-        ? withoutExtension.slice(0, -'/index'.length) || '.'
-        : withoutExtension
-      if (!rel.startsWith('.')) rel = `./${rel}`
-    }
-  }
-
-  return rel
+  return dotted(path.extname(importPath) ? rel : stripExtension(dotted(rel)))
 }
 
 const countParentPrefixes = (p: string) => {
