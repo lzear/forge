@@ -845,9 +845,12 @@
         "SpeechGrammar": false,
         "SpeechGrammarList": false,
         "SpeechRecognition": false,
+        "SpeechRecognitionAlternative": false,
         "SpeechRecognitionErrorEvent": false,
         "SpeechRecognitionEvent": false,
         "SpeechRecognitionPhrase": false,
+        "SpeechRecognitionResult": false,
+        "SpeechRecognitionResultList": false,
         "SpeechSynthesis": false,
         "SpeechSynthesisErrorEvent": false,
         "SpeechSynthesisEvent": false,
@@ -19779,7 +19782,7 @@
                       "deprecated": false,
                       "docs": {
                         "description": "Playwright "networkidle" waits should not be used",
-                        "recommended": true,
+                        "recommended": false,
                         "requiresTypeChecking": false,
                         "url": "https://sonarsource.github.io/rspec/#/rspec/S9332/javascript",
                       },
@@ -22189,7 +22192,7 @@
               "sonarjs/no-nested-incdec": "off",
               "sonarjs/no-nested-switch": "off",
               "sonarjs/no-nested-template-literals": "error",
-              "sonarjs/no-networkidle-wait": "error",
+              "sonarjs/no-networkidle-wait": "off",
               "sonarjs/no-os-command-from-path": "error",
               "sonarjs/no-parameter-reassignment": "error",
               "sonarjs/no-primitive-wrappers": "error",
@@ -22496,7 +22499,7 @@
               "sonarjs/no-nested-incdec": "off",
               "sonarjs/no-nested-switch": "off",
               "sonarjs/no-nested-template-literals": "error",
-              "sonarjs/no-networkidle-wait": "error",
+              "sonarjs/no-networkidle-wait": "off",
               "sonarjs/no-os-command-from-path": "error",
               "sonarjs/no-parameter-reassignment": "error",
               "sonarjs/no-primitive-wrappers": "error",
@@ -26598,7 +26601,7 @@
               "deprecated": false,
               "docs": {
                 "description": "Playwright "networkidle" waits should not be used",
-                "recommended": true,
+                "recommended": false,
                 "requiresTypeChecking": false,
                 "url": "https://sonarsource.github.io/rspec/#/rspec/S9332/javascript",
               },
@@ -41489,7 +41492,7 @@
       "sonarjs/no-nested-incdec": "off",
       "sonarjs/no-nested-switch": "off",
       "sonarjs/no-nested-template-literals": "error",
-      "sonarjs/no-networkidle-wait": "error",
+      "sonarjs/no-networkidle-wait": "off",
       "sonarjs/no-os-command-from-path": 0,
       "sonarjs/no-parameter-reassignment": "error",
       "sonarjs/no-primitive-wrappers": "error",
@@ -50229,7 +50232,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-dom",
-          "version": "5.20.5",
+          "version": "5.23.3",
         },
         "rules": {
           "no-dangerously-set-innerhtml": {
@@ -51428,7 +51431,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-web-api",
-          "version": "5.20.5",
+          "version": "5.23.3",
         },
         "rules": {
           "no-leaked-event-listener": {
@@ -51969,7 +51972,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-x",
-          "version": "5.20.5",
+          "version": "5.23.3",
         },
         "rules": {
           "error-boundaries": {
@@ -54802,7 +54805,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         },
         "meta": {
           "name": "eslint-plugin-n",
-          "version": "18.3.0",
+          "version": "18.4.0",
         },
         "rules": {
           "callback-return": {
@@ -59514,7 +59517,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.70.1",
+          "version": "8.71.0",
         },
         "parseForESLint": [Function],
       },
@@ -59607,6 +59610,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "@typescript-eslint/no-unsafe-assignment": "error",
               "@typescript-eslint/no-unsafe-call": "error",
               "@typescript-eslint/no-unsafe-declaration-merging": "error",
+              "@typescript-eslint/no-unsafe-enum-assignment": "error",
               "@typescript-eslint/no-unsafe-enum-comparison": "error",
               "@typescript-eslint/no-unsafe-function-type": "error",
               "@typescript-eslint/no-unsafe-member-access": "error",
@@ -59728,6 +59732,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "@typescript-eslint/no-unsafe-argument": "off",
               "@typescript-eslint/no-unsafe-assignment": "off",
               "@typescript-eslint/no-unsafe-call": "off",
+              "@typescript-eslint/no-unsafe-enum-assignment": "off",
               "@typescript-eslint/no-unsafe-enum-comparison": "off",
               "@typescript-eslint/no-unsafe-member-access": "off",
               "@typescript-eslint/no-unsafe-return": "off",
@@ -59805,7 +59810,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -59930,6 +59935,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "@typescript-eslint/no-unsafe-assignment": "error",
                 "@typescript-eslint/no-unsafe-call": "error",
                 "@typescript-eslint/no-unsafe-declaration-merging": "error",
+                "@typescript-eslint/no-unsafe-enum-assignment": "error",
                 "@typescript-eslint/no-unsafe-enum-comparison": "error",
                 "@typescript-eslint/no-unsafe-function-type": "error",
                 "@typescript-eslint/no-unsafe-member-access": "error",
@@ -60011,7 +60017,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "parser": {
                 "meta": {
                   "name": "typescript-eslint/parser",
-                  "version": "8.70.1",
+                  "version": "8.71.0",
                 },
                 "parseForESLint": [Function],
               },
@@ -60062,6 +60068,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "@typescript-eslint/no-unsafe-argument": "off",
               "@typescript-eslint/no-unsafe-assignment": "off",
               "@typescript-eslint/no-unsafe-call": "off",
+              "@typescript-eslint/no-unsafe-enum-assignment": "off",
               "@typescript-eslint/no-unsafe-enum-comparison": "off",
               "@typescript-eslint/no-unsafe-member-access": "off",
               "@typescript-eslint/no-unsafe-return": "off",
@@ -60136,7 +60143,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60216,7 +60223,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60323,7 +60330,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60407,7 +60414,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60501,7 +60508,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60595,6 +60602,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "@typescript-eslint/no-unsafe-assignment": "error",
                 "@typescript-eslint/no-unsafe-call": "error",
                 "@typescript-eslint/no-unsafe-declaration-merging": "error",
+                "@typescript-eslint/no-unsafe-enum-assignment": "error",
                 "@typescript-eslint/no-unsafe-enum-comparison": "error",
                 "@typescript-eslint/no-unsafe-function-type": "error",
                 "@typescript-eslint/no-unsafe-member-access": "error",
@@ -60661,7 +60669,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60734,6 +60742,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "@typescript-eslint/no-unsafe-argument": "error",
                 "@typescript-eslint/no-unsafe-assignment": "error",
                 "@typescript-eslint/no-unsafe-call": "error",
+                "@typescript-eslint/no-unsafe-enum-assignment": "error",
                 "@typescript-eslint/no-unsafe-enum-comparison": "error",
                 "@typescript-eslint/no-unsafe-member-access": "error",
                 "@typescript-eslint/no-unsafe-return": "error",
@@ -60786,7 +60795,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60857,7 +60866,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -60937,7 +60946,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -61278,6 +61287,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "@typescript-eslint/no-unsafe-assignment": "error",
               "@typescript-eslint/no-unsafe-call": "error",
               "@typescript-eslint/no-unsafe-declaration-merging": "error",
+              "@typescript-eslint/no-unsafe-enum-assignment": "error",
               "@typescript-eslint/no-unsafe-enum-comparison": "error",
               "@typescript-eslint/no-unsafe-function-type": "error",
               "@typescript-eslint/no-unsafe-member-access": "error",
@@ -61368,6 +61378,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "@typescript-eslint/no-unsafe-argument": "error",
               "@typescript-eslint/no-unsafe-assignment": "error",
               "@typescript-eslint/no-unsafe-call": "error",
+              "@typescript-eslint/no-unsafe-enum-assignment": "error",
               "@typescript-eslint/no-unsafe-enum-comparison": "error",
               "@typescript-eslint/no-unsafe-member-access": "error",
               "@typescript-eslint/no-unsafe-return": "error",
@@ -61487,7 +61498,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         "meta": {
           "name": "@typescript-eslint/eslint-plugin",
           "namespace": "@typescript-eslint",
-          "version": "8.70.1",
+          "version": "8.71.0",
         },
         "rules": {
           "adjacent-overload-signatures": {
@@ -67520,6 +67531,7 @@ Otherwise, if you don't need to preserve emojis or other non-Ascii characters, d
               },
               "fixable": "code",
               "messages": {
+                "contextuallyInferredTypeArguments": "The type arguments for this generic call may be inferred from the assertion. Specify them explicitly instead.",
                 "contextuallyUnnecessary": "This assertion is unnecessary since the receiver accepts the original type of the expression.",
                 "unnecessaryAssertion": "This assertion is unnecessary since it does not change the type of the expression.",
               },
@@ -67695,6 +67707,29 @@ You can try to fix this by turning on the `noImplicitThis` compiler option, or a
               "type": "problem",
             },
             "name": "no-unsafe-declaration-merging",
+          },
+          "no-unsafe-enum-assignment": {
+            "create": [Function],
+            "defaultOptions": [],
+            "meta": {
+              "docs": {
+                "description": "Disallow assigning non-enum values to enum typed locations",
+                "recommended": "strict",
+                "requiresTypeChecking": true,
+                "url": "https://typescript-eslint.io/rules/no-unsafe-enum-assignment",
+              },
+              "messages": {
+                "unsafeEnumAccess": "The computed key used here does not have a shared enum type with the expected enum {{enumNames}}.",
+                "unsafeEnumArgument": "The argument passed here does not have a shared enum type with the expected enum {{enumNames}}.",
+                "unsafeEnumAssertion": "The value asserted here does not have a shared enum type with the expected enum {{enumNames}}.",
+                "unsafeEnumAssignment": "The value assigned here does not have a shared enum type with the expected enum {{enumNames}}.",
+                "unsafeEnumMutation": "This mutation can produce a value outside of the expected enum {{enumNames}}.",
+                "unsafeEnumReturn": "The value returned here does not have a shared enum type with the expected enum {{enumNames}}.",
+              },
+              "schema": [],
+              "type": "problem",
+            },
+            "name": "no-unsafe-enum-assignment",
           },
           "no-unsafe-enum-comparison": {
             "create": [Function],
@@ -70518,6 +70553,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       "@typescript-eslint/no-unsafe-assignment": "error",
       "@typescript-eslint/no-unsafe-call": "error",
       "@typescript-eslint/no-unsafe-declaration-merging": "error",
+      "@typescript-eslint/no-unsafe-enum-assignment": "error",
       "@typescript-eslint/no-unsafe-enum-comparison": "error",
       "@typescript-eslint/no-unsafe-function-type": "error",
       "@typescript-eslint/no-unsafe-member-access": "error",
@@ -70588,7 +70624,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.70.1",
+          "version": "8.71.0",
         },
         "parseForESLint": [Function],
       },
@@ -70681,6 +70717,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               "@typescript-eslint/no-unsafe-assignment": "error",
               "@typescript-eslint/no-unsafe-call": "error",
               "@typescript-eslint/no-unsafe-declaration-merging": "error",
+              "@typescript-eslint/no-unsafe-enum-assignment": "error",
               "@typescript-eslint/no-unsafe-enum-comparison": "error",
               "@typescript-eslint/no-unsafe-function-type": "error",
               "@typescript-eslint/no-unsafe-member-access": "error",
@@ -70802,6 +70839,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               "@typescript-eslint/no-unsafe-argument": "off",
               "@typescript-eslint/no-unsafe-assignment": "off",
               "@typescript-eslint/no-unsafe-call": "off",
+              "@typescript-eslint/no-unsafe-enum-assignment": "off",
               "@typescript-eslint/no-unsafe-enum-comparison": "off",
               "@typescript-eslint/no-unsafe-member-access": "off",
               "@typescript-eslint/no-unsafe-return": "off",
@@ -70879,7 +70917,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -71004,6 +71042,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "@typescript-eslint/no-unsafe-assignment": "error",
                 "@typescript-eslint/no-unsafe-call": "error",
                 "@typescript-eslint/no-unsafe-declaration-merging": "error",
+                "@typescript-eslint/no-unsafe-enum-assignment": "error",
                 "@typescript-eslint/no-unsafe-enum-comparison": "error",
                 "@typescript-eslint/no-unsafe-function-type": "error",
                 "@typescript-eslint/no-unsafe-member-access": "error",
@@ -71085,7 +71124,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               "parser": {
                 "meta": {
                   "name": "typescript-eslint/parser",
-                  "version": "8.70.1",
+                  "version": "8.71.0",
                 },
                 "parseForESLint": [Function],
               },
@@ -71136,6 +71175,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               "@typescript-eslint/no-unsafe-argument": "off",
               "@typescript-eslint/no-unsafe-assignment": "off",
               "@typescript-eslint/no-unsafe-call": "off",
+              "@typescript-eslint/no-unsafe-enum-assignment": "off",
               "@typescript-eslint/no-unsafe-enum-comparison": "off",
               "@typescript-eslint/no-unsafe-member-access": "off",
               "@typescript-eslint/no-unsafe-return": "off",
@@ -71210,7 +71250,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -71290,7 +71330,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -71397,7 +71437,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -71481,7 +71521,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -71575,7 +71615,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -71671,6 +71711,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "@typescript-eslint/no-unsafe-assignment": "error",
                 "@typescript-eslint/no-unsafe-call": "error",
                 "@typescript-eslint/no-unsafe-declaration-merging": "error",
+                "@typescript-eslint/no-unsafe-enum-assignment": "error",
                 "@typescript-eslint/no-unsafe-enum-comparison": "error",
                 "@typescript-eslint/no-unsafe-function-type": "error",
                 "@typescript-eslint/no-unsafe-member-access": "error",
@@ -71737,7 +71778,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -71810,6 +71851,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "@typescript-eslint/no-unsafe-argument": "error",
                 "@typescript-eslint/no-unsafe-assignment": "error",
                 "@typescript-eslint/no-unsafe-call": "error",
+                "@typescript-eslint/no-unsafe-enum-assignment": "error",
                 "@typescript-eslint/no-unsafe-enum-comparison": "error",
                 "@typescript-eslint/no-unsafe-member-access": "error",
                 "@typescript-eslint/no-unsafe-return": "error",
@@ -71862,7 +71904,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -71933,7 +71975,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -72011,7 +72053,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.70.1",
+                    "version": "8.71.0",
                   },
                   "parseForESLint": [Function],
                 },
@@ -72352,6 +72394,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               "@typescript-eslint/no-unsafe-assignment": "error",
               "@typescript-eslint/no-unsafe-call": "error",
               "@typescript-eslint/no-unsafe-declaration-merging": "error",
+              "@typescript-eslint/no-unsafe-enum-assignment": "error",
               "@typescript-eslint/no-unsafe-enum-comparison": "error",
               "@typescript-eslint/no-unsafe-function-type": "error",
               "@typescript-eslint/no-unsafe-member-access": "error",
@@ -72442,6 +72485,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               "@typescript-eslint/no-unsafe-argument": "error",
               "@typescript-eslint/no-unsafe-assignment": "error",
               "@typescript-eslint/no-unsafe-call": "error",
+              "@typescript-eslint/no-unsafe-enum-assignment": "error",
               "@typescript-eslint/no-unsafe-enum-comparison": "error",
               "@typescript-eslint/no-unsafe-member-access": "error",
               "@typescript-eslint/no-unsafe-return": "error",
@@ -72561,7 +72605,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
         "meta": {
           "name": "@typescript-eslint/eslint-plugin",
           "namespace": "@typescript-eslint",
-          "version": "8.70.1",
+          "version": "8.71.0",
         },
         "rules": {
           "adjacent-overload-signatures": {
@@ -78594,6 +78638,7 @@ Otherwise, if you don't need to preserve emojis or other non-Ascii characters, d
               },
               "fixable": "code",
               "messages": {
+                "contextuallyInferredTypeArguments": "The type arguments for this generic call may be inferred from the assertion. Specify them explicitly instead.",
                 "contextuallyUnnecessary": "This assertion is unnecessary since the receiver accepts the original type of the expression.",
                 "unnecessaryAssertion": "This assertion is unnecessary since it does not change the type of the expression.",
               },
@@ -78769,6 +78814,29 @@ You can try to fix this by turning on the `noImplicitThis` compiler option, or a
               "type": "problem",
             },
             "name": "no-unsafe-declaration-merging",
+          },
+          "no-unsafe-enum-assignment": {
+            "create": [Function],
+            "defaultOptions": [],
+            "meta": {
+              "docs": {
+                "description": "Disallow assigning non-enum values to enum typed locations",
+                "recommended": "strict",
+                "requiresTypeChecking": true,
+                "url": "https://typescript-eslint.io/rules/no-unsafe-enum-assignment",
+              },
+              "messages": {
+                "unsafeEnumAccess": "The computed key used here does not have a shared enum type with the expected enum {{enumNames}}.",
+                "unsafeEnumArgument": "The argument passed here does not have a shared enum type with the expected enum {{enumNames}}.",
+                "unsafeEnumAssertion": "The value asserted here does not have a shared enum type with the expected enum {{enumNames}}.",
+                "unsafeEnumAssignment": "The value assigned here does not have a shared enum type with the expected enum {{enumNames}}.",
+                "unsafeEnumMutation": "This mutation can produce a value outside of the expected enum {{enumNames}}.",
+                "unsafeEnumReturn": "The value returned here does not have a shared enum type with the expected enum {{enumNames}}.",
+              },
+              "schema": [],
+              "type": "problem",
+            },
+            "name": "no-unsafe-enum-assignment",
           },
           "no-unsafe-enum-comparison": {
             "create": [Function],
@@ -81580,7 +81648,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.70.1",
+          "version": "8.71.0",
         },
         "parseForESLint": [Function],
       },
