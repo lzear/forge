@@ -44,6 +44,19 @@ jobs:
       - run: yarn forge check --skip-remote
         if: ${{ inputs.run-check }}
         continue-on-error: true
+      # advisory: annotates duplication and complexity, `forge check` gates dead code
+      - uses: fallow-rs/fallow@3f6d4a5f817525d322365d64953940ff47175bf2 # v3.9.1
+        continue-on-error: true
+        with:
+          command: dupes
+          fail-on-issues: false
+          branded-token: false
+      - uses: fallow-rs/fallow@3f6d4a5f817525d322365d64953940ff47175bf2 # v3.9.1
+        continue-on-error: true
+        with:
+          command: health
+          fail-on-issues: false
+          branded-token: false
       - name: collect coverage paths
         id: coverage
         run: |
