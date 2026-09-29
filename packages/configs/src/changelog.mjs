@@ -64,37 +64,26 @@ const filterCommits = (raw) =>
     .filter((l) => l && SKIP_PREFIXES.every((p) => !l.slice(9).startsWith(p)))
     .join('\n')
 
+const SKIP_DIRS = new Set(['node_modules', 'dist'])
+
+const readName = (file) =>
+  fs
+    .readFile(file, 'utf8')
+    .then((text) => JSON.parse(text).name)
+    .catch(() => {})
+
 // Depth-first search for the package.json of the package being released,
-// skipping node_modules/dist/.git — packages are typically <5 dirs deep.
-// eslint-disable-next-line sonarjs/cognitive-complexity
+// skipping node_modules/dist/dotfiles — packages are typically <5 dirs deep.
 const findPackageJson = async (dir, name) => {
-  try {
-    const entries = await fs.readdir(dir, { withFileTypes: true })
-    for (const entry of entries) {
-      if (
-        entry.name === 'node_modules' ||
-        entry.name === 'dist' ||
-        entry.name.startsWith('.')
-      )
-        continue
-      const full = path.join(dir, entry.name)
-      if (entry.isDirectory())
-        try {
-          const found = await findPackageJson(full, name)
-          if (found) return found
-        } catch {
-          // skip directories we can't traverse
-        }
-      else if (entry.name === 'package.json')
-        try {
-          const pkg = JSON.parse(await fs.readFile(full, 'utf8'))
-          if (pkg.name === name) return full
-        } catch {
-          // not valid JSON, skip
-        }
-    }
-  } catch {
-    // skip unreadable directories
+  const entries = await fs.readdir(dir, { withFileTypes: true }).catch(() => [])
+  for (const entry of entries) {
+    if (SKIP_DIRS.has(entry.name) || entry.name.startsWith('.')) continue
+    const full = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      const found = await findPackageJson(full, name)
+      if (found) return found
+    } else if (entry.name === 'package.json' && (await readName(full)) === name)
+      return full
   }
 }
 
