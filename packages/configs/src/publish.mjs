@@ -3,16 +3,12 @@
 import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
+import { listWorkspaces } from './workspaces.mjs'
 
 const publish = process.argv.includes('--publish')
 const root = process.cwd()
 
-const workspaces = execSync('yarn workspaces list --json', { cwd: root })
-  .toString()
-  .trim()
-  .split('\n')
-  .map((line) => JSON.parse(line))
-  .filter(({ location }) => location !== '.')
+const workspaces = listWorkspaces(root)
 
 for (const { location } of workspaces) {
   const package_ = JSON.parse(

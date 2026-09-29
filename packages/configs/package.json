@@ -65,6 +65,7 @@
     "src/changelog.mjs",
     "src/changelog.d.ts",
     "dist",
+    "src/workspaces.mjs",
     "tsconfig"
   ],
   "keywords": [

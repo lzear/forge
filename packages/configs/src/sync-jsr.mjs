@@ -4,22 +4,17 @@
 // a package opts into JSR by having a deno.json at all, everything inside it
 // is derived. --check fails instead of writing, for CI.
 
-import { execSync } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { listWorkspaces } from './workspaces.mjs'
 
 const isCheck = process.argv.includes('--check')
 const root = process.cwd()
 
 const readJson = (file) => JSON.parse(readFileSync(file, 'utf8'))
 
-const workspaces = execSync('yarn workspaces list --json', { cwd: root })
-  .toString()
-  .trim()
-  .split('\n')
-  .map((line) => JSON.parse(line))
-  .filter(({ location }) => location !== '.')
+const workspaces = listWorkspaces(root)
 
 // a workspace dep is publishable to JSR only if it opts in too
 const isOnJsr = new Map(
