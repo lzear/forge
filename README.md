@@ -212,7 +212,7 @@ steps:
   - run: yarn do-your-thing
 ```
 
-Inputs: `node-version` (default `24`), `cache` (default `yarn`), `install-command` (default `yarn install --immutable`).
+Inputs: `node-version` (default `26`), `cache` (default `yarn`), `install-command` (default `yarn install --immutable`).
 
 ## Development
 
