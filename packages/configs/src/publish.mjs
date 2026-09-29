@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
 // Stages every unpublished workspace package on npm; a maintainer approves it
-// with 2FA. Dry run unless --publish. --tag sets the npm dist-tag. --release
+// with 2FA. Dry run unless --publish. --tag sets the npm dist-tag, which
+// defaults to a prerelease's id (`rc` for 1.0.0-rc.2) and npm's `latest`
+// otherwise. --release
 // also creates the GitHub release, whose tag marks the version as done: a
 // released version is skipped, even while its npm stage awaits approval.
 
@@ -67,6 +69,12 @@ const isReleased = (tag) => {
   }
 }
 
+// `1.0.0-rc.2` → `rc`, `1.0.0` → undefined
+const prereleaseOf = (version) => {
+  const pre = version.split('-', 2)[1]
+  return pre && (/^[a-z]+/i.exec(pre)?.[0] ?? 'next')
+}
+
 const isPublished = ({ name, version }) => {
   try {
     return run(`npm view "${name}@${version}" version`) === version
@@ -85,7 +93,8 @@ const stage = ({ name, version }) => {
     return
   }
   console.log(`Staging ${name}@${version}...`)
-  const distTag = options.tag ? ` --tag ${options.tag}` : ''
+  const tag = options.tag ?? prereleaseOf(version)
+  const distTag = tag ? ` --tag ${tag}` : ''
   execSync(`yarn workspace "${name}" pack --out ${tarball}`, {
     cwd: root,
     stdio: 'inherit',
@@ -111,8 +120,9 @@ const createRelease = (release) => {
   const notes = path.join(tmpdir(), 'lzear-publish-notes.md')
   writeFileSync(notes, notesOf(release))
   const sha = run('git rev-parse HEAD')
+  const flag = prereleaseOf(release.version) ? ' --prerelease' : ''
   run(
-    `gh release create "${release.tag}" --target ${sha} --notes-file ${notes}`,
+    `gh release create "${release.tag}" --target ${sha} --notes-file ${notes}${flag}`,
   )
   console.log(`Released ${release.tag}`)
 }

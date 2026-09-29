@@ -32,7 +32,9 @@ const fakeExec = (command: string): ReturnType<typeof execSync> => {
   const release = /^gh release view "(.+)"$/.exec(command)
   if (release && !released.has(release[1] ?? '')) throw new Error('not found')
   const create =
-    /^gh release create "(.+)" --target \S+ --notes-file (\S+)$/.exec(command)
+    /^gh release create "(.+)" --target \S+ --notes-file (\S+)(?: --prerelease)?$/.exec(
+      command,
+    )
   if (create) notes.set(create[1] ?? '', readFileSync(create[2] ?? '', 'utf8'))
   return Buffer.from(command === 'git rev-parse HEAD' ? 'abc123' : '')
 }
@@ -122,6 +124,30 @@ describe('lzear-publish', () => {
     expect(commands()).toContainEqual(
       expect.stringMatching(
         /^npm stage publish \S+ --access public --tag beta$/,
+      ),
+    )
+  })
+
+  it.each([
+    ['1.0.0', ''],
+    ['1.0.0-rc.2', ' --tag rc'],
+    ['1.0.0-0', ' --tag next'],
+  ])('stages %s under its prerelease id', async (version, flag) => {
+    pkg('a', 'a', version)
+    setWorkspaces('a')
+    await run('--publish')
+    expect(commands()).toContain(
+      `npm stage publish ${path.join(tmpdir(), 'lzear-publish.tgz')} --access public${flag}`,
+    )
+  })
+
+  it('marks a prerelease release', async () => {
+    pkg('a', 'a', '2.0.0-beta.0')
+    setWorkspaces('a')
+    await run('--publish', '--release')
+    expect(commands()).toContainEqual(
+      expect.stringMatching(
+        /^gh release create "a@2\.0\.0-beta\.0" .* --prerelease$/,
       ),
     )
   })
