@@ -15,7 +15,10 @@ const bump = (version, type) => {
 
 const getCommits = () => {
   try {
-    const lastTag = execSync('git describe --tags --abbrev=0', { cwd: ROOT })
+    const lastTag = execSync('git describe --tags --abbrev=0', {
+      cwd: ROOT,
+      stdio: 'pipe',
+    })
       .toString()
       .trim()
     const commits = execSync(`git log ${lastTag}..HEAD --oneline --no-merges`, {
