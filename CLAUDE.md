@@ -60,7 +60,7 @@ Defines `LOCAL_CHECKS` (14) and `REMOTE_CHECKS` (1). Local checks verify: requir
 
 ### CI reuse
 
-`.github/workflows/ci.yml` is a reusable workflow (`workflow_call`) consumers call as `lzear/forge/.github/workflows/ci.yml@<sha>` (SHA-pinned, renovate bumps). `actions/setup/action.yml` is a composite action (`lzear/forge/actions/setup@<sha>`) for custom consumer jobs: corepack + setup-node (pm cache) + install.
+`.github/workflows/ci.yml` is a reusable workflow (`workflow_call`) consumers call as `lzear/forge/.github/workflows/ci.yml@<sha>` (SHA-pinned, renovate bumps). `actions/setup/action.yml` is a composite action (`lzear/forge/actions/setup@<sha>`) for custom consumer jobs: corepack + setup-node (pm cache) + install. `.github/workflows/release.yml` is the reusable changesets release (forge's own `main.yml` calls it locally): Version Packages PR, then `lzear-publish --publish --release`, optional `deno publish` and snapshot branch. It inlines its setup steps, since a reusable workflow cannot `uses: ./actions/setup` from the caller's checkout.
 
 ### Versioning & Publishing
 
@@ -71,5 +71,5 @@ JSR: `deno.json` (root) is a Deno workspace; a package opts in by having its own
 ```bash
 yarn changeset        # create changeset on your branch
 yarn version-packages # version bump (CI runs this)
-yarn lzear-publish    # dry run; CI passes --publish
+yarn lzear-publish    # dry run; CI passes --publish --release
 ```

@@ -26,64 +26,14 @@ jobs:
       - uses: ./actions/setup
       - run: yarn --version
 
-  # opens the "Version Packages" PR while changesets are pending
-  version:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  release:
+    if: github.event_name == 'push'
     needs: ci
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/release.yml
     permissions:
       contents: write
       pull-requests: write
-    outputs:
-      tag: ${{ steps.release.outputs.tag }}
-    steps:
-      # persist-credentials stays on: changesets/action pushes the
-      # "Version Packages" branch with the checked-out credentials
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-        with:
-          fetch-depth: 0
-      - uses: ./actions/setup
-        with:
-          cache: ''
-      - run: yarn build
-      - id: changesets
-        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
-        with:
-          version-script: yarn version-packages
-      # nothing pending and no release yet for this version: publish it
-      - id: release
-        if: steps.changesets.outputs.hasChangesets == 'false'
-        run: |
-          tag="v$(jq -r .version packages/forge/package.json)"
-          gh release view "$tag" > /dev/null 2>&1 || echo "tag=$tag" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-  # stages on npm (approve with 2FA), publishes to JSR, then creates the
-  # GitHub release, whose tag marks the version as done
-  publish:
-    needs: version
-    if: needs.version.outputs.tag
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
       id-token: write
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-        with:
-          persist-credentials: false
-      - uses: ./actions/setup
-        with:
-          cache: ''
-      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
-        with:
-          deno-version: v2.x
-      - run: yarn build
-      - run: yarn lzear-publish --publish
-      - run: deno publish
-      - run: |
-          awk '/^## /{n++} n==1' CHANGELOG.md | tail -n +2 > "$RUNNER_TEMP/notes.md"
-          gh release create "$TAG" --target "$GITHUB_SHA" --notes-file "$RUNNER_TEMP/notes.md"
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ needs.version.outputs.tag }}
+    with:
+      version-script: yarn version-packages
+      jsr: true

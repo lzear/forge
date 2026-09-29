@@ -1,0 +1,106 @@
+name: Release
+
+# Changesets release for a yarn workspace repo, published with trusted
+# publishing and staged on npm: every version waits for a 2FA approval.
+# npm matches the *caller's* workflow file, so the trusted publisher of a
+# package calling this is `<owner>/<repo>` / `main.yml`, stage only.
+# The caller job grants `contents: write`, `pull-requests: write` and
+# `id-token: write`; each job below narrows them.
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        default: '26'
+      version-script:
+        type: string
+        default: 'yarn changeset version'
+      jsr:
+        description: also `deno publish` the deno.json workspace
+        type: boolean
+        default: false
+      snapshot-branch:
+        description: stage a `<branch>` snapshot on every push to this branch
+        type: string
+        default: ''
+
+jobs:
+  # opens the "Version Packages" PR while changesets are pending
+  version:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      hasChangesets: ${{ steps.changesets.outputs.hasChangesets }}
+    steps:
+      # persist-credentials stays on: changesets/action pushes the
+      # "Version Packages" branch with the checked-out credentials
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+      - run: corepack enable
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: ${{ inputs.node-version }}
+      - run: yarn install --immutable
+      - run: yarn build
+      - id: changesets
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          version-script: ${{ inputs.version-script }}
+
+  # once that PR is merged: stages on npm, publishes to JSR and creates the
+  # GitHub release; lzear-publish skips a version already released
+  publish:
+    needs: version
+    if: needs.version.outputs.hasChangesets == 'false'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - run: corepack enable
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: ${{ inputs.node-version }}
+      - run: yarn install --immutable
+      - run: yarn build
+      - run: yarn lzear-publish --publish --release
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - if: inputs.jsr
+        uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
+        with:
+          deno-version: v2.x
+      - if: inputs.jsr
+        run: deno publish
+
+  # snapshot versions are unique per push: no PR, no release
+  snapshot:
+    if: inputs.snapshot-branch != '' && github.ref_name == inputs.snapshot-branch
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - run: corepack enable
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: ${{ inputs.node-version }}
+      - run: yarn install --immutable
+      - run: yarn build
+      - run: yarn changeset version --snapshot "$BRANCH"
+        env:
+          BRANCH: ${{ inputs.snapshot-branch }}
+      - run: yarn lzear-publish --publish --tag "$BRANCH"
+        env:
+          BRANCH: ${{ inputs.snapshot-branch }}

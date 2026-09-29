@@ -187,7 +187,7 @@ Run with `--dry` to preview without writing.
 |-----------------------------|----------------------------------------------------------------------------|
 | Push to any branch          | `ci` — install, lint, test, build, `forge check`                           |
 | Push to `main`              | `ci` then `release` — changesets opens/updates a **"Version Packages"** PR |
-| Merge "Version Packages" PR | `release` publishes changed packages to npm                                |
+| Merge "Version Packages" PR | `release` stages changed packages on npm and creates the GitHub release   |
 
 ### Consuming CI from other repos
 
@@ -202,6 +202,21 @@ jobs:
 ```
 
 Inputs: `node-version`, `coverage-command`, `run-check`. Extra repo-specific jobs live alongside the `ci:` job in the caller.
+
+Releases: the reusable release workflow runs changesets, stages on npm with `lzear-publish` (add `@lzear/configs` as a dev dependency) and creates the GitHub release. npm matches the caller's workflow file, so set the package's trusted publisher to `<owner>/<repo>` / `main.yml`, stage only:
+
+```yaml
+  release:
+    if: github.event_name == 'push'
+    needs: ci
+    uses: lzear/forge/.github/workflows/release.yml@<sha> # v4.5.0
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+```
+
+Inputs: `node-version`, `version-script` (default `yarn changeset version`), `jsr` (also `deno publish`), `snapshot-branch` (stage a snapshot on every push to that branch).
 
 Custom pipelines: skip the workflow and compose steps with the setup action (node + corepack + package-manager cache + immutable install):
 
