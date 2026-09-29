@@ -166,7 +166,6 @@ const promptAndSet = async (
 }
 
 const REQUIRED_SECRETS = (repo: string) => [
-  { name: 'NPM_TOKEN', desc: 'npm publish token (same for all repos)' },
   {
     name: 'CODACY_PROJECT_TOKEN',
     desc: `Codacy project token — find at app.codacy.com/gh/${repo}/settings/coverage`,

@@ -225,17 +225,17 @@ describe('forge setup', () => {
   })
 
   it('prints JSON, failing on missing secrets', async () => {
-    mockGh({ secrets: ['NPM_TOKEN'] })
+    mockGh({ secrets: ['OTHER'] })
     expect(await run('setup', '--json')).toBe(1)
     expect(json()).toEqual({
       repo: 'lzear/x',
-      present: ['NPM_TOKEN'],
+      present: [],
       missing: ['CODACY_PROJECT_TOKEN'],
     })
   })
 
   it('is done when every secret is present', async () => {
-    mockGh({ secrets: ['NPM_TOKEN', 'CODACY_PROJECT_TOKEN'] })
+    mockGh({ secrets: ['CODACY_PROJECT_TOKEN'] })
     expect(await run('setup', '--repo', 'lzear/y')).toBeUndefined()
     expect(printed()).toContain('forge setup · ')
     expect(printed()).toContain('All secrets present.')
@@ -250,32 +250,39 @@ describe('forge setup', () => {
   it('points to gh secret set outside a TTY', async () => {
     mockGh()
     expect(await run('setup')).toBeUndefined()
-    expect(printed()).toContain('gh secret set NPM_TOKEN --repo lzear/x')
+    expect(printed()).toContain(
+      'gh secret set CODACY_PROJECT_TOKEN --repo lzear/x',
+    )
     expect(clack.password).not.toHaveBeenCalled()
   })
 
   it('prompts for missing secrets in a TTY', async () => {
     setTTY(true)
     mockGh()
-    vi.mocked(clack.password)
-      .mockResolvedValueOnce(' npm-token ')
-      .mockResolvedValueOnce(Symbol('cancel') as never)
+    vi.mocked(clack.password).mockResolvedValueOnce(' codacy-token ')
     expect(await run('setup')).toBeUndefined()
     expect(spawnSync).toHaveBeenCalledWith(
       'gh',
       [
         'secret',
         'set',
-        'NPM_TOKEN',
+        'CODACY_PROJECT_TOKEN',
         '--repo',
         'lzear/x',
         '--body',
-        'npm-token',
+        'codacy-token',
       ],
       { stdio: 'ignore' },
     )
-    expect(clack.log.warn).toHaveBeenCalledWith('CODACY_PROJECT_TOKEN skipped.')
     expect(clack.outro).toHaveBeenCalledWith(expect.stringContaining('Done.'))
+  })
+
+  it('skips a cancelled prompt', async () => {
+    setTTY(true)
+    mockGh()
+    vi.mocked(clack.password).mockResolvedValueOnce(Symbol('cancel') as never)
+    expect(await run('setup')).toBeUndefined()
+    expect(clack.log.warn).toHaveBeenCalledWith('CODACY_PROJECT_TOKEN skipped.')
   })
 })
 

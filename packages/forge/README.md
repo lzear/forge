@@ -57,7 +57,7 @@ forge update --json        # machine-readable output
 
 ### `forge setup`
 
-Checks and sets the required GitHub secrets (`NPM_TOKEN`, `CODACY_PROJECT_TOKEN`) for a repo.
+Checks and sets the required GitHub secrets (`CODACY_PROJECT_TOKEN`; npm publishes through trusted publishing, no token) for a repo.
 
 ```sh
 forge setup                         # auto-detects repo from git remote
