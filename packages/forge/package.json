@@ -59,6 +59,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "files": [
@@ -83,6 +85,7 @@
   "devDependencies": {
     "@types/node": "^26",
     "@vitejs/plugin-react": "^6",
+    "@vitest/coverage-v8": "^5",
     "eslint": "^10",
     "tsup": "^8",
     "vite": "^8",

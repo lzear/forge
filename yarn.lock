@@ -1478,6 +1478,7 @@ __metadata:
     "@commitlint/config-conventional": "npm:^21"
     "@commitlint/types": "npm:^21"
     "@vitejs/plugin-react": "npm:^6"
+    "@vitest/coverage-v8": "npm:^5"
     jsdom: "npm:~30"
     tsup: "npm:^8"
     vite: "npm:^8"
