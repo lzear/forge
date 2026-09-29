@@ -26,45 +26,64 @@ jobs:
       - uses: ./actions/setup
       - run: yarn --version
 
-  release:
+  # opens the "Version Packages" PR while changesets are pending
+  version:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: ci
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
-      id-token: write
+    outputs:
+      tag: ${{ steps.release.outputs.tag }}
     steps:
       # persist-credentials stays on: changesets/action pushes the
       # "Version Packages" branch with the checked-out credentials
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: ./actions/setup
         with:
-          node-version: '26'
-          registry-url: 'https://registry.npmjs.org'
+          cache: ''
+      - run: yarn build
+      - id: changesets
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          version-script: yarn version-packages
+      # nothing pending and no release yet for this version: publish it
+      - id: release
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: |
+          tag="v$(jq -r .version packages/forge/package.json)"
+          gh release view "$tag" > /dev/null 2>&1 || echo "tag=$tag" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  # stages on npm (approve with 2FA), publishes to JSR, then creates the
+  # GitHub release, whose tag marks the version as done
+  publish:
+    needs: version
+    if: needs.version.outputs.tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: ./actions/setup
+        with:
+          cache: ''
       - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: v2.x
-      - run: corepack enable
-      - run: yarn install --immutable
       - run: yarn build
-      - id: changesets
-        uses: changesets/action@v2
-        with:
-          version-script: yarn version-packages
-          createGithubReleases-script: false
+      - run: yarn lzear-publish --publish
+      - run: deno publish
+      - run: |
+          awk '/^## /{n++} n==1' CHANGELOG.md | tail -n +2 > "$RUNNER_TEMP/notes.md"
+          gh release create "$TAG" --target "$GITHUB_SHA" --notes-file "$RUNNER_TEMP/notes.md"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - if: steps.changesets.outputs.hasChangesets == 'false'
-        run: yarn lzear-publish --publish
-        env:
-          NPM_CONFIG_PROVENANCE: 'true'
-          NPM_TOKEN: '' # Empty string forces OIDC instead of token auth
-
-      # publishes every member of the deno.json workspace; versions come from
-      # the Version Packages PR, which runs lzear-sync-jsr after changeset version
-      - if: steps.changesets.outputs.hasChangesets == 'false'
-        run: deno publish
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.version.outputs.tag }}

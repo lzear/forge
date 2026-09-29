@@ -229,4 +229,4 @@ yarn qa        # build + typecheck + lint + test (parallel) + forge check
 yarn changeset   # create a changeset on your branch
 ```
 
-Merge to `main` → CI opens a **"Version Packages"** PR. Merge that PR → CI publishes to npm.
+Merge to `main` → CI opens a **"Version Packages"** PR. Merge that PR → CI stages the packages on npm, publishes to JSR and creates the GitHub release. Approve the staged versions with `npm stage approve` (2FA) to make them live.

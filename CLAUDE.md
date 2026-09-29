@@ -64,12 +64,12 @@ Defines `LOCAL_CHECKS` (14) and `REMOTE_CHECKS` (1). Local checks verify: requir
 
 ### Versioning & Publishing
 
-Changesets workflow. Add changeset → merge to `main` → CI opens "Version Packages" PR → merge PR → CI publishes to npm, then to JSR.
+Changesets workflow. Add changeset → merge to `main` → CI opens "Version Packages" PR → merge PR → CI stages on npm (approve with `npm stage approve` + 2FA), publishes to JSR and creates the `v<version>` GitHub release. `lzear-changelog` writes the root `CHANGELOG.md` section before `changeset version`.
 
 JSR: `deno.json` (root) is a Deno workspace; a package opts in by having its own `deno.json`, generated from `package.json` + tsup entries by `lzear-sync-jsr` (`@lzear/configs/src/sync-jsr.mjs`) — never edit one by hand, run `yarn lzear-sync-jsr` (`yarn qa` runs it with `--check`). `@lzear/eslint-config` stays npm-only: the untyped ESLint plugins it wraps rely on ambient `declare module` shims JSR cannot resolve, which is also why `@lzear/forge` drops its `./eslint` export there.
 
 ```bash
 yarn changeset        # create changeset on your branch
 yarn version-packages # version bump (CI runs this)
-yarn release          # publish (CI runs this)
+yarn lzear-publish    # dry run; CI passes --publish
 ```
