@@ -18,8 +18,9 @@ export const core = (local?: string): Linter.Config => {
   const l = local?.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`)
 
   const sonarRules = (
-    sonarjsPlugin.configs?.recommended as { rules?: Linter.RulesRecord }
-  ).rules
+    sonarjsPlugin.configs?.recommended as
+      { rules?: Linter.RulesRecord } | undefined
+  )?.rules
 
   const rules = {
     ...js.configs.recommended.rules,
