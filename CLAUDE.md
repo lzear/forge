@@ -44,6 +44,8 @@ All packages build with `tsup`. Config factories in `@lzear/configs/src/tsup.ts`
 
 Async default export `configGenerator(options)`. Options: `node | react | typescript | vitest` (all default `true`). Each feature section loaded in parallel via `Promise.all`. Prettier config is last to override others.
 
+Oxlint evaluated 2026-09 (oxlint 1.86, `@oxlint/migrate`): ~4× faster (2.9s vs 12.4s) but 210 rules unported (181 unicorn v76), per-override settings unsupported (breaks `lzear/prefer-relative-imports` resolver), local plugin needs bundling. Staying on ESLint; revisit when unicorn coverage catches up.
+
 ### `@lzear/repo-lint`
 
 Defines `LOCAL_CHECKS` (14) and `REMOTE_CHECKS` (1). Local checks verify: required files (README, .codacy.yml, LICENSE, renovate.json), CI calling the forge reusable workflow (`lzear/forge/.github/workflows/ci.yml`), README badges (Codacy grade/coverage, npm), `deno.json` name/version matching `package.json` (`jsr-config`), and package quality (`publint`, `attw`, `fallow`, `sherif` for monorepos, audit, no deprecated deps, fresh deps). Remote check verifies the CODACY_PROJECT_TOKEN GitHub secret. Also home of `runUpdate()`/`detectPackageManager()` (`src/update.ts`) powering `forge update`.
