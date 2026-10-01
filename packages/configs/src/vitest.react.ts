@@ -10,20 +10,14 @@
  */
 
 import { defineConfig, type ViteUserConfig } from 'vitest/config'
+import base from './vitest.ts'
 
 /**
  * The config, ready to default-export from the consumer's config file.
  */
 const config: ViteUserConfig = defineConfig({
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: [],
-    coverage: {
-      provider: 'v8',
-      reporter: ['lcov', 'text'],
-    },
-  },
+  ...base,
+  test: { ...base.test, environment: 'jsdom' },
 })
 
 export default config
