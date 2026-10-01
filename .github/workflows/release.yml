@@ -34,7 +34,7 @@ jobs:
       contents: write
       pull-requests: write
     outputs:
-      hasChangesets: ${{ steps.changesets.outputs.hasChangesets }}
+      hasChangesets: ${{ steps.changesets.outputs.has-changesets }}
     steps:
       # persist-credentials stays on: changesets/action pushes the
       # "Version Packages" branch with the checked-out credentials
