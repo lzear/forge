@@ -77,7 +77,7 @@ import config from '@lzear/configs/vitest'
 export default config
 ```
 
-For React projects (adds `jsdom` environment and `@vitejs/plugin-react`):
+For React projects (adds the `jsdom` environment):
 
 ```ts
 import config from '@lzear/configs/vitest/react'
@@ -89,9 +89,9 @@ export default config
 
 ```ts
 // vite.config.ts
-import config from '@lzear/configs/vite'
+import { defineReactConfig } from '@lzear/configs/vite'
 
-export default config
+export default defineReactConfig()
 ```
 
 ## commitlint

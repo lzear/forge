@@ -119,9 +119,9 @@ For React: `@lzear/forge/vitest/react`.
 
 ```ts
 // vite.config.ts
-import config from '@lzear/forge/vite'
+import { defineReactConfig } from '@lzear/forge/vite'
 
-export default config
+export default defineReactConfig()
 ```
 
 ## commitlint
