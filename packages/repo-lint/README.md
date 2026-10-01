@@ -84,6 +84,7 @@ const report = await runUpdate({ dry: true })
 | `readme-npm-badge`    | README has an npm badge                                   |
 | `codacy`              | Codacy grade & coverage badges in README, `.codacy.yml`   |
 | `license`             | `LICENSE` exists                                          |
+| `jsr-config`          | `deno.json` name & version match `package.json`           |
 | `ci-workflow`         | a workflow calls the forge reusable CI workflow           |
 | `renovate`            | `renovate.json` exists                                    |
 | `pkg-publint`         | All published packages pass `publint`                     |
