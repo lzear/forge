@@ -273,6 +273,18 @@ describe('LOCAL_CHECKS', () => {
       vi.mocked(publint).mockResolvedValue({ messages: [] } as never)
       expect(await check('pkg-publint', dir)).toMatchObject({ pass: true })
     })
+    it('checks a workspace listed by its plain path', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ private: true, workspaces: ['lib'] }),
+      )
+      write(dir, 'lib/package.json', JSON.stringify({}))
+      vi.mocked(publint).mockResolvedValue({
+        messages: [{ type: 'error', code: 'FILE_INVALID_FORMAT' }],
+      } as never)
+      expect(await check('pkg-publint', dir)).toMatchObject({ pass: false })
+    })
   })
 
   describe('pkg-attw', () => {

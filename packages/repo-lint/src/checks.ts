@@ -76,6 +76,12 @@ const getWorkspaceDirectories = (rootDir: string): string[] => {
   if (!package_) return []
   const directories: string[] = []
   for (const pattern of getWorkspacePatterns(package_)) {
+    // a glob-free pattern names the package directory itself
+    if (!pattern.includes('*')) {
+      const packageDir = path.join(rootDir, pattern)
+      if (existsSync(packageDir)) directories.push(packageDir)
+      continue
+    }
     const base = patternToBase(rootDir, pattern)
     if (!base || !existsSync(base)) continue
     const entries = readdirSync(base, { withFileTypes: true })
