@@ -56,7 +56,7 @@ jobs:
       - name: merge coverage for fallow
         id: fallow-coverage
         run: |
-          files=$(find . -path ./node_modules -prune -o -name coverage-final.json -print)
+          files=$(find . -name node_modules -prune -o -name coverage-final.json -print)
           [ -z "$files" ] && exit 0
           out="$RUNNER_TEMP/coverage-final.json"
           jq -s add $files > "$out"
