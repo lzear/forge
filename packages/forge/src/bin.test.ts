@@ -1,5 +1,5 @@
 import { spawnSync, type SpawnSyncReturns } from 'node:child_process'
-import { existsSync, mkdtempSync, readFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import * as clack from '@clack/prompts'
@@ -344,11 +344,19 @@ describe('forge sync', () => {
     expect(existsSync(path.join(dir, 'lefthook.yml'))).toBe(true)
   })
 
-  it('writes nothing on --dry', async () => {
+  it('previews changes on --dry without writing', async () => {
     mockFetch()
+    writeFileSync(path.join(dir, '.editorconfig'), 'old')
+    writeFileSync(
+      path.join(dir, '.codacy.yml'),
+      'from https://raw.githubusercontent.com/lzear/forge/main/template/.codacy.yml',
+    )
     expect(await run('sync', '--dry')).toBeUndefined()
     expect(existsSync(path.join(dir, 'lefthook.yml'))).toBe(false)
-    expect(printed()).toContain('(dry)')
+    expect(readFileSync(path.join(dir, '.editorconfig'), 'utf8')).toBe('old')
+    expect(printed()).toContain('lefthook.yml (would create)')
+    expect(printed()).toContain('.editorconfig (would update)')
+    expect(printed()).toContain('.codacy.yml (unchanged)')
   })
 
   it('exits 1 when a fetch fails', async () => {

@@ -11,7 +11,7 @@
  */
 
 import { spawnSync } from 'node:child_process'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { homedir } from 'node:os'
 import path from 'node:path'
@@ -327,6 +327,27 @@ const SYNC_FILES: { src: string; dest: string }[] = [
 
 const RAW_BASE = 'https://raw.githubusercontent.com/lzear/forge/main'
 
+// fetches one template file and writes it when it differs
+const syncFile = async (src: string, dest: string, isDry: boolean) => {
+  const res = await fetch(`${RAW_BASE}/${src}`)
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  const content = await res.text()
+  const destinationPath = path.join(process.cwd(), dest)
+  const current = await readFile(destinationPath, 'utf8').catch(() => null)
+  if (current === content) {
+    log.success(`${dest} ${pc.dim('(unchanged)')}`)
+    return
+  }
+  const isNew = current === null
+  if (isDry) {
+    log.warn(`${dest} ${pc.dim(isNew ? '(would create)' : '(would update)')}`)
+    return
+  }
+  await mkdir(path.dirname(destinationPath), { recursive: true })
+  await writeFile(destinationPath, content, 'utf8')
+  log.success(`${dest} ${pc.dim(isNew ? '(created)' : '(updated)')}`)
+}
+
 program
   .command('sync')
   .description('sync template files from forge into this repo')
@@ -334,24 +355,13 @@ program
   .action(async (options: { dry: boolean }) => {
     log.intro(pc.bold('forge sync'))
     let isAnyFail = false
-    for (const { src, dest } of SYNC_FILES) {
-      const url = `${RAW_BASE}/${src}`
-      const destinationPath = path.join(process.cwd(), dest)
+    for (const { src, dest } of SYNC_FILES)
       try {
-        const res = await fetch(url)
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const content = await res.text()
-        if (options.dry) log.success(`${dest} ${pc.dim('(dry)')}`)
-        else {
-          await mkdir(path.dirname(destinationPath), { recursive: true })
-          await writeFile(destinationPath, content, 'utf8')
-          log.success(dest)
-        }
+        await syncFile(src, dest, options.dry)
       } catch (error) {
         log.error(`${dest} — ${String(error)}`)
         isAnyFail = true
       }
-    }
     log.outro(isAnyFail ? pc.red('Done with errors.') : pc.green('Done.'))
     if (isAnyFail) process.exit(1)
   })
