@@ -103,6 +103,7 @@ export const checkLocal = async (
     (() => {
       try {
         const remote = execSync('git remote get-url origin', {
+          cwd: dir,
           encoding: 'utf8',
           stdio: ['ignore', 'pipe', 'ignore'],
         }).trim()
