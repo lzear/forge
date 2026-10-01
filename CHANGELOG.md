@@ -1,3 +1,56 @@
+## 4.5.0
+
+`forge check` runs fallow instead of knip (`pkg-knip` → `pkg-fallow`). Move knip config to `.fallowrc.json`.
+
+Publish to JSR. `lzear-sync-jsr` generates each `deno.json`, the `jsr-config` check catches drift. `@lzear/eslint-config` stays npm-only.
+
+`lzear-publish` stages on npm for 2FA approval. `--release` creates the GitHub release. Prereleases get their own dist-tag.
+
+`forge setup` no longer asks for `NPM_TOKEN`.
+
+`lzear-changelog` bin replaces the `./changelog` export: one `CHANGELOG.md` section per release.
+
+### Commits
+
+- [`0282bec`](https://github.com/lzear/forge/commit/0282bec) fix(eslint-config): guard missing sonarjs recommended config
+- [`63bbc1a`](https://github.com/lzear/forge/commit/63bbc1a) docs: note oxlint evaluation
+- [`5c12dad`](https://github.com/lzear/forge/commit/5c12dad) chore: shorten the pending changesets
+- [`674cd3d`](https://github.com/lzear/forge/commit/674cd3d) chore: declare the changesets changelog module to fallow
+- [`1626840`](https://github.com/lzear/forge/commit/1626840) chore: merge dependency updates into one changelog line
+- [`c166cdb`](https://github.com/lzear/forge/commit/c166cdb) fix: keep per-package changelogs for changesets/action
+- [`5bc62c0`](https://github.com/lzear/forge/commit/5bc62c0) chore: sync deno.json with the 4.4.4 release
+- [`64287ac`](https://github.com/lzear/forge/commit/64287ac) test(configs): answer the publish fakes from a table
+- [`c478378`](https://github.com/lzear/forge/commit/c478378) fix(configs): list commits since the last stable release in a stable changelog
+- [`f822ba0`](https://github.com/lzear/forge/commit/f822ba0) feat(configs): stage prereleases under their own dist-tag
+- [`eb7b673`](https://github.com/lzear/forge/commit/eb7b673) fix(forge): stop asking setup for an NPM_TOKEN
+- [`1cef751`](https://github.com/lzear/forge/commit/1cef751) feat(configs): create the GitHub release from lzear-publish
+- [`fe90ee6`](https://github.com/lzear/forge/commit/fe90ee6) chore: stop running dependency install scripts
+- [`e93dc7d`](https://github.com/lzear/forge/commit/e93dc7d) feat(configs): write one changelog section per release
+- [`884bda9`](https://github.com/lzear/forge/commit/884bda9) fix(configs): stage into the OS temp dir, leave provenance to trusted publishing
+- [`7d99c87`](https://github.com/lzear/forge/commit/7d99c87) fix(configs): type commitlint severities with RuleConfigSeverity
+- [`eef5232`](https://github.com/lzear/forge/commit/eef5232) chore: sync yarn.lock with the eslint-package-json range
+- [`069fbca`](https://github.com/lzear/forge/commit/069fbca) fix: lint
+- [`9913578`](https://github.com/lzear/forge/commit/9913578) chore: `yarn housekeep`
+- [`1f35316`](https://github.com/lzear/forge/commit/1f35316) fix(configs): silence git describe stderr in changelog
+- [`5181ba6`](https://github.com/lzear/forge/commit/5181ba6) test(eslint-config): cover the lzear plugin rules
+- [`7414297`](https://github.com/lzear/forge/commit/7414297) test(repo-lint): cover the bin and the jsr-config check
+- [`b52654d`](https://github.com/lzear/forge/commit/b52654d) test(forge): cover the CLI
+- [`122515f`](https://github.com/lzear/forge/commit/122515f) test(configs): cover sync-jsr and the changelog generator
+- [`bfc82cf`](https://github.com/lzear/forge/commit/bfc82cf) refactor(forge): drop the unused log.spinner and await parseAsync
+- [`41753be`](https://github.com/lzear/forge/commit/41753be) fix(configs): skip ci and ncu commits in the changelog again
+- [`79629fa`](https://github.com/lzear/forge/commit/79629fa) refactor(forge): extract secret listing from the setup action
+- [`2aff42f`](https://github.com/lzear/forge/commit/2aff42f) refactor(eslint-config): split prefer-relative-imports path helpers
+- [`4610620`](https://github.com/lzear/forge/commit/4610620) refactor(configs): flatten the changelog package.json search
+- [`cbf2516`](https://github.com/lzear/forge/commit/cbf2516) refactor(repo-lint): dedupe check running and output trimming
+- [`cdffb09`](https://github.com/lzear/forge/commit/cdffb09) refactor(configs): share the workspace listing between bins
+- [`a055b26`](https://github.com/lzear/forge/commit/a055b26) feat(repo-lint): replace knip with fallow
+- [`ac599b4`](https://github.com/lzear/forge/commit/ac599b4) chore: source ~/.lefthookrc before running hook commands
+- [`7079a82`](https://github.com/lzear/forge/commit/7079a82) chore: `yarn housekeep`
+- [`381105e`](https://github.com/lzear/forge/commit/381105e) feat: check deno.json against package.json
+- [`c7a391c`](https://github.com/lzear/forge/commit/c7a391c) fix: type the vitest config default exports
+- [`3da66c2`](https://github.com/lzear/forge/commit/3da66c2) refactor: import sources with explicit .ts extensions
+- [`89a3996`](https://github.com/lzear/forge/commit/89a3996) chore: changeset v3
+
 ## 4.4.4
 
 Enable `reportUnusedDisableDirectives` and `reportUnusedInlineConfigs`, add `@typescript-eslint/consistent-type-imports` (inline style) and `import-x/consistent-type-specifier-style` (prefer-inline), export shared file-glob constants (`FILES.TESTS`, `FILES.REACT`, `FILES.TS`, `FILES.JS`, `FILES.CORE`, `FILES.PACKAGE_JSON`, and their atoms), and export the individual config builders (`core`, `react`, `node`, `typescript`, `vitest`, `a11y`, `packageJson`, `prettier`, `ignores`) so consumers can inspect, reuse, or replace a single layer instead of only appending overrides on top, and turn off `@typescript-eslint/no-non-null-assertion`, the `@typescript-eslint/no-unsafe-*` rules, and `sonarjs/no-duplicate-string` in test files, where they mostly fight mocks and fixtures.
