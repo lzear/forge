@@ -477,8 +477,20 @@ describe('LOCAL_CHECKS', () => {
       expect(result).toMatchObject({ pass: false })
       expect((result as { detail: string }).detail).toContain('react')
     })
-    it('uses workspaces mode for monorepos', async () => {
-      write(dir, 'package.json', JSON.stringify({ workspaces: ['packages/*'] }))
+    it('applies .ncurc rejects without upgrading', async () => {
+      write(dir, 'package.json', JSON.stringify({}))
+      write(dir, '.ncurc.json', JSON.stringify({ reject: ['react'] }))
+      vi.mocked(ncuRun).mockResolvedValue({})
+      expect(await check('deps-fresh', dir)).toBe(true)
+      expect(vi.mocked(ncuRun)).toHaveBeenCalledWith(
+        expect.objectContaining({ reject: ['react'], upgrade: false }),
+      )
+    })
+    it.each([
+      { workspaces: ['packages/*'] },
+      { workspaces: { packages: ['packages/*'] } },
+    ])('uses workspaces mode for monorepos (%j)', async (package_) => {
+      write(dir, 'package.json', JSON.stringify(package_))
       vi.mocked(ncuRun).mockResolvedValue({})
       await check('deps-fresh', dir)
       expect(vi.mocked(ncuRun)).toHaveBeenCalledWith(

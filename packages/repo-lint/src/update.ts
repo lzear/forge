@@ -179,7 +179,10 @@ const loadNcuRc = async (
   return { config: {} }
 }
 
-const stepDeps = async (dir: string, isDry: boolean): Promise<UpdateResult> => {
+export const stepDeps = async (
+  dir: string,
+  isDry: boolean,
+): Promise<UpdateResult> => {
   const base = { id: 'deps', desc: 'dependency ranges (ncu)' }
   try {
     const isWorkspaces = hasWorkspaces(dir)

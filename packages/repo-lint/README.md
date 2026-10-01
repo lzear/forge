@@ -92,7 +92,7 @@ const report = await runUpdate({ dry: true })
 | `monorepo-lint`       | Workspace consistency (`sherif`, monorepos only)          |
 | `deps-audit`          | No known vulnerabilities (PM-native `audit`, prod, high+) |
 | `deps-deprecated`     | No direct dependency resolves to a deprecated version     |
-| `deps-fresh`          | All dependencies up to date (`ncu`)                       |
+| `deps-fresh`          | All dependencies up to date (`ncu`, honours `.ncurc`)     |
 | `secret-codacy-token` | GitHub secret `CODACY_PROJECT_TOKEN` is set               |
 
 ## Part of forge

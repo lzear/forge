@@ -2,10 +2,13 @@ import { spawnSync } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { run as ncuRun } from 'npm-check-updates'
 import { publint } from 'publint'
 import { maxSatisfying, satisfies } from 'semver'
-import { detectPackageManager, type PackageManager } from './update.ts'
+import {
+  detectPackageManager,
+  type PackageManager,
+  stepDeps,
+} from './update.ts'
 
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -482,30 +485,12 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'deps-fresh',
     desc: 'deps up to date',
     type: 'local',
+    // the dry run of `forge update`, so .ncurc rejects apply to both
     check: async (dir) => {
-      const package_ = readPackage(dir)
-      const hasWorkspaces =
-        Array.isArray(package_?.workspaces) &&
-        (package_.workspaces as unknown[]).length > 0
-      try {
-        const result = (await ncuRun({
-          packageFile: path.join(dir, 'package.json'),
-          ...(hasWorkspaces && { workspaces: true }),
-          silent: true,
-        })) as Record<string, string> | Record<string, Record<string, string>>
-
-        const entries = hasWorkspaces
-          ? Object.values(
-              result as Record<string, Record<string, string>>,
-            ).flatMap((x) => Object.entries(x))
-          : Object.entries(result as Record<string, string>)
-
-        if (entries.length === 0) return true
-        const lines = entries.map(([k, v]) => `${k}  →  ${v}`).join('\n')
-        return { pass: false, detail: `${lines}\n\nRun: forge update` }
-      } catch (error) {
-        return { pass: false, detail: String(error) }
-      }
+      const { pass, changed, detail = '' } = await stepDeps(dir, true)
+      return pass
+        ? !changed || { pass: false, detail: `${detail}\n\nRun: forge update` }
+        : { pass, detail }
     },
   },
 ]
