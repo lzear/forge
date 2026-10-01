@@ -99,7 +99,7 @@ const lib = (dir = 'packages/lib'): void => {
   write(dir, 'src/bin.ts', "import { c } from '@x/jsr/sub'")
   write(dir, 'src/nested.ts', '')
   write(dir, 'src/off-jsr.ts', "import { d } from '@x/npm-only'")
-  write(dir, 'src/index.test.ts', '')
+  write(dir, 'src/sub/index.test.ts', '')
   write(dir, 'tsconfig/base.json', '{}')
   write(dir, 'deno.json', {})
 }

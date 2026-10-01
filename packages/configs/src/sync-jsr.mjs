@@ -78,7 +78,9 @@ const reachesOnlyJsr = (dir, source, seen = new Set()) => {
 
 const hasTests = (dir) =>
   existsSync(path.join(dir, 'src')) &&
-  readdirSync(path.join(dir, 'src')).some((f) => f.endsWith('.test.ts'))
+  readdirSync(path.join(dir, 'src'), { recursive: true }).some((f) =>
+    f.endsWith('.test.ts'),
+  )
 
 const compare = (a, b) => a.localeCompare(b)
 const sortKeys = (o) =>
