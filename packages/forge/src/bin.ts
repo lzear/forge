@@ -167,12 +167,18 @@ const promptAndSet = async (
     log.warn(`${s.name} skipped.`)
     return
   }
-  spawnSync(
-    'gh',
-    ['secret', 'set', s.name, '--repo', repo, '--body', value.trim()],
-    { stdio: 'ignore' },
-  )
-  log.success(`${s.name} set.`)
+  // stdin, not --body, keeps the value out of the process list
+  const result = spawnSync('gh', ['secret', 'set', s.name, '--repo', repo], {
+    input: value.trim(),
+    encoding: 'utf8',
+    stdio: ['pipe', 'ignore', 'pipe'],
+  })
+  if (result.status === 0) {
+    log.success(`${s.name} set.`)
+    return
+  }
+  const reason = result.stderr.trim() || `gh exited ${result.status}`
+  log.error(`${s.name} not set: ${reason}`)
 }
 
 const REQUIRED_SECRETS = (repo: string) => [

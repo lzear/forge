@@ -75,11 +75,12 @@ const spawned = (status: number, stdout = ''): SpawnSyncReturns<string> => ({
   signal: null,
 })
 
-// answers `gh` calls: `git remote`, `gh --version`, then `gh secret list`
+// answers `gh` calls: `git remote`, `gh --version`, `gh secret list`, then `set`
 const mockGh = ({
   remote = 'git@github.com:lzear/x.git',
   gh = 0,
   secrets = [] as string[] | null,
+  set = 0,
 } = {}): void => {
   vi.mocked(spawnSync).mockImplementation(((
     command: string,
@@ -91,7 +92,7 @@ const mockGh = ({
       return secrets
         ? spawned(0, JSON.stringify(secrets.map((name) => ({ name }))))
         : spawned(1)
-    return spawned(0)
+    return spawned(args[1] === 'set' ? set : 0)
   }) as typeof spawnSync)
 }
 
@@ -263,18 +264,28 @@ describe('forge setup', () => {
     expect(await run('setup')).toBeUndefined()
     expect(spawnSync).toHaveBeenCalledWith(
       'gh',
-      [
-        'secret',
-        'set',
-        'CODACY_PROJECT_TOKEN',
-        '--repo',
-        'lzear/x',
-        '--body',
-        'codacy-token',
-      ],
-      { stdio: 'ignore' },
+      ['secret', 'set', 'CODACY_PROJECT_TOKEN', '--repo', 'lzear/x'],
+      {
+        input: 'codacy-token',
+        encoding: 'utf8',
+        stdio: ['pipe', 'ignore', 'pipe'],
+      },
     )
+    expect(clack.log.success).toHaveBeenCalledWith('CODACY_PROJECT_TOKEN set.')
     expect(clack.outro).toHaveBeenCalledWith(expect.stringContaining('Done.'))
+  })
+
+  it('reports a failed gh secret set', async () => {
+    setTTY(true)
+    mockGh({ set: 1 })
+    vi.mocked(clack.password).mockResolvedValueOnce('codacy-token')
+    expect(await run('setup')).toBeUndefined()
+    expect(clack.log.error).toHaveBeenCalledWith(
+      'CODACY_PROJECT_TOKEN not set: gh exited 1',
+    )
+    expect(clack.log.success).not.toHaveBeenCalledWith(
+      'CODACY_PROJECT_TOKEN set.',
+    )
   })
 
   it('skips a cancelled prompt', async () => {
