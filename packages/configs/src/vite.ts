@@ -1,6 +1,24 @@
+/**
+ * Vite config factory for React apps.
+ *
+ * ```ts
+ * // vite.config.ts
+ * import { defineReactConfig } from '@lzear/configs/vite'
+ *
+ * export default defineReactConfig()
+ * ```
+ *
+ * @module
+ */
+
 import react from '@vitejs/plugin-react'
 import { type UserConfig } from 'vite'
 
+/**
+ * Vite config with the React plugin.
+ *
+ * @param overrides merged shallowly over the defaults
+ */
 export const defineReactConfig = (overrides: UserConfig = {}): UserConfig => ({
   plugins: [react()],
   ...overrides,

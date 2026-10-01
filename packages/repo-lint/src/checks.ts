@@ -9,12 +9,18 @@ import { detectPackageManager, type PackageManager } from './update.ts'
 
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
 
+/**
+ * A check result carrying an explanation.
+ */
 export interface CheckDetail {
   pass: boolean
   detail?: string
 }
 type CheckResult = boolean | CheckDetail | Promise<boolean | CheckDetail>
 
+/**
+ * A check run against a checkout directory.
+ */
 export interface LocalCheck {
   id: string
   desc: string
@@ -23,6 +29,9 @@ export interface LocalCheck {
   check: (dir: string) => CheckResult
 }
 
+/**
+ * A check run against a GitHub repo through the `gh` CLI.
+ */
 export interface RemoteCheck {
   id: string
   desc: string
@@ -31,6 +40,9 @@ export interface RemoteCheck {
   check: (repo: string) => boolean
 }
 
+/**
+ * Any local or remote check.
+ */
 export type Check = LocalCheck | RemoteCheck
 
 const readPackage = (dir: string): Record<string, unknown> | null => {
@@ -237,6 +249,9 @@ const findDeprecated = async (
   return deprecated ? `${name}@${resolved} — ${deprecated.slice(0, 120)}` : null
 }
 
+/**
+ * Checks run against a checkout directory.
+ */
 export const LOCAL_CHECKS: LocalCheck[] = [
   {
     id: 'readme-exists',
@@ -507,6 +522,9 @@ const listSecrets = (repo: string): string[] | null => {
   }
 }
 
+/**
+ * Checks run against the GitHub repo.
+ */
 export const REMOTE_CHECKS: RemoteCheck[] = [
   {
     id: 'secret-codacy-token',
@@ -520,4 +538,7 @@ export const REMOTE_CHECKS: RemoteCheck[] = [
   },
 ]
 
+/**
+ * Every check, local then remote.
+ */
 export const CHECKS: Check[] = [...LOCAL_CHECKS, ...REMOTE_CHECKS]

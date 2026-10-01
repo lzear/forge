@@ -1,5 +1,16 @@
 #!/usr/bin/env node
 
+/**
+ * The `repo-lint` CLI: checks the current repo (`--local`) or a
+ * comma-separated list of GitHub repos (`--repos`).
+ *
+ * ```sh
+ * npx @lzear/repo-lint --local --skip-remote
+ * ```
+ *
+ * @module
+ */
+
 import { mkdirSync } from 'node:fs'
 import { parseArgs } from 'node:util'
 import { checkLocal, checkRepo, type RepoReport } from './index.ts'

@@ -1,3 +1,17 @@
+/**
+ * Repo compliance checks (local files, CI, badges, package quality) and
+ * dependency updates.
+ *
+ * ```ts
+ * import { checkLocal } from '@lzear/repo-lint'
+ *
+ * const { results } = await checkLocal({ skipRemote: true })
+ * for (const r of results) console.log(r.pass ? '✓' : '✗', r.desc)
+ * ```
+ *
+ * @module
+ */
+
 import { execSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -11,6 +25,9 @@ import {
 
 export type { Check, CheckDetail, LocalCheck, RemoteCheck } from './checks.ts'
 
+/**
+ * Outcome of one check.
+ */
 export interface CheckResult {
   id: string
   desc: string
@@ -18,11 +35,17 @@ export interface CheckResult {
   detail?: string
 }
 
+/**
+ * All check results for one repo.
+ */
 export interface RepoReport {
   repo: string
   results: CheckResult[]
 }
 
+/**
+ * Options for {@linkcode checkRepo}.
+ */
 export interface CheckRepoOptions {
   token?: string
   baseDir?: string
@@ -55,12 +78,21 @@ const runChecks = async (
   return { repo, results: [...localResults, ...remoteResults] }
 }
 
+/**
+ * Options for {@linkcode checkLocal}.
+ */
 export interface CheckLocalOptions {
   dir?: string
   skipRemote?: boolean
   repo?: string
 }
 
+/**
+ * Runs the checks against a local checkout. Package-quality checks only run
+ * when the repo publishes a package.
+ *
+ * @param options `dir` defaults to the cwd, `repo` to the `origin` remote
+ */
 export const checkLocal = async (
   options: CheckLocalOptions = {},
 ): Promise<RepoReport> => {
@@ -90,6 +122,12 @@ export const checkLocal = async (
   )
 }
 
+/**
+ * Clones (or pulls) a GitHub repo into `baseDir` and runs every check on it.
+ *
+ * @param repo `owner/name`
+ * @param options `token` authenticates the clone
+ */
 export const checkRepo = async (
   repo: string,
   options: CheckRepoOptions = {},

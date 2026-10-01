@@ -5,14 +5,23 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { run as ncuRun } from 'npm-check-updates'
 
+/**
+ * Package managers `forge update` can install with.
+ */
 export type PackageManagerName = 'npm' | 'yarn' | 'pnpm' | 'bun'
 
+/**
+ * A detected package manager and where it was detected from.
+ */
 export interface PackageManager {
   name: PackageManagerName
   version?: string
   source: 'packageManager' | 'lockfile' | 'default'
 }
 
+/**
+ * Outcome of one update step.
+ */
 export interface UpdateResult {
   id: string
   desc: string
@@ -21,12 +30,18 @@ export interface UpdateResult {
   detail?: string
 }
 
+/**
+ * All update step results for one directory.
+ */
 export interface UpdateReport {
   dir: string
   packageManager: PackageManager
   results: UpdateResult[]
 }
 
+/**
+ * Options for {@linkcode runUpdate}.
+ */
 export interface UpdateOptions {
   dir?: string
   dry?: boolean
@@ -67,6 +82,10 @@ const writeJsonFile = (file: string, json: JsonFile): void => {
   )
 }
 
+/**
+ * Detects the package manager from the `packageManager` field, then the
+ * lockfile, defaulting to npm.
+ */
 export const detectPackageManager = (dir: string): PackageManager => {
   const packageFile = path.join(dir, 'package.json')
   if (existsSync(packageFile))
@@ -436,6 +455,12 @@ const stepInstall = (dir: string, pm: PackageManager): UpdateResult => {
   }
 }
 
+/**
+ * Bumps dependency ranges, the `packageManager` field, Node and Bun version
+ * files and the LICENSE year, then installs.
+ *
+ * @param options `dry` writes nothing, `install: false` skips the install
+ */
 export const runUpdate = async (
   options: UpdateOptions = {},
 ): Promise<UpdateReport> => {
