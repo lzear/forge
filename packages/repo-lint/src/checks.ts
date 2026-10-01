@@ -6,7 +6,9 @@ import { publint } from 'publint'
 import { maxSatisfying, satisfies } from 'semver'
 import {
   detectPackageManager,
+  getWorkspacePatterns,
   type PackageManager,
+  readPackage,
   stepDeps,
 } from './update.ts'
 
@@ -47,25 +49,6 @@ export interface RemoteCheck {
  * Any local or remote check.
  */
 export type Check = LocalCheck | RemoteCheck
-
-const readPackage = (dir: string): Record<string, unknown> | null => {
-  const f = path.join(dir, 'package.json')
-  if (!existsSync(f)) return null
-  try {
-    return JSON.parse(readFileSync(f, 'utf8')) as Record<string, unknown>
-  } catch {
-    return null
-  }
-}
-
-const getWorkspacePatterns = (package_: Record<string, unknown>): string[] => {
-  const ws = package_.workspaces
-  if (Array.isArray(ws)) return ws as string[]
-  const wsPackage = ws as Record<string, unknown> | undefined
-  return Array.isArray(wsPackage?.packages)
-    ? (wsPackage.packages as string[])
-    : []
-}
 
 const patternToBase = (rootDir: string, pattern: string): string | null => {
   const parts = pattern.split('/')

@@ -82,29 +82,39 @@ const writeJsonFile = (file: string, json: JsonFile): void => {
   )
 }
 
+export const readPackage = (dir: string): Record<string, unknown> | null => {
+  const f = path.join(dir, 'package.json')
+  if (!existsSync(f)) return null
+  try {
+    return JSON.parse(readFileSync(f, 'utf8')) as Record<string, unknown>
+  } catch {
+    return null
+  }
+}
+
+export const getWorkspacePatterns = (
+  package_: Record<string, unknown>,
+): string[] => {
+  const ws = package_.workspaces
+  if (Array.isArray(ws)) return ws as string[]
+  const wsPackage = ws as Record<string, unknown> | undefined
+  return Array.isArray(wsPackage?.packages)
+    ? (wsPackage.packages as string[])
+    : []
+}
+
 /**
  * Detects the package manager from the `packageManager` field, then the
  * lockfile, defaulting to npm.
  */
 export const detectPackageManager = (dir: string): PackageManager => {
-  const packageFile = path.join(dir, 'package.json')
-  if (existsSync(packageFile))
-    try {
-      const package_ = JSON.parse(readFileSync(packageFile, 'utf8')) as Record<
-        string,
-        unknown
-      >
-      if (typeof package_.packageManager === 'string') {
-        const match = PM_FIELD_RE.exec(package_.packageManager)
-        if (match?.[1] && match[2])
-          return {
-            name: match[1] as PackageManagerName,
-            version: match[2],
-            source: 'packageManager',
-          }
-      }
-    } catch {
-      // fall through to lockfile detection
+  const field = readPackage(dir)?.packageManager
+  const match = typeof field === 'string' ? PM_FIELD_RE.exec(field) : null
+  if (match?.[1] && match[2])
+    return {
+      name: match[1] as PackageManagerName,
+      version: match[2],
+      source: 'packageManager',
     }
 
   for (const [file, name] of LOCKFILES)
@@ -131,20 +141,6 @@ const latestPackageVersion = async (name: string): Promise<string> => {
   if (typeof data.version !== 'string')
     throw new Error(`no version in registry response for ${name}`)
   return data.version
-}
-
-const hasWorkspaces = (dir: string): boolean => {
-  try {
-    const package_ = JSON.parse(
-      readFileSync(path.join(dir, 'package.json'), 'utf8'),
-    ) as Record<string, unknown>
-    const ws = package_.workspaces
-    if (Array.isArray(ws)) return ws.length > 0
-    const packages = (ws as Record<string, unknown> | undefined)?.packages
-    return Array.isArray(packages) && packages.length > 0
-  } catch {
-    return false
-  }
 }
 
 const NCURC_FILES = [
@@ -185,7 +181,7 @@ export const stepDeps = async (
 ): Promise<UpdateResult> => {
   const base = { id: 'deps', desc: 'dependency ranges (ncu)' }
   try {
-    const isWorkspaces = hasWorkspaces(dir)
+    const isWorkspaces = getWorkspacePatterns(readPackage(dir) ?? {}).length > 0
     const rc = await loadNcuRc(dir)
     const result = (await ncuRun({
       ...rc.config,
