@@ -13,6 +13,7 @@ const deps = (field: string, versions: Record<string, unknown>): string =>
 ruleTester.run('major-version-only', majorVersionOnly, {
   valid: [
     deps('dependencies', { a: '^1', b: '~2', c: '^0.5' }),
+    deps('dependencies', { a: '^0.0.2', b: '~0.0.2', c: '^0.0', d: '^0.0.0' }),
     deps('dependencies', { a: '1.2.3', b: '^1.0.0-beta.1', c: 'workspace:*' }),
     deps('scripts', { a: '^1.2.3' }),
     deps('dependencies', { a: 1 }),
@@ -34,9 +35,13 @@ ruleTester.run('major-version-only', majorVersionOnly, {
       errors: [{ messageId: 'useMajorOnly' }],
     },
     {
-      code: deps('peerDependencies', { a: '^0.5.4', b: '~0.5.4' }),
-      output: deps('peerDependencies', { a: '^0.5', b: '~0' }),
-      errors: [{ messageId: 'useMajorOnly' }, { messageId: 'useMajorOnly' }],
+      code: deps('peerDependencies', { a: '^0.5.4', b: '~0.5.4', c: '^0.2.0' }),
+      output: deps('peerDependencies', { a: '^0.5', b: '~0.5', c: '^0.2' }),
+      errors: [
+        { messageId: 'useMajorOnly' },
+        { messageId: 'useMajorOnly' },
+        { messageId: 'useMajorOnly' },
+      ],
     },
     {
       code: deps('optionalDependencies', { skip: '^1.2', a: '^3.0' }),

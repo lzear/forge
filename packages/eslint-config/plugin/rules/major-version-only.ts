@@ -7,25 +7,13 @@ const DEP_FIELDS = new Set([
   'peerDependencies',
 ])
 
-// Matches operator + major + at least .minor, optionally .patch — no prerelease
-const VERSION_RE = /^([~^])(\d+)\.(\d+)(?:\.\d+)?$/
+// Captures operator + version up to its leftmost non-zero part, the breaking
+// one (^1.2.3 → ^1, ^0.5.4 → ^0.5), when more parts follow; no prerelease.
+// ^0.0.2 has none after it, so it stays
+const VERSION_RE = /^([~^](?:0\.)*[1-9]\d*)(?:\.\d+)+$/
 
-const simplify = (version: string): string | null => {
-  const match = VERSION_RE.exec(version)
-  if (!match) return null
-
-  const [, operator, major, minor] = match
-
-  // For 0.x packages, ^ semver means minor is the "major" (breaking) version.
-  // ^0.5.4 → ^0.5 (keep major.minor), not ^0
-  if (major === '0' && operator === '^') {
-    const target = `^0.${minor}`
-    return target === version ? null : target
-  }
-
-  const target = `${operator}${major}`
-  return target === version ? null : target
-}
+const simplify = (version: string): string | null =>
+  VERSION_RE.exec(version)?.[1] ?? null
 
 const isIgnored = (packageName: string, ignore: (string | RegExp)[]): boolean =>
   ignore.some((pattern) =>
