@@ -1,3 +1,17 @@
+## 4.5.1
+
+Every JSR entrypoint has a module doc with an example, and every exported symbol has JSDoc.
+
+The `repo-lint` binary runs again: it was built with two shebang lines, which Node rejects.
+
+`forge check` sees workspaces listed by plain path (`"workspaces": ["lib"]`).
+
+### Commits
+
+- [`f8ae53a`](https://github.com/lzear/forge/commit/f8ae53a) fix(repo-lint): check workspaces listed by plain path
+- [`d238e79`](https://github.com/lzear/forge/commit/d238e79) fix(repo-lint): build the bin with a single shebang
+- [`2c07cf8`](https://github.com/lzear/forge/commit/2c07cf8) docs: add module and symbol docs to every JSR entrypoint
+
 ## 4.5.0
 
 `forge check` runs fallow instead of knip (`pkg-knip` → `pkg-fallow`). Move knip config to `.fallowrc.json`.
