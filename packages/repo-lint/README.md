@@ -16,18 +16,10 @@ yarn add -D @lzear/repo-lint
 
 Requires Node ≥ 20.
 
-## CLI
-
-```sh
-npx repo-lint          # check current directory
-```
-
-Most users should use `forge check` via [`@lzear/forge`](https://www.npmjs.com/package/@lzear/forge) instead.
-
 ## Programmatic API
 
 ```ts
-import { checkLocal, checkRepo, CHECKS } from '@lzear/repo-lint'
+import { checkLocal, CHECKS } from '@lzear/repo-lint'
 
 // Check the current working directory
 const report = await checkLocal()
@@ -37,9 +29,6 @@ console.log(report.results)
 //   { pass: false, desc: 'publint (all published packages)', detail: '...' },
 //   ...
 // ]
-
-// Check a remote GitHub repo (clones via gh CLI)
-const remote = await checkRepo('lzear/votes', { skipRemote: false })
 ```
 
 ### `checkLocal(options?)`

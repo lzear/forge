@@ -27,14 +27,12 @@ yarn forge sync           # pull shared files from forge into this repo
 
 ### `forge check`
 
-Audits the current repo (or a list of remote repos) against forge standards: README, badges, license, CI workflow, package hygiene (`publint`, `attw`, `fallow`), and up-to-date dependencies.
+Audits the current repo against forge standards: README, badges, license, CI workflow, package hygiene (`publint`, `attw`, `fallow`), and up-to-date dependencies.
 
 ```sh
-forge check                         # current repo
-forge check --repos lzear/votes     # remote repo (clones via gh)
-forge check --repos lzear/a,lzear/b # multiple repos
-forge check --json                  # machine-readable output
-forge check --skip-remote           # skip GitHub secret checks
+forge check                # current repo
+forge check --json         # machine-readable output
+forge check --skip-remote  # skip GitHub secret checks
 ```
 
 ### `forge update`
@@ -161,7 +159,7 @@ export default {
 Programmatic access to the checks run by `forge check`:
 
 ```ts
-import { checkLocal, checkRepo } from '@lzear/forge/repo-lint'
+import { checkLocal } from '@lzear/forge/repo-lint'
 
 const report = await checkLocal()
 console.log(report.results)

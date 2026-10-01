@@ -13,14 +13,12 @@
 import { spawnSync } from 'node:child_process'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
-import { homedir } from 'node:os'
 import path from 'node:path'
 import * as clack from '@clack/prompts'
 import { Command } from 'commander'
 import pc from 'picocolors'
 import {
   checkLocal,
-  checkRepo,
   type PackageManager,
   type RepoReport,
   runUpdate,
@@ -64,8 +62,6 @@ program
   .version(version, '-v, --version')
   .helpOption('-h, --help', 'show help')
 
-const DEFAULT_DIR = path.join(homedir(), '.cache', 'forge')
-
 const printResults = (report: RepoReport, json: boolean): boolean => {
   const isAnyFail = report.results.some((r) => !r.pass)
   if (json) {
@@ -96,59 +92,17 @@ const printResults = (report: RepoReport, json: boolean): boolean => {
   return isAnyFail
 }
 
-const runCheck = async (
-  repos: string | undefined,
-  options: { skipRemote: boolean; dir: string; json: boolean },
-): Promise<void> => {
-  if (!options.json) process.stdout.write(`\n  ${pc.bold('forge check')}\n\n`)
-
-  if (!repos) {
+program
+  .command('check')
+  .description('audit the current repo against forge standards')
+  .option('--skip-remote', 'skip secret checks', false)
+  .option('--json', 'output results as JSON', false)
+  .action(async (options: { skipRemote: boolean; json: boolean }) => {
+    if (!options.json) process.stdout.write(`\n  ${pc.bold('forge check')}\n\n`)
     debug('checkLocal', process.cwd())
     const result = await checkLocal({ skipRemote: options.skipRemote })
     process.exit(printResults(result, options.json) ? 1 : 0)
-  }
-
-  const repoList = repos.split(',').map((r) => r.trim())
-  let isAnyFail = false
-
-  for (const repo of repoList) {
-    if (!options.json)
-      process.stdout.write(`  ${pc.dim('checking ' + repo + '…')}\n`)
-    debug('checkRepo', repo)
-    try {
-      const result = await checkRepo(repo, {
-        baseDir: options.dir,
-        skipRemote: options.skipRemote,
-      })
-      if (printResults(result, options.json)) isAnyFail = true
-    } catch (error) {
-      debug(String(error))
-      process.stderr.write(`  ${pc.red('✗ ' + repo + ' — could not clone')}\n`)
-      isAnyFail = true
-    }
-  }
-
-  process.exit(isAnyFail ? 1 : 0)
-}
-
-program
-  .command('check')
-  .description('audit repo(s) against forge standards')
-  .option(
-    '--repos <repos>',
-    'comma-separated list of repos (default: current repo)',
-  )
-  .option('--skip-remote', 'skip secret checks', false)
-  .option('--dir <dir>', 'cache dir for cloned repos', DEFAULT_DIR)
-  .option('--json', 'output results as JSON', false)
-  .action(
-    (options: {
-      repos?: string
-      skipRemote: boolean
-      dir: string
-      json: boolean
-    }) => runCheck(options.repos, options),
-  )
+  })
 
 const promptAndSet = async (
   s: { name: string; desc: string },

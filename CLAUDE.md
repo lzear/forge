@@ -55,7 +55,7 @@ Defines `LOCAL_CHECKS` (14) and `REMOTE_CHECKS` (1). Local checks verify: requir
 ### `forge` CLI
 
 `packages/forge/src/bin.ts` — four subcommands via commander:
-- `check` — runs `checkLocal()` + `checkRepo()` from `@lzear/repo-lint`
+- `check` — runs `checkLocal()` from `@lzear/repo-lint` on the current repo
 - `update` — runs `runUpdate()` from `@lzear/repo-lint`: bumps dependency ranges (ncu), the `packageManager` field, `.nvmrc`/`.node-version`/`.bun-version`, then installs with the detected package manager (npm/yarn/pnpm/bun); `--dry`, `--no-install`
 - `setup` — interactive prompt to set GitHub secrets (uses `@clack/prompts`)
 - `sync` — fetches `.editorconfig`, `.codacy.yml`, `lefthook.yml`, `.github/zizmor.yml` from forge `main` branch; `--dry` to preview

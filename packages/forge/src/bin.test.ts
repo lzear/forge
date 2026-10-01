@@ -4,16 +4,10 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import * as clack from '@clack/prompts'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import {
-  checkLocal,
-  checkRepo,
-  type RepoReport,
-  runUpdate,
-} from '@lzear/repo-lint'
+import { checkLocal, type RepoReport, runUpdate } from '@lzear/repo-lint'
 
 vi.mock('@lzear/repo-lint', () => ({
   checkLocal: vi.fn(),
-  checkRepo: vi.fn(),
   runUpdate: vi.fn(),
 }))
 vi.mock('node:child_process', () => ({ spawnSync: vi.fn() }))
@@ -177,30 +171,6 @@ describe('forge check', () => {
     vi.mocked(checkLocal).mockResolvedValue(report(true))
     expect(await run('check', '--json')).toBe(0)
     expect(json()).toMatchObject({ repo: 'lzear/x', pass: true })
-  })
-
-  it('checks remote repos and survives clone failures', async () => {
-    vi.mocked(checkRepo)
-      .mockResolvedValueOnce(report(true))
-      .mockRejectedValueOnce(new Error('clone'))
-    expect(
-      await run('check', '--repos', 'lzear/a, lzear/b', '--dir', '/d'),
-    ).toBe(1)
-    expect(checkRepo).toHaveBeenCalledWith('lzear/b', {
-      baseDir: '/d',
-      skipRemote: false,
-    })
-    expect(printed()).toContain('lzear/b — could not clone')
-  })
-
-  it('exits 0 when every remote repo passes', async () => {
-    vi.mocked(checkRepo).mockResolvedValue(report(true))
-    expect(await run('check', '--repos', 'lzear/a', '--json')).toBe(0)
-  })
-
-  it('exits 1 when a remote repo fails', async () => {
-    vi.mocked(checkRepo).mockResolvedValue(report(false))
-    expect(await run('check', '--repos', 'lzear/a')).toBe(1)
   })
 })
 

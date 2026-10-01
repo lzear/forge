@@ -12,9 +12,7 @@
  * @module
  */
 
-import { execSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { execFileSync } from 'node:child_process'
 import path from 'node:path'
 import {
   type Check,
@@ -41,15 +39,6 @@ export interface CheckResult {
 export interface RepoReport {
   repo: string
   results: CheckResult[]
-}
-
-/**
- * Options for {@linkcode checkRepo}.
- */
-export interface CheckRepoOptions {
-  token?: string
-  baseDir?: string
-  skipRemote?: boolean
 }
 
 const runChecks = async (
@@ -102,7 +91,7 @@ export const checkLocal = async (
     options.repo ??
     (() => {
       try {
-        const remote = execSync('git remote get-url origin', {
+        const remote = execFileSync('git', ['remote', 'get-url', 'origin'], {
           cwd: dir,
           encoding: 'utf8',
           stdio: ['ignore', 'pipe', 'ignore'],
@@ -121,35 +110,6 @@ export const checkLocal = async (
     skipRemote,
     (c) => !c.publishedOnly || isPublished,
   )
-}
-
-/**
- * Clones (or pulls) a GitHub repo into `baseDir` and runs every check on it.
- *
- * @param repo `owner/name`
- * @param options `token` authenticates the clone
- */
-export const checkRepo = async (
-  repo: string,
-  options: CheckRepoOptions = {},
-): Promise<RepoReport> => {
-  const {
-    token,
-    baseDir = path.join(tmpdir(), 'repo-lint'),
-    skipRemote = false,
-  } = options
-  const dir = path.join(baseDir, repo.replace('/', '__'))
-
-  if (existsSync(dir))
-    execSync(`git -C ${dir} pull --quiet`, { stdio: 'ignore' })
-  else {
-    const url = token
-      ? `https://${token}@github.com/${repo}.git`
-      : `https://github.com/${repo}.git`
-    execSync(`git clone --depth 1 --quiet ${url} ${dir}`, { stdio: 'ignore' })
-  }
-
-  return runChecks(dir, repo, skipRemote, () => true)
 }
 
 export { CHECKS, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.ts'

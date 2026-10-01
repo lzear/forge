@@ -13,7 +13,6 @@
 export type {
   Check,
   CheckLocalOptions,
-  CheckRepoOptions,
   CheckResult,
   LocalCheck,
   PackageManager,
@@ -24,9 +23,4 @@ export type {
   UpdateReport,
   UpdateResult,
 } from '@lzear/repo-lint'
-export {
-  checkLocal,
-  checkRepo,
-  detectPackageManager,
-  runUpdate,
-} from '@lzear/repo-lint'
+export { checkLocal, detectPackageManager, runUpdate } from '@lzear/repo-lint'

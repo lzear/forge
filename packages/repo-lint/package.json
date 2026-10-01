@@ -16,7 +16,6 @@
       "default": "./dist/index.js"
     }
   },
-  "bin": "./dist/bin.js",
   "sideEffects": false,
   "engines": {
     "node": ">=24"
