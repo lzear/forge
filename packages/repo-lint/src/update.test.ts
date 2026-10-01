@@ -300,6 +300,18 @@ describe('runUpdate', () => {
     expect(read(dir, '.nvmrc')).toBe('v26.3.0\n')
   })
 
+  it.each([
+    ['v22', 'v26'],
+    ['24.9', '26.3'],
+    ['lts/*', 'lts/*'],
+  ])('keeps the shape of .nvmrc %s', async (before, after) => {
+    write(dir, 'package.json', JSON.stringify({}))
+    write(dir, '.nvmrc', `${before}\n`)
+    mockRegistry({})
+    await runUpdate({ dir, install: false })
+    expect(read(dir, '.nvmrc')).toBe(`${after}\n`)
+  })
+
   it('updates .bun-version', async () => {
     write(dir, 'package.json', JSON.stringify({}))
     write(dir, '.bun-version', '1.1.0\n')

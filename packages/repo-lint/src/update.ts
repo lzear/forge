@@ -272,6 +272,8 @@ const stepPackageManager = async (
   }
 }
 
+const VERSION_FILE_RE = /^(v?)(\d+(?:\.\d+){0,2})$/
+
 const updateVersionFile = (
   file: string,
   latest: string,
@@ -279,8 +281,13 @@ const updateVersionFile = (
 ): { changed: boolean; detail: string } => {
   const raw = readFileSync(file, 'utf8')
   const current = raw.trim()
-  const isVPrefixed = current.startsWith('v')
-  const next = isVPrefixed ? `v${latest}` : latest
+  const [, prefix = '', version] = VERSION_FILE_RE.exec(current) ?? []
+  // aliases like lts/* or node already float
+  if (!version)
+    return { changed: false, detail: `${path.basename(file)} ${current} kept` }
+  // keep the file's precision: v22 → v26, not v26.3.0
+  const parts = version.split('.').length
+  const next = prefix + latest.split('.').slice(0, parts).join('.')
   if (current === next)
     return { changed: false, detail: `${path.basename(file)} is latest` }
   if (!isDry)
