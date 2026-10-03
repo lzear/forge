@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   ci:
-    uses: ./.github/workflows/ci.yml
+    uses: $/.github/workflows/ci.yml
     secrets:
       CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
 
@@ -23,13 +23,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: ./actions/setup
+      - uses: $/actions/setup
       - run: yarn --version
 
   release:
     if: github.event_name == 'push'
     needs: ci
-    uses: ./.github/workflows/release.yml
+    uses: $/.github/workflows/release.yml
     permissions:
       contents: write
       pull-requests: write
