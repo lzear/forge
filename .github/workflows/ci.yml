@@ -25,7 +25,7 @@ jobs:
     env:
       HAS_CODACY_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN != '' }}
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       # a bun lockfile makes it a Bun repo, anything else a yarn one
@@ -52,7 +52,7 @@ jobs:
       - if: steps.pm.outputs.name == 'yarn'
         run: corepack enable
       # Bun repos still need node: forge, fallow and e18e run on it
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ inputs.node-version }}
           cache: ${{ steps.pm.outputs.name == 'yarn' && 'yarn' || '' }}
@@ -68,7 +68,7 @@ jobs:
         if: ${{ inputs.run-check }}
         continue-on-error: true
       # advisory: annotates duplication and complexity, `forge check` gates dead code
-      - uses: fallow-rs/fallow@3f6d4a5f817525d322365d64953940ff47175bf2 # v3.9.1
+      - uses: fallow-rs/fallow@71369f80d099e25726ad04382f15aef14a251abc # v3.31.0
         continue-on-error: true
         with:
           command: dupes
@@ -84,7 +84,7 @@ jobs:
           out="$RUNNER_TEMP/coverage-final.json"
           jq -s add $files > "$out"
           echo "path=$out" >> "$GITHUB_OUTPUT"
-      - uses: fallow-rs/fallow@3f6d4a5f817525d322365d64953940ff47175bf2 # v3.9.1
+      - uses: fallow-rs/fallow@71369f80d099e25726ad04382f15aef14a251abc # v3.31.0
         continue-on-error: true
         with:
           command: health
@@ -118,9 +118,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa # v0.5.7
+      - uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
         with:
           advanced-security: false
