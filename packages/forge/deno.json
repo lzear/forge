@@ -1,6 +1,6 @@
 {
   "name": "@lzear/forge",
-  "version": "4.5.1",
+  "version": "4.6.0",
   "license": "MIT",
   "exports": {
     "./bin": "./src/bin.ts",
