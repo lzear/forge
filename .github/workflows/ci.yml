@@ -7,8 +7,9 @@ on:
         type: string
         default: '26'
       coverage-command:
+        description: defaults to `yarn test --coverage`, or `bun test --coverage --coverage-reporter=lcov` in a Bun repo
         type: string
-        default: 'yarn test --coverage'
+        default: ''
       run-check:
         type: boolean
         default: true
@@ -27,21 +28,43 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           persist-credentials: false
+      # a bun lockfile makes it a Bun repo, anything else a yarn one
+      - name: detect package manager
+        id: pm
+        run: |
+          if [ -f bun.lock ] || [ -f bun.lockb ]; then
+            pm=bun run='bun run' install='bun install --frozen-lockfile'
+            coverage='bun test --coverage --coverage-reporter=lcov'
+          else
+            pm=yarn run=yarn install='yarn install --immutable'
+            coverage='yarn test --coverage'
+          fi
+          echo "name=$pm" >> "$GITHUB_OUTPUT"
+          {
+            echo "RUN=$run"
+            echo "INSTALL=$install"
+            echo "COVERAGE_COMMAND=${COVERAGE_COMMAND:-$coverage}"
+          } >> "$GITHUB_ENV"
+        env:
+          COVERAGE_COMMAND: ${{ inputs.coverage-command }}
       # corepack first so setup-node's cache detection resolves the
       # packageManager-pinned yarn, not the runner's preinstalled one
-      - run: corepack enable
+      - if: steps.pm.outputs.name == 'yarn'
+        run: corepack enable
+      # Bun repos still need node: forge, fallow and e18e run on it
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ inputs.node-version }}
-          cache: yarn
-      - run: yarn install --immutable
-      - run: yarn build
-      - run: yarn typecheck
-      - run: yarn lint
+          cache: ${{ steps.pm.outputs.name == 'yarn' && 'yarn' || '' }}
+      # version from packageManager, else the latest
+      - if: steps.pm.outputs.name == 'bun'
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      - run: ${INSTALL}
+      - run: ${RUN} build
+      - run: ${RUN} typecheck
+      - run: ${RUN} lint
       - run: ${COVERAGE_COMMAND}
-        env:
-          COVERAGE_COMMAND: ${{ inputs.coverage-command }}
-      - run: yarn forge check --skip-remote
+      - run: ${RUN} forge check --skip-remote
         if: ${{ inputs.run-check }}
         continue-on-error: true
       # advisory: annotates duplication and complexity, `forge check` gates dead code

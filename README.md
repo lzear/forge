@@ -204,6 +204,8 @@ jobs:
 
 Inputs: `node-version`, `coverage-command`, `run-check`. Extra repo-specific jobs live alongside the `ci:` job in the caller.
 
+A `bun.lock` switches it to Bun: `bun install --frozen-lockfile`, `bun run <script>` and `bun test --coverage --coverage-reporter=lcov`. Node is still set up for forge, fallow and e18e; fallow scores complexity without coverage, since Bun writes no `coverage-final.json`.
+
 Releases: the reusable release workflow runs changesets, stages on npm with `lzear-publish` (add `@lzear/configs` as a dev dependency) and creates the GitHub release. npm matches the caller's workflow file, so set the package's trusted publisher to `<owner>/<repo>` / `main.yml`, stage only:
 
 ```yaml
