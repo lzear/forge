@@ -9,9 +9,16 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { listWorkspaces } from './workspaces.mjs'
 
+/**
+ * @typedef {string | { [key: string]: Exports } | null | undefined} Exports
+ */
+
 const isCheck = process.argv.includes('--check')
 const root = process.cwd()
 
+/**
+ * @param {string} file
+ */
 const readJson = (file) => JSON.parse(readFileSync(file, 'utf8'))
 
 const workspaces = listWorkspaces(root)
@@ -24,7 +31,11 @@ const isOnJsr = new Map(
   ]),
 )
 
-// dist output ("./dist/commitlint.emoji.js") -> source ("./src/commitlint-emoji.ts")
+/**
+ * dist output ("./dist/commitlint.emoji.js") -> source ("./src/commitlint-emoji.ts")
+ * @param {string} dir
+ * @returns {Promise<Record<string, string>>}
+ */
 const distToSource = async (dir) => {
   const configFile = path.join(dir, 'tsup.config.ts')
   if (!existsSync(configFile)) return {}
@@ -40,9 +51,19 @@ const distToSource = async (dir) => {
   )
 }
 
-// flattens the exports map to { subpath: target }, taking the default condition
+/**
+ * flattens the exports map to { subpath: target }, taking the default condition
+ * @param {Exports} exports_
+ */
 const exportTargets = (exports_) => {
+  /**
+   * @type {Record<string, string>}
+   */
   const targets = {}
+  /**
+   * @param {string} subpath
+   * @param {Exports} value
+   */
   const walk = (subpath, value) => {
     if (typeof value === 'string') targets[subpath] = value
     else if (value?.default) walk(subpath, value.default)
@@ -55,14 +76,20 @@ const exportTargets = (exports_) => {
   return targets
 }
 
-// an export is publishable unless its sources reach a package that is not on JSR
+/**
+ * an export is publishable unless its sources reach a package that is not on JSR
+ * @param {string} dir
+ * @param {string} source
+ * @param {Set<string>} [seen]
+ * @returns {boolean}
+ */
 const reachesOnlyJsr = (dir, source, seen = new Set()) => {
   const file = path.join(dir, source)
   if (seen.has(file) || !existsSync(file)) return true
   seen.add(file)
   const specifiers = readFileSync(file, 'utf8')
     .matchAll(/from '([^']+)'/g)
-    .map((m) => m[1])
+    .map((m) => /** @type {string} */ (m[1]))
     .filter((specifier) => !specifier.startsWith('node:'))
     .toArray()
   return specifiers.every((specifier) =>
@@ -76,24 +103,53 @@ const reachesOnlyJsr = (dir, source, seen = new Set()) => {
   )
 }
 
+/**
+ * @param {string} dir
+ */
 const hasTests = (dir) =>
   existsSync(path.join(dir, 'src')) &&
-  readdirSync(path.join(dir, 'src'), { recursive: true }).some((f) =>
-    f.endsWith('.test.ts'),
-  )
+  readdirSync(path.join(dir, 'src'), {
+    encoding: 'utf8',
+    recursive: true,
+  }).some((f) => f.endsWith('.test.ts'))
 
+/**
+ * @param {string} a
+ * @param {string} b
+ */
 const compare = (a, b) => a.localeCompare(b)
+/**
+ * @param {Record<string, string>} o
+ */
 const sortKeys = (o) =>
   Object.fromEntries(Object.entries(o).toSorted(([a], [b]) => compare(a, b)))
+/**
+ * @param {Set<string>} set
+ */
 const sorted = (set) => [...set].toSorted(compare)
 
+/**
+ * "./dist/x.js" -> "dist"
+ * @param {string} file
+ */
+const topDir = (file) => file.replace(/^\.\//, '').replace(/\/.*/, '')
+
+/**
+ * @param {string} location
+ */
 const generate = async (location) => {
   const dir = path.join(root, location)
   const package_ = readJson(path.join(dir, 'package.json'))
   const sources = await distToSource(dir)
 
+  /**
+   * @type {Record<string, string>}
+   */
   const exports_ = {}
   const include = new Set(['README.md', 'package.json'])
+  /**
+   * @type {Set<string>}
+   */
   const exclude = new Set()
 
   const bins = Object.entries(
@@ -109,11 +165,10 @@ const generate = async (location) => {
     const source = sources[target]
     // non-TS targets (tsconfig JSON, .mjs) ship as plain files, not exports
     if (!source) {
-      if (existsSync(path.join(dir, target)))
-        include.add(target.replace('./', '').split('/', 1)[0])
+      if (existsSync(path.join(dir, target))) include.add(topDir(target))
       continue
     }
-    include.add(source.replace('./', '').split('/', 1)[0])
+    include.add(topDir(source))
     if (reachesOnlyJsr(dir, source)) exports_[subpath] = source
     else exclude.add(source.replace('./', ''))
   }

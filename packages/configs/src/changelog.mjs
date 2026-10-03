@@ -12,9 +12,15 @@ import path from 'node:path'
 const root = process.cwd()
 const changelogPath = path.join(root, 'CHANGELOG.md')
 
+/**
+ * @param {string} command
+ */
 const run = (command) =>
   execSync(command, { cwd: root, stdio: 'pipe' }).toString().trim()
 
+/**
+ * @returns {{ releases: { newVersion: string }[], changesets: { summary: string }[] }}
+ */
 const readStatus = () => {
   const dir = mkdtempSync(path.join(tmpdir(), 'changelog-'))
   const file = path.join(dir, 'status.json')
@@ -22,9 +28,12 @@ const readStatus = () => {
   return JSON.parse(readFileSync(file, 'utf8'))
 }
 
-// commits since the last release tag, else since the last Version Packages
-// commit, else the last 20. A stable release skips prerelease tags, so it
-// lists everything its betas and rcs shipped.
+/**
+ * commits since the last release tag, else since the last Version Packages
+ * commit, else the last 20. A stable release skips prerelease tags, so it
+ * lists everything its betas and rcs shipped.
+ * @param {string} version
+ */
 const getCommits = (version) => {
   const exclude = version.includes('-') ? '' : " --exclude 'v*-*'"
   let base
@@ -45,6 +54,9 @@ const SKIP_PREFIXES = [
   'Version Packages',
 ]
 
+/**
+ * @param {string} raw
+ */
 const filterCommits = (raw) =>
   raw.split('\n').filter((l) => {
     const subject = l.slice(l.indexOf(' ') + 1)
@@ -64,10 +76,11 @@ const getRepoUrl = () => {
 }
 
 const { releases, changesets } = readStatus()
-if (releases.length === 0) process.exit(0)
+const [release] = releases
+if (!release) process.exit(0)
 
 const repoUrl = getRepoUrl()
-const commits = filterCommits(getCommits(releases[0].newVersion)).map((l) => {
+const commits = filterCommits(getCommits(release.newVersion)).map((l) => {
   const [sha, ...rest] = l.split(' ')
   const label = repoUrl
     ? `[\`${sha}\`](${repoUrl}/commit/${sha})`
@@ -76,7 +89,7 @@ const commits = filterCommits(getCommits(releases[0].newVersion)).map((l) => {
 })
 
 const section = [
-  `## ${releases[0].newVersion}`,
+  `## ${release.newVersion}`,
   ...changesets.map((c) => c.summary.trim()),
   ...(commits.length > 0 ? ['### Commits', commits.join('\n')] : []),
 ].join('\n\n')
