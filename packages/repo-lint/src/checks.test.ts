@@ -212,8 +212,16 @@ describe('LOCAL_CHECKS', () => {
     it('fails when missing', async () => {
       expect(await check('renovate', dir)).toBe(false)
     })
-    it('passes when present', async () => {
-      write(dir, 'renovate.json', '{}')
+    it('fails on invalid JSON', async () => {
+      write(dir, 'renovate.json', '{')
+      expect(await check('renovate', dir)).toMatchObject({ pass: false })
+    })
+    it('fails without the forge preset', async () => {
+      write(dir, 'renovate.json', '{"extends":["github>lzear/forge-x"]}')
+      expect(await check('renovate', dir)).toMatchObject({ pass: false })
+    })
+    it('passes when extending the forge preset', async () => {
+      write(dir, 'renovate.json', '{"extends":["github>lzear/forge#v4"]}')
       expect(await check('renovate', dir)).toBe(true)
     })
   })

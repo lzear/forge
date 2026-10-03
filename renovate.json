@@ -1,20 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
-  "packageRules": [
-    {
-      "matchUpdateTypes": ["patch"],
-      "automerge": true,
-      "stabilityDays": 7
-    }
-  ],
-  "customManagers": [
-    {
-      "customType": "regex",
-      "description": "npx-pinned CLIs in workflows",
-      "managerFilePatterns": ["/^\\.github/workflows/[^/]+\\.ya?ml$/"],
-      "matchStrings": ["npx --yes (?<depName>@?[^@\\s]+)@(?<currentValue>\\S+)"],
-      "datasourceTemplate": "npm"
-    }
-  ]
+  "extends": ["github>lzear/forge"]
 }

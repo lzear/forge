@@ -23,7 +23,7 @@ const update = await runUpdate({ dir, dry, install })
 | `license`             | `LICENSE` exists                                          |
 | `jsr-config`          | `deno.json` name & version match `package.json`           |
 | `ci-workflow`         | a workflow calls the forge reusable CI workflow           |
-| `renovate`            | `renovate.json` exists                                    |
+| `renovate`            | `renovate.json` extends `github>lzear/forge`              |
 | `pkg-publint`         | published packages pass `publint`                         |
 | `pkg-attw`            | published packages pass `attw` (ESM-only profile)         |
 | `pkg-size-limit`      | within `size-limit` budgets (where configured)            |

@@ -127,6 +127,7 @@ const readmeIncludes = (dir: string, needle: string): boolean => {
 }
 
 const FORGE_WORKFLOW_RE = /uses:\s*lzear\/forge\/\.github\/workflows\/ci\.yml@/
+const FORGE_PRESET_RE = /^github>lzear\/forge(?:$|[#:])/
 
 // The forge repo hosts the reusable workflow and calls it locally.
 const isForgeRepo = (dir: string): boolean =>
@@ -340,9 +341,24 @@ export const LOCAL_CHECKS: LocalCheck[] = [
   },
   {
     id: 'renovate',
-    desc: 'renovate.json',
+    desc: 'renovate extends forge',
     type: 'local',
-    check: (dir) => existsSync(path.join(dir, 'renovate.json')),
+    check: (dir) => {
+      const file = path.join(dir, 'renovate.json')
+      if (!existsSync(file)) return false
+      let config: { extends?: string[] }
+      try {
+        config = JSON.parse(readFileSync(file, 'utf8')) as typeof config
+      } catch {
+        return { pass: false, detail: 'renovate.json is not valid JSON' }
+      }
+      return (
+        config.extends?.some((p) => FORGE_PRESET_RE.test(p)) === true || {
+          pass: false,
+          detail: 'add "github>lzear/forge" to renovate.json extends',
+        }
+      )
+    },
   },
   {
     id: 'pkg-publint',
