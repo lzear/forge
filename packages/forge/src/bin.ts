@@ -20,6 +20,7 @@ import pc from 'picocolors'
 import {
   checkLocal,
   detectRepo,
+  listSecrets,
   type PackageManager,
   type RepoReport,
   runUpdate,
@@ -143,26 +144,6 @@ const REQUIRED_SECRETS = (repo: string) => [
   },
 ]
 
-const listSecrets = (repo: string): string[] => {
-  if (spawnSync('gh', ['--version'], { stdio: 'ignore' }).status !== 0) {
-    log.error('gh CLI not found — install at https://cli.github.com')
-    process.exit(1)
-  }
-  try {
-    debug('gh secret list --repo', repo)
-    const result = spawnSync(
-      'gh',
-      ['secret', 'list', '--repo', repo, '--json', 'name'],
-      { encoding: 'utf8' },
-    )
-    if (result.status !== 0) throw new Error(result.stderr)
-    return (JSON.parse(result.stdout) as { name: string }[]).map((s) => s.name)
-  } catch {
-    log.error('Failed to list secrets. Run: gh auth login')
-    process.exit(1)
-  }
-}
-
 program
   .command('setup')
   .description('check and set required GitHub secrets for a repo')
@@ -180,6 +161,12 @@ program
     if (!json) log.intro(pc.bold(`forge setup · ${pc.cyan(repo)}`))
 
     const existing = listSecrets(repo)
+    if (!existing) {
+      log.error(
+        'Failed to list secrets. Install gh (https://cli.github.com), then: gh auth login',
+      )
+      process.exit(1)
+    }
     const secrets = REQUIRED_SECRETS(repo)
     const present = secrets.filter((s) => existing.includes(s.name))
     const missing = secrets.filter((s) => !existing.includes(s.name))

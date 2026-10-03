@@ -113,7 +113,7 @@ export const checkLocal = async (
   )
 }
 
-export { CHECKS, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.ts'
+export { CHECKS, listSecrets, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.ts'
 export type {
   PackageManager,
   PackageManagerName,

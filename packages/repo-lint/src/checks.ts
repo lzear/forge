@@ -524,7 +524,10 @@ export const LOCAL_CHECKS: LocalCheck[] = [
   },
 ]
 
-const listSecrets = (repo: string): string[] | null => {
+/**
+ * Lists the repo's GitHub Actions secret names, or `null` when `gh` fails.
+ */
+export const listSecrets = (repo: string): string[] | null => {
   try {
     const result = spawnSync(
       'gh',

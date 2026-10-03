@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   checkLocal,
   detectRepo,
+  listSecrets,
   type RepoReport,
   runUpdate,
 } from '@lzear/repo-lint'
@@ -14,6 +15,7 @@ import {
 vi.mock('@lzear/repo-lint', () => ({
   checkLocal: vi.fn(),
   detectRepo: vi.fn(),
+  listSecrets: vi.fn(),
   runUpdate: vi.fn(),
 }))
 vi.mock('node:child_process', () => ({ spawnSync: vi.fn() }))
@@ -69,33 +71,20 @@ const report = (...passes: boolean[]): RepoReport => ({
   })),
 })
 
-const spawned = (status: number, stdout = ''): SpawnSyncReturns<string> => ({
+const spawned = (status: number): SpawnSyncReturns<string> => ({
   status,
-  stdout,
+  stdout: '',
   stderr: '',
   pid: 0,
   output: [],
   signal: null,
 })
 
-// answers `detectRepo` and `gh` calls: `--version`, `secret list`, then `set`
-const mockGh = ({
-  gh = 0,
-  secrets = [] as string[] | null,
-  set = 0,
-} = {}): void => {
+// answers `detectRepo`, `listSecrets`, then `gh secret set`
+const mockGh = ({ secrets = [] as string[] | null, set = 0 } = {}): void => {
   vi.mocked(detectRepo).mockReturnValue('lzear/x')
-  vi.mocked(spawnSync).mockImplementation(((
-    _command: string,
-    args: string[],
-  ) => {
-    if (args[0] === '--version') return spawned(gh)
-    if (args[0] === 'secret' && args[1] === 'list')
-      return secrets
-        ? spawned(0, JSON.stringify(secrets.map((name) => ({ name }))))
-        : spawned(1)
-    return spawned(args[1] === 'set' ? set : 0)
-  }) as typeof spawnSync)
+  vi.mocked(listSecrets).mockReturnValue(secrets)
+  vi.mocked(spawnSync).mockReturnValue(spawned(set))
 }
 
 const updateReport = (pass: boolean) => ({
@@ -192,13 +181,7 @@ describe('forge setup', () => {
     expect(printed()).toContain('Could not detect repo')
   })
 
-  it('needs gh', async () => {
-    mockGh({ gh: 1 })
-    expect(await run('setup')).toBe(1)
-    expect(printed()).toContain('gh CLI not found')
-  })
-
-  it('needs gh auth', async () => {
+  it('needs a working gh', async () => {
     mockGh({ secrets: null })
     expect(await run('setup')).toBe(1)
     expect(printed()).toContain('gh auth login')
