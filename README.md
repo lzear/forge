@@ -34,6 +34,7 @@ package opts into JSR by having a `deno.json`; its contents are generated from
 `package.json` and the tsup entries by `yarn lzear-sync-jsr`, never edited by
 hand.
 
+Complements [e18e](https://e18e.dev): the ESLint config runs `e18e/ban-dependencies`, CI runs `e18e analyze`.
 
 ## Usage
 

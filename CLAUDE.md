@@ -48,7 +48,7 @@ Oxlint evaluated 2026-09 (oxlint 1.86, `@oxlint/migrate`): ~4× faster (2.9s vs 
 
 ### `@lzear/repo-lint`
 
-Defines `LOCAL_CHECKS` (14) and `REMOTE_CHECKS` (1). Local checks verify: required files (README, .codacy.yml, LICENSE, renovate.json), CI calling the forge reusable workflow (`lzear/forge/.github/workflows/ci.yml`), README badges (Codacy grade/coverage, npm), `deno.json` name/version matching `package.json` (`jsr-config`), and package quality (`publint`, `attw`, `fallow`, `sherif` for monorepos, audit, no deprecated deps, fresh deps). Remote check verifies the CODACY_PROJECT_TOKEN GitHub secret. Also home of `runUpdate()`/`detectPackageManager()` (`src/update.ts`) powering `forge update`.
+Defines `LOCAL_CHECKS` (15) and `REMOTE_CHECKS` (1). Local checks verify: required files (README, .codacy.yml, LICENSE, renovate.json), CI calling the forge reusable workflow (`lzear/forge/.github/workflows/ci.yml`), README badges (Codacy grade/coverage, npm), `deno.json` name/version matching `package.json` (`jsr-config`), and package quality (`publint`, `attw`, `size-limit` where configured, `fallow`, `sherif` for monorepos, audit, no deprecated deps, fresh deps). Remote check verifies the CODACY_PROJECT_TOKEN GitHub secret. Also home of `runUpdate()`/`detectPackageManager()` (`src/update.ts`) powering `forge update`.
 
 `eachPublishedPkg(dir)` walks workspaces, skipping private packages.
 

@@ -78,6 +78,7 @@ const report = await runUpdate({ dry: true })
 | `renovate`            | `renovate.json` exists                                    |
 | `pkg-publint`         | All published packages pass `publint`                     |
 | `pkg-attw`            | All published packages pass `attw` (ESM-only profile)     |
+| `pkg-size-limit`      | Within `size-limit` budgets (where configured)            |
 | `pkg-fallow`          | No unused files, exports or dependencies (`fallow`)       |
 | `monorepo-lint`       | Workspace consistency (`sherif`, monorepos only)          |
 | `deps-audit`          | No known vulnerabilities (PM-native `audit`, prod, high+) |

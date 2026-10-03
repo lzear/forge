@@ -318,6 +318,48 @@ describe('LOCAL_CHECKS', () => {
     })
   })
 
+  describe('pkg-size-limit', () => {
+    it('skips repos without a size-limit config', async () => {
+      write(dir, 'package.json', JSON.stringify({}))
+      expect(await check('pkg-size-limit', dir)).toBe(true)
+      expect(vi.mocked(childProcess.spawnSync)).not.toHaveBeenCalled()
+    })
+    it('fails when configured but not installed', async () => {
+      write(dir, '.size-limit.json', '[]')
+      const result = await check('pkg-size-limit', dir)
+      expect(result).toMatchObject({ pass: false })
+      expect((result as { detail: string }).detail).toContain('not installed')
+    })
+    it('runs the repo bin where the package.json field lives', async () => {
+      write(dir, 'node_modules/.bin/size-limit')
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ private: true, workspaces: ['packages/*'] }),
+      )
+      write(
+        dir,
+        'packages/a/package.json',
+        JSON.stringify({ 'size-limit': [{ path: 'dist/index.js' }] }),
+      )
+      mockSpawn(0)
+      expect(await check('pkg-size-limit', dir)).toBe(true)
+      expect(vi.mocked(childProcess.spawnSync)).toHaveBeenCalledWith(
+        process.execPath,
+        [path.join(dir, 'node_modules/.bin/size-limit')],
+        expect.objectContaining({ cwd: path.join(dir, 'packages/a') }),
+      )
+    })
+    it('fails with output when over the limit', async () => {
+      write(dir, 'node_modules/.bin/size-limit')
+      write(dir, '.size-limit.ts', 'export default []')
+      mockSpawn(1, 'Package size limit has exceeded by 1 kB')
+      const result = await check('pkg-size-limit', dir)
+      expect(result).toMatchObject({ pass: false })
+      expect((result as { detail: string }).detail).toContain('exceeded')
+    })
+  })
+
   describe('pkg-fallow', () => {
     it('passes when fallow exits 0', async () => {
       mockSpawn(0)

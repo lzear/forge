@@ -858,6 +858,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@e18e/eslint-plugin@npm:^0.8":
+  version: 0.8.1
+  resolution: "@e18e/eslint-plugin@npm:0.8.1"
+  dependencies:
+    empathic: "npm:^2.0.1"
+    module-replacements: "npm:^3.3.0"
+    verkit: "npm:^0.4.0"
+  peerDependencies:
+    eslint: ^9.0.0 || ^10.0.0
+    oxlint: ^1.72.0
+  peerDependenciesMeta:
+    eslint:
+      optional: true
+    oxlint:
+      optional: true
+  checksum: 10c0/7ca7cbb60667f604b0bee8bbcdd3527428c173f82b531d53170cff07f0469abd976d04c91fdb2f5af91d4627fdd5ce177be254ca9333f64955068936e0842919
+  languageName: node
+  linkType: hard
+
 "@emnapi/core@npm:1.10.0":
   version: 1.10.0
   resolution: "@emnapi/core@npm:1.10.0"
@@ -1526,6 +1545,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lzear/eslint-config@workspace:packages/eslint-config"
   dependencies:
+    "@e18e/eslint-plugin": "npm:^0.8"
     "@eslint-community/eslint-plugin-eslint-comments": "npm:^4"
     "@eslint/js": "npm:^10"
     "@lzear/configs": "workspace:*"
@@ -1620,8 +1640,6 @@ __metadata:
     sherif: "npm:^1"
     tsup: "npm:^8"
     vitest: "npm:^5"
-  bin:
-    repo-lint: ./dist/bin.js
   languageName: unknown
   linkType: soft
 
@@ -3641,6 +3659,13 @@ __metadata:
   version: 2.4.0
   resolution: "emojilib@npm:2.4.0"
   checksum: 10c0/6e66ba8921175842193f974e18af448bb6adb0cf7aeea75e08b9d4ea8e9baba0e4a5347b46ed901491dcaba277485891c33a8d70b0560ca5cc9672a94c21ab8f
+  languageName: node
+  linkType: hard
+
+"empathic@npm:^2.0.1":
+  version: 2.1.0
+  resolution: "empathic@npm:2.1.0"
+  checksum: 10c0/cf13e2919d680a22140d7cd1637a01f6cf9a727f21d3a54b23489ec01c80eab548b9d832d2e167d00e124a54377660c1d6fd2b5947d905366e4d22fde7b9e082
   languageName: node
   linkType: hard
 
@@ -6133,6 +6158,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"module-replacements@npm:^3.3.0":
+  version: 3.4.0
+  resolution: "module-replacements@npm:3.4.0"
+  checksum: 10c0/1c13919005b4a2f6af85249e2423507e10f1585a1cd9300a25d246eef0e839a6759f5eb388f5131b9c3e41736366dfa89f40da10e8dc8ab40e6568ee98f74083
+  languageName: node
+  linkType: hard
+
 "mri@npm:^1.1.0":
   version: 1.2.0
   resolution: "mri@npm:1.2.0"
@@ -8064,6 +8096,13 @@ __metadata:
   version: 8.0.0
   resolution: "validate-npm-package-name@npm:8.0.0"
   checksum: 10c0/ec44abe7f8dd39f263d2571a538973e9c1864a99a0b0899092e50cae914fd9d7d25d69f52d3c9a422f04e75d2fa6d4a6bae8dc24cd6ae3a20e60d3d92e1b752e
+  languageName: node
+  linkType: hard
+
+"verkit@npm:^0.4.0":
+  version: 0.4.1
+  resolution: "verkit@npm:0.4.1"
+  checksum: 10c0/b184269beec1d8ee90915d504f3d3671663a9c840cae01e664ea2614fcd5ff7e42472ce0b2795b66a967abaef6dfe2ecf89c5d2a6f1826c8cab9e65a41b7fd0f
   languageName: node
   linkType: hard
 

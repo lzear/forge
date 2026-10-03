@@ -86595,6 +86595,572 @@ If a function does not access `this`, it can be annotated with `this: void`.",
     ],
     "name": "lzear/package-json",
     "plugins": {
+      "e18e": {
+        "configs": {
+          "modernization": {
+            "plugins": {
+              "e18e": [Circular],
+            },
+            "rules": {
+              "e18e/prefer-array-at": "error",
+              "e18e/prefer-array-fill": "error",
+              "e18e/prefer-array-to-reversed": "error",
+              "e18e/prefer-array-to-sorted": "error",
+              "e18e/prefer-array-to-spliced": "error",
+              "e18e/prefer-includes": "error",
+              "e18e/prefer-nullish-coalescing": "error",
+              "e18e/prefer-object-has-own": "error",
+              "e18e/prefer-spread-syntax": "error",
+              "e18e/prefer-url-canparse": "error",
+            },
+          },
+          "moduleReplacements": {
+            "plugins": {
+              "e18e": [Circular],
+            },
+            "rules": {
+              "e18e/ban-dependencies": "error",
+            },
+          },
+          "performanceImprovements": {
+            "plugins": {
+              "e18e": [Circular],
+            },
+            "rules": {
+              "e18e/prefer-array-from-map": "error",
+              "e18e/prefer-array-some": "error",
+              "e18e/prefer-date-now": "error",
+              "e18e/prefer-regex-test": "error",
+              "e18e/prefer-static-regex": "error",
+              "e18e/prefer-string-fromcharcode": "error",
+              "e18e/prefer-timer-args": "error",
+            },
+          },
+          "recommended": {
+            "plugins": {
+              "e18e": [Circular],
+            },
+            "rules": {
+              "e18e/ban-dependencies": "error",
+              "e18e/prefer-array-at": "error",
+              "e18e/prefer-array-fill": "error",
+              "e18e/prefer-array-from-map": "error",
+              "e18e/prefer-array-some": "error",
+              "e18e/prefer-array-to-reversed": "error",
+              "e18e/prefer-array-to-sorted": "error",
+              "e18e/prefer-array-to-spliced": "error",
+              "e18e/prefer-date-now": "error",
+              "e18e/prefer-includes": "error",
+              "e18e/prefer-nullish-coalescing": "error",
+              "e18e/prefer-object-has-own": "error",
+              "e18e/prefer-regex-test": "error",
+              "e18e/prefer-spread-syntax": "error",
+              "e18e/prefer-static-regex": "error",
+              "e18e/prefer-string-fromcharcode": "error",
+              "e18e/prefer-timer-args": "error",
+              "e18e/prefer-url-canparse": "error",
+            },
+          },
+        },
+        "meta": {
+          "name": "e18e",
+          "namespace": "e18e",
+        },
+        "rules": {
+          "ban-dependencies": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {},
+              ],
+              "docs": {
+                "description": "Disallow dependencies in favor of more performant or secure alternatives",
+              },
+              "messages": {
+                "documentedReplacement": ""{{name}}" should be replaced with an alternative package. In your project, we recommend {{replacement}}. Read more here: {{url}}",
+                "nativeReplacement": ""{{name}}" should be replaced with native functionality. You can instead use {{replacement}}. Read more here: {{url}}",
+                "removalReplacement": ""{{name}}" is flagged as no longer needed. {{description}}",
+                "simpleReplacement": ""{{name}}" should be replaced with inline/local logic.{{description}}",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "allowed": {
+                      "description": "Module names to allow even if matched by a preset",
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                    "modules": {
+                      "description": "Additional module names to disallow",
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                    "presets": {
+                      "description": "Preset groups of modules to disallow",
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "suggestion",
+            },
+          },
+          "no-delete-property": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow `delete` on properties — V8 deoptimizes the object to dictionary mode",
+                "recommended": true,
+              },
+              "hasSuggestions": true,
+              "messages": {
+                "noDeleteProperty": "`delete` forces V8 into a slow dictionary representation. Set the value to `undefined` if absence-vs-undefined does not matter, or use `Map` for a dynamic key-value collection.",
+                "replaceWithUndefined": "Replace with assignment to undefined",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "no-indexof-equality": {
+            "create": [Function],
+            "defaultOptions": [],
+            "meta": {
+              "docs": {
+                "description": "Prefer optimized alternatives to `indexOf()` equality checks",
+              },
+              "fixable": "code",
+              "messages": {
+                "preferDirectAccess": "Use direct array access `{{array}}[{{index}}] === {{item}}` instead of `indexOf() === {{index}}`",
+                "preferStartsWith": "Use `.startsWith()` instead of `indexOf() === 0` for strings",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "no-spread-in-reduce": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow spreading the accumulator inside a `reduce` callback (O(N²) growth)",
+                "recommended": false,
+              },
+              "messages": {
+                "noSpreadInReduce": "Spreading the accumulator on every reduce step is O(N²). Mutate the accumulator (push/Object.assign) and return it, or use a different shape (e.g. `flatMap`, `Object.fromEntries`).",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-array-at": {
+            "create": [Function],
+            "defaultOptions": [],
+            "meta": {
+              "docs": {
+                "description": "Prefer Array.prototype.at() over length-based indexing",
+              },
+              "fixable": "code",
+              "messages": {
+                "preferAt": "Use .at(-1) instead of [{{array}}.length - 1]",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-array-fill": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer Array.prototype.fill() over Array.from or map with constant values",
+                "recommended": true,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferFillArrayFrom": "Use Array.from({length: {{length}}}).fill({{value}}) instead of Array.from with a constant callback",
+                "preferFillSpreadMap": "Use Array({{length}}).fill({{value}}) instead of spread Array with map",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-array-from-map": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer Array.from(iterable, mapper) over [...iterable].map(mapper) to avoid intermediate array allocation",
+                "recommended": true,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferArrayFrom": "Use Array.from({{iterable}}, {{mapper}}) instead of [...{{iterable}}].map({{mapper}}) to avoid creating an intermediate array",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-array-some": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer Array.some() over Array.find() and Array.filter().length checks when checking for element existence",
+                "recommended": true,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferArraySome": "Use Array.some() instead of Array.find() and Array.filter().length checks when checking for element existence",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-array-to-reversed": {
+            "create": [Function],
+            "defaultOptions": [],
+            "meta": {
+              "docs": {
+                "description": "Prefer Array.prototype.toReversed() over copying and reversing arrays",
+              },
+              "fixable": "code",
+              "messages": {
+                "preferToReversed": "Use {{array}}.toReversed() instead of copying and reversing",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-array-to-sorted": {
+            "create": [Function],
+            "defaultOptions": [],
+            "meta": {
+              "docs": {
+                "description": "Prefer Array.prototype.toSorted() over copying and sorting arrays",
+              },
+              "fixable": "code",
+              "messages": {
+                "preferToSorted": "Use {{array}}.toSorted() instead of copying and sorting",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-array-to-spliced": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer Array.prototype.toSpliced() over copying and splicing arrays",
+                "recommended": true,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferToSpliced": "Use {{array}}.toSpliced() instead of copying and splicing",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-charcode-at-in-loop": {
+            "create": [Function],
+            "defaultOptions": [],
+            "meta": {
+              "docs": {
+                "description": "Prefer `charCodeAt()` over indexed string access for single-character comparisons inside loops",
+              },
+              "hasSuggestions": true,
+              "messages": {
+                "preferCharCodeAt": "Comparing indexed string access to a single-character string can allocate and compare a one-character string. In a loop, charCodeAt() against a numeric code unit is faster.",
+                "replaceWithCharCodeAt": "Replace with charCodeAt() and code unit {{code}} for {{quoted}}.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-date-now": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer Date.now() over new Date().getTime() and +new Date()",
+                "recommended": true,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferDateNow": "Use Date.now() to avoid allocating a new Date object.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-exponentiation-operator": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer the exponentiation operator ** over Math.pow()",
+                "recommended": true,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferExponentiation": "Use the ** operator instead of Math.pow()",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-flatmap-over-map-flat": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer Array.prototype.flatMap() over .map(fn).flat() to avoid the intermediate array",
+                "recommended": false,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferFlatMap": "Use `.flatMap(fn)` instead of `.map(fn).flat()` — skips the intermediate array.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-get-or-insert": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer `Map.prototype.getOrInsert()` over reading an entry with a default and writing it back",
+                "recommended": false,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferGetOrInsert": "Use `map.getOrInsert(key, default)` instead of reading the entry with a default and setting it back.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-includes": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer .includes() over indexOf() comparisons for arrays and strings",
+                "recommended": true,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferIncludes": "Use .includes() instead of indexOf() comparison",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-includes-over-regex-test": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer String.prototype.{includes,startsWith,endsWith} over equivalent regex.test() calls",
+                "recommended": false,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferEndsWith": "Prefer `s.endsWith('{{literal}}')` over `/{{literal}}$/.test(s)`.",
+                "preferEquals": "Prefer `s === '{{literal}}'` over `/^{{literal}}$/.test(s)`.",
+                "preferIncludes": "Prefer `s.includes('{{literal}}')` over `/{{pattern}}/.test(s)`.",
+                "preferStartsWith": "Prefer `s.startsWith('{{literal}}')` over `/^{{literal}}/.test(s)`.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-inline-equality": {
+            "create": [Function],
+            "defaultOptions": [],
+            "meta": {
+              "docs": {
+                "description": "Prefer inline equality checks over temporary object creation for simple comparisons",
+              },
+              "fixable": "code",
+              "messages": {
+                "preferEquality": "Avoid creating a temporary array just to call `.includes()`. Use equality checks instead.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-nullish-coalescing": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer nullish coalescing operator (?? and ??=) over verbose null checks",
+                "recommended": true,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferNullishCoalescing": "Use nullish coalescing operator (??) instead of verbose null check",
+                "preferNullishCoalescingAssignment": "Use nullish coalescing assignment (??=) instead of verbose null check",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-object-has-own": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer Object.hasOwn() over Object.prototype.hasOwnProperty.call() and obj.hasOwnProperty()",
+                "recommended": true,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferObjectHasOwn": "Use Object.hasOwn() instead of hasOwnProperty",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-regex-test": {
+            "create": [Function],
+            "defaultOptions": [],
+            "meta": {
+              "docs": {
+                "description": "prefer `RegExp.test()` over `String.match()` and `RegExp.exec()` when only checking for match existence",
+              },
+              "fixable": "code",
+              "messages": {
+                "preferTest": "Prefer `{{regex}}.test({{string}})` over `{{original}}` for boolean checks",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-slice-over-split-index": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer `indexOf(needle)` and `slice(...)` over `split()[N]` when splitting a string into two pieces.",
+                "recommended": false,
+              },
+              "messages": {
+                "preferSliceFirst": "Prefer `indexOf(needle)` and `slice(0, index)` over `split(needle)[0]` for string separators. `split` will allocate an intermediate array, resulting in poorer performance. Preserve the missing-separator fallback explicitly.",
+                "preferSliceSecond": "Prefer `indexOf(needle)` and `slice(index)` over `split(needle)[1]` for string separators. `split` will allocate an intermediate array, resulting in poorer performance. Preserve the missing-separator fallback explicitly.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-spread-syntax": {
+            "create": [Function],
+            "defaultOptions": [],
+            "meta": {
+              "docs": {
+                "description": "Prefer spread syntax over Array.concat(), Array.from(), Object.assign({}, ...), and Function.apply()",
+              },
+              "fixable": "code",
+              "messages": {
+                "preferSpreadArray": "Use spread syntax [...arr, ...other] instead of arr.concat(other)",
+                "preferSpreadArrayFrom": "Use spread syntax [...iterable] instead of Array.from(iterable) when no mapper function is provided",
+                "preferSpreadFunction": "Use spread syntax fn(...args) instead of fn.apply(null/undefined, args)",
+                "preferSpreadObject": "Use spread syntax {...a, ...b} instead of Object.assign({}, a, b)",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-static-collator": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer hoisting an `Intl.Collator` instance over calling localeCompare in a sort callback",
+                "recommended": false,
+              },
+              "messages": {
+                "preferStaticCollator": "`localeCompare` constructs an `Intl.Collator` on every call. Hoist `const collator = new Intl.Collator(...)` outside the callback and use `collator.compare(a, b)`.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-static-regex": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer defining regular expressions at module scope to avoid re-compilation on every function call",
+                "recommended": true,
+              },
+              "messages": {
+                "preferStatic": "Move this regular expression to module scope to avoid re-compilation on every call.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-string-fromcharcode": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer String.fromCharCode() over String.fromCodePoint() for code points below 0x10000",
+                "recommended": true,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferFromCharCode": "String.fromCharCode is faster than String.fromCodePoint for code points below 0x10000.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-throw-if-no-entry": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer `{throwIfNoEntry: false}` over relying on a thrown error for missing fs entries from sync stat calls",
+                "recommended": false,
+              },
+              "hasSuggestions": true,
+              "messages": {
+                "addThrowIfNoEntryOption": "Pass { throwIfNoEntry: false } so the call returns undefined instead of throwing.",
+                "preferThrowIfNoEntry": "Pass { throwIfNoEntry: false } and check the return value for missing entries, keeping the try/catch for real errors like EACCES. Throwing on the common not-found path builds an expensive Error stack trace.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-timer-args": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer passing function and arguments directly to setTimeout/setInterval instead of wrapping in an arrow function or using bind",
+                "recommended": true,
+              },
+              "fixable": "code",
+              "messages": {
+                "preferArgs": "Pass function and arguments directly to timer function to avoid allocating an extra function",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "prefer-url-canparse": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Prefer URL.canParse() over try-catch blocks for URL validation",
+                "recommended": true,
+              },
+              "hasSuggestions": true,
+              "messages": {
+                "preferCanParse": "Use URL.canParse() instead of try-catch for URL validation",
+                "replaceWithCanParse": "Replace with URL.canParse()",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+        },
+      },
       "lzear": {
         "meta": {
           "name": "lzear",
@@ -86673,6 +87239,15 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       },
     },
     "rules": {
+      "e18e/ban-dependencies": [
+        2,
+        {
+          "presets": [
+            "microutilities",
+            "native",
+          ],
+        },
+      ],
       "lzear/major-version-only": 2,
     },
   },

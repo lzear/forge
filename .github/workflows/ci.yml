@@ -68,6 +68,16 @@ jobs:
           coverage: ${{ steps.fallow-coverage.outputs.path }}
           fail-on-issues: false
           branded-token: false
+      # advisory: annotates e18e's lighter/native alternatives and publint hints,
+      # minus duplicate deps (dozens per repo, mostly transitive)
+      - name: e18e analyze
+        continue-on-error: true
+        run: |
+          out="$RUNNER_TEMP/e18e.json"
+          npx --yes @e18e/cli@0.7.0 analyze --json --log-level error --report-level info > "$out"
+          jq -r '.messages[]
+            | select(.message | startswith("[duplicate dependency]") | not)
+            | "::\(if .severity == "error" or .severity == "warning" then .severity else "notice" end) title=e18e::\(.message | gsub("\n"; "%0A"))"' "$out"
       - name: collect coverage paths
         id: coverage
         run: |

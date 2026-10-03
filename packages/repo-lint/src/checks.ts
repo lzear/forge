@@ -146,6 +146,13 @@ const callsForgeWorkflow = (dir: string): boolean => {
   )
 }
 
+// size-limit's config files; it also reads a `size-limit` package.json field
+const SIZE_LIMIT_FILE_RE = /^\.size-limit(?:\.json|\.[cm]?[jt]s)?$/
+
+const hasSizeLimit = (dir: string): boolean =>
+  readPackage(dir)?.['size-limit'] !== undefined ||
+  readdirSync(dir).some((f) => SIZE_LIMIT_FILE_RE.test(f))
+
 const auditCommand = (pm: PackageManager): [string, ...string[]] => {
   switch (pm.name) {
     case 'npm':
@@ -377,6 +384,30 @@ export const LOCAL_CHECKS: LocalCheck[] = [
           ? { pass: true }
           : { pass: false, detail: (r.stdout + r.stderr).trim() }
       })
+    },
+  },
+  {
+    id: 'pkg-size-limit',
+    desc: 'size-limit',
+    type: 'local',
+    // the repo's own bin: size-limit loads only plugins its package.json lists
+    check: (dir) => {
+      const failures = [dir, ...getWorkspaceDirectories(dir)]
+        .filter((d) => hasSizeLimit(d))
+        .flatMap((d) => {
+          const bin = findBin('size-limit', d)
+          if (!bin) return [`${d}: size-limit not installed`]
+          const r = spawnSync(process.execPath, [bin], {
+            cwd: d,
+            encoding: 'utf8',
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: { ...process.env, NO_COLOR: '1' },
+          })
+          return r.status === 0 ? [] : [head(r.stdout + r.stderr)]
+        })
+      return (
+        failures.length === 0 || { pass: false, detail: failures.join('\n') }
+      )
     },
   },
   {
