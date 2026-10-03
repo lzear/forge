@@ -1,3 +1,85 @@
+## 4.6.0
+
+`lib` and `app` tsconfigs target ES2025.
+
+README documents presets, defaults and bin flags.
+
+`lzear-publish` titles GitHub releases with their tag.
+
+Base tsconfig enables `erasableSyntaxOnly` and `noImplicitOverride`, and makes unreachable code and unused labels errors.
+
+`lzear-sync-jsr` excludes tests from JSR when they only live in `src` subfolders.
+
+`vitest/react` extends `vitest`, so it also writes `coverage-final.json` for `fallow health`.
+
+Remove the `repo-lint` CLI, `checkRepo` and `forge check --repos`/`--dir`; run `forge check` inside each repo.
+
+`e18e/ban-dependencies` flags `package.json` deps with a native or micro-utility replacement.
+
+`eslint-package-json` v2: adds `package-json/no-node-modules-bin-paths`.
+
+README documents options, layers and rules.
+
+`lzear/major-version-only` keeps 0.x ranges up to their first non-zero part: `~0.5.4` → `~0.5`, `^0.0.2` unchanged.
+
+`forge setup` pipes secrets to `gh` via stdin and reports a failed `gh secret set`.
+
+`forge setup` detects repos with a dot in their name; `@lzear/repo-lint` exports `detectRepo`.
+
+`forge sync` reports each file as unchanged, created or updated; `--dry` previews which.
+
+README `vite` example uses `defineReactConfig()`; there is no default export.
+
+`checkLocal({ dir })` reads the repo name from `dir`'s origin, not the cwd's.
+
+`ci-workflow` also applies to repos that publish nothing.
+
+`deps-fresh` runs `forge update`'s ncu step dry, so it honours `.ncurc`, peer deps and `{ "packages": [...] }` workspaces.
+
+Export `listSecrets`.
+
+README lists the `jsr-config` check.
+
+`forge update` skips versions under 3 days old, except own packages; new `deps-release-age` check requires the package manager to do the same.
+
+`renovate` requires extending the `github>lzear/forge` preset.
+
+`pkg-size-limit` runs the repo's `size-limit` wherever it is configured.
+
+`forge update` keeps a version file's precision (`v22` → `v26`) and leaves aliases like `lts/*` alone.
+
+### Commits
+
+- [`2b570ad`](https://github.com/lzear/forge/commit/2b570ad) docs: adopt steps and workflow inputs in README
+- [`9bf2a7e`](https://github.com/lzear/forge/commit/9bf2a7e) docs(configs): document presets, defaults and bin flags
+- [`cd6c99e`](https://github.com/lzear/forge/commit/cd6c99e) docs(eslint-config): document options, layers and rules
+- [`e34ecc3`](https://github.com/lzear/forge/commit/e34ecc3) fix(configs): title GitHub releases with their tag
+- [`86d1907`](https://github.com/lzear/forge/commit/86d1907) feat: wait 3 days before adopting new versions
+- [`c4ac11a`](https://github.com/lzear/forge/commit/c4ac11a) test(forge): strip colors from captured CLI output
+- [`78b9d06`](https://github.com/lzear/forge/commit/78b9d06) feat(eslint-config): bump eslint-package-json to v2
+- [`b1f2816`](https://github.com/lzear/forge/commit/b1f2816) refactor(forge): reuse repo-lint's listSecrets in forge setup
+- [`243d598`](https://github.com/lzear/forge/commit/243d598) fix(forge): detect repos with a dot in their name
+- [`50365bd`](https://github.com/lzear/forge/commit/50365bd) feat: ship the github>lzear/forge Renovate preset and require it
+- [`cf56f96`](https://github.com/lzear/forge/commit/cf56f96) docs: slim READMEs and CLAUDE.md
+- [`c8c68dc`](https://github.com/lzear/forge/commit/c8c68dc) feat(repo-lint): require the forge CI in unpublished repos too
+- [`25c41c4`](https://github.com/lzear/forge/commit/25c41c4) feat(ci): run Bun repos in the reusable CI
+- [`9cb2c64`](https://github.com/lzear/forge/commit/9cb2c64) chore(renovate): bump npx-pinned CLIs in workflows
+- [`1361fef`](https://github.com/lzear/forge/commit/1361fef) feat: add e18e
+- [`605875e`](https://github.com/lzear/forge/commit/605875e) feat: make tsconfig stricter
+- [`3aff351`](https://github.com/lzear/forge/commit/3aff351) feat: remove the repo-lint CLI and checkRepo
+- [`ea87a37`](https://github.com/lzear/forge/commit/ea87a37) fix(repo-lint): detect the origin of checkLocal's dir
+- [`1d44741`](https://github.com/lzear/forge/commit/1d44741) fix(forge): make forge sync --dry show what would change
+- [`fa32d90`](https://github.com/lzear/forge/commit/fa32d90) fix(ci): skip nested node_modules when merging coverage for fallow
+- [`ed0ba4f`](https://github.com/lzear/forge/commit/ed0ba4f) fix(configs): find nested tests in lzear-sync-jsr
+- [`d1b2b5f`](https://github.com/lzear/forge/commit/d1b2b5f) refactor(repo-lint): share the package.json readers of checks and update
+- [`62c993d`](https://github.com/lzear/forge/commit/62c993d) fix(repo-lint): keep the precision of node and bun version files
+- [`aa0e6df`](https://github.com/lzear/forge/commit/aa0e6df) fix(forge): pipe secrets to gh via stdin and report failures
+- [`a7f7d03`](https://github.com/lzear/forge/commit/a7f7d03) docs(repo-lint): list the jsr-config check
+- [`f196c63`](https://github.com/lzear/forge/commit/f196c63) fix(repo-lint): share forge update's ncu step with deps-fresh
+- [`b9493b0`](https://github.com/lzear/forge/commit/b9493b0) docs: fix the vite and vitest/react README examples
+- [`5362cb1`](https://github.com/lzear/forge/commit/5362cb1) fix(configs): extend the base vitest config in vitest/react
+- [`8b377db`](https://github.com/lzear/forge/commit/8b377db) fix(eslint-config): keep ^0.x and ^0.0.x ranges in major-version-only
+
 ## 4.5.1
 
 Every JSR entrypoint has a module doc with an example, and every exported symbol has JSDoc.
