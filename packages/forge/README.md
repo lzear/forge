@@ -15,7 +15,7 @@ yarn add -D @lzear/forge
 `check`, `update` and `setup` take `--json`.
 
 - `forge check [--skip-remote]` — audit the repo against forge standards ([checks](https://www.npmjs.com/package/@lzear/repo-lint#checks)).
-- `forge update [--dry] [--no-install]` — bump dependency ranges (ncu, honors `.ncurc`), `packageManager`, `.nvmrc`/`.node-version`/`.bun-version` and the LICENSE year, then install and dedupe.
+- `forge update [--dry] [--no-install]` — bump dependency ranges (ncu, versions ≥ 3 days old except own packages, honors `.ncurc`), `packageManager`, `.nvmrc`/`.node-version`/`.bun-version` and the LICENSE year, then install and dedupe.
 - `forge setup [--repo owner/name] [--dry]` — set the `CODACY_PROJECT_TOKEN` GitHub secret.
 - `forge sync [--dry]` — write `.editorconfig`, `.codacy.yml`, `lefthook.yml` and `.github/zizmor.yml` from forge `main`.
 

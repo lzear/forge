@@ -7,7 +7,9 @@ import { maxSatisfying, satisfies } from 'semver'
 import {
   detectPackageManager,
   getWorkspacePatterns,
+  MIN_RELEASE_AGE_DAYS,
   type PackageManager,
+  type PackageManagerName,
   readPackage,
   stepDeps,
 } from './update.ts'
@@ -247,6 +249,36 @@ const findDeprecated = async (
   if (!resolved) return null
   const deprecated = data.versions[resolved]?.deprecated
   return deprecated ? `${name}@${resolved} — ${deprecated.slice(0, 120)}` : null
+}
+
+// where each package manager sets its minimum release age, in units per day
+const RELEASE_AGE: Record<
+  PackageManagerName,
+  [file: string, key: string, perDay: number]
+> = {
+  bun: ['bunfig.toml', 'minimumReleaseAge', 86_400],
+  npm: ['.npmrc', 'min-release-age', 1],
+  pnpm: ['pnpm-workspace.yaml', 'minimumReleaseAge', 1440],
+  yarn: ['.yarnrc.yml', 'npmMinimalAgeGate', 1440],
+}
+
+// yarn's goes through `yarn config`: it defaults to 1 day and takes `3d`
+const releaseAgeDays = (dir: string, pm: PackageManagerName): number => {
+  const [file, key, perDay] = RELEASE_AGE[pm]
+  if (pm === 'yarn') {
+    const r = spawnSync('yarn', ['config', 'get', key], {
+      cwd: dir,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
+    return (Number(r.stdout) || 0) / perDay
+  }
+  const f = path.join(dir, file)
+  const config = existsSync(f) ? readFileSync(f, 'utf8') : ''
+  const value = new RegExp(String.raw`^${key}\s*[=:]\s*(\d+)`, 'm').exec(
+    config,
+  )?.[1]
+  return Number(value ?? 0) / perDay
 }
 
 /**
@@ -520,6 +552,24 @@ export const LOCAL_CHECKS: LocalCheck[] = [
       return pass
         ? !changed || { pass: false, detail: `${detail}\n\nRun: forge update` }
         : { pass, detail }
+    },
+  },
+  {
+    id: 'deps-release-age',
+    desc: 'minimum release age',
+    type: 'local',
+    check: (dir) => {
+      const { name, version } = detectPackageManager(dir)
+      if (name === 'yarn' && version?.startsWith('1.'))
+        return { pass: false, detail: 'Yarn 1 has none; move to Yarn 4' }
+      const days = releaseAgeDays(dir, name)
+      if (days >= MIN_RELEASE_AGE_DAYS) return true
+      const [file, key, perDay] = RELEASE_AGE[name]
+      const value = MIN_RELEASE_AGE_DAYS * perDay
+      return {
+        pass: false,
+        detail: `${days} days — set ${key} to ${value} in ${file}`,
+      }
     },
   },
 ]

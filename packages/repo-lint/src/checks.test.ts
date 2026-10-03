@@ -548,6 +548,58 @@ describe('LOCAL_CHECKS', () => {
       )
     })
   })
+
+  describe('deps-release-age', () => {
+    const yarn4 = JSON.stringify({ packageManager: 'yarn@4.18.1' })
+
+    it.each([
+      ['bun.lock', 'bunfig.toml', '[install]\nminimumReleaseAge = 259200\n'],
+      ['package-lock.json', '.npmrc', 'min-release-age=3\n'],
+      ['pnpm-lock.yaml', 'pnpm-workspace.yaml', 'minimumReleaseAge: 4320\n'],
+    ])('passes on 3 days (%s, %s)', async (lockfile, file, content) => {
+      write(dir, 'package.json', JSON.stringify({}))
+      write(dir, lockfile)
+      write(dir, file, content)
+      expect(await check('deps-release-age', dir)).toBe(true)
+    })
+    it('fails with the setting to add when unset', async () => {
+      write(dir, 'package.json', JSON.stringify({}))
+      write(dir, 'bun.lock')
+      expect(await check('deps-release-age', dir)).toEqual({
+        pass: false,
+        detail: '0 days — set minimumReleaseAge to 259200 in bunfig.toml',
+      })
+    })
+    it("reads yarn's gate through yarn config", async () => {
+      write(dir, 'package.json', yarn4)
+      mockSpawn(0, '4320\n')
+      expect(await check('deps-release-age', dir)).toBe(true)
+      expect(vi.mocked(childProcess.spawnSync)).toHaveBeenCalledWith(
+        'yarn',
+        ['config', 'get', 'npmMinimalAgeGate'],
+        expect.objectContaining({ cwd: dir }),
+      )
+    })
+    it("fails on yarn's 1-day default", async () => {
+      write(dir, 'package.json', yarn4)
+      mockSpawn(0, '1440\n')
+      expect(await check('deps-release-age', dir)).toMatchObject({
+        pass: false,
+        detail: '1 days — set npmMinimalAgeGate to 4320 in .yarnrc.yml',
+      })
+    })
+    it('fails on Yarn 1', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ packageManager: 'yarn@1.22.22' }),
+      )
+      expect(await check('deps-release-age', dir)).toMatchObject({
+        pass: false,
+        detail: expect.stringContaining('Yarn 1'),
+      })
+    })
+  })
 })
 
 // ── REMOTE_CHECKS ─────────────────────────────────────────────────────────────

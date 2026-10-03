@@ -1,11 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "minimumReleaseAge": "3 days",
   "packageRules": [
     {
       "matchUpdateTypes": ["patch"],
       "automerge": true,
       "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "own packages skip the wait",
+      "matchPackageNames": ["@lzear/**", "votes", "eslint-plugin-ninja"],
+      "minimumReleaseAge": "0 days"
     }
   ],
   "customManagers": [

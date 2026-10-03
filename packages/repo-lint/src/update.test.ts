@@ -206,6 +206,27 @@ describe('runUpdate', () => {
     expect(resultById(report.results, 'deps')?.detail).toContain('.ncurc.json')
   })
 
+  it('waits 3 days for new versions, except own packages', async () => {
+    write(dir, 'package.json', JSON.stringify({}))
+    mockRegistry({})
+    await runUpdate({ dir, dry: true })
+    const days = vi.mocked(ncuRun).mock.calls[0]?.[0]?.cooldown as (
+      name: string,
+    ) => number
+    const names = ['react', '@lzear/forge', 'votes', 'votes-ui']
+    expect(names.map((name) => days(name))).toEqual([3, 0, 0, 3])
+  })
+
+  it('lets .ncurc.json override the cooldown', async () => {
+    write(dir, 'package.json', JSON.stringify({}))
+    write(dir, '.ncurc.json', JSON.stringify({ cooldown: 0 }))
+    mockRegistry({})
+    await runUpdate({ dir, dry: true })
+    expect(vi.mocked(ncuRun)).toHaveBeenCalledWith(
+      expect.objectContaining({ cooldown: 0 }),
+    )
+  })
+
   it('does not let .ncurc.json override forge update behavior', async () => {
     write(dir, 'package.json', JSON.stringify({}))
     write(dir, '.ncurc.json', JSON.stringify({ upgrade: false, silent: false }))

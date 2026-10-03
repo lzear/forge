@@ -32,4 +32,5 @@ const update = await runUpdate({ dir, dry, install })
 | `deps-audit`          | no high+ prod vulnerabilities (package manager `audit`)   |
 | `deps-deprecated`     | no direct dependency resolves to a deprecated version     |
 | `deps-fresh`          | dependencies up to date (`ncu`, honors `.ncurc`)          |
+| `deps-release-age`    | package manager installs only versions ≥ 3 days old       |
 | `secret-codacy-token` | GitHub secret `CODACY_PROJECT_TOKEN` is set               |

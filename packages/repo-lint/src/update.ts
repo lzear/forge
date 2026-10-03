@@ -58,6 +58,13 @@ const LOCKFILES: [string, PackageManagerName][] = [
 
 const PM_FIELD_RE = /^(npm|yarn|pnpm|bun)@([^+\s]+)/
 
+// matches the package manager's age gate, so ncu never picks a version the
+// install then rejects; own packages skip both
+export const MIN_RELEASE_AGE_DAYS = 3
+const OWN_PACKAGE_RE = /^(?:@lzear\/|(?:votes|eslint-plugin-ninja)$)/
+const cooldown = (name: string): number =>
+  OWN_PACKAGE_RE.test(name) ? 0 : MIN_RELEASE_AGE_DAYS
+
 interface JsonFile {
   data: Record<string, unknown>
   indent: string
@@ -184,6 +191,7 @@ export const stepDeps = async (
     const isWorkspaces = getWorkspacePatterns(readPackage(dir) ?? {}).length > 0
     const rc = await loadNcuRc(dir)
     const result = (await ncuRun({
+      cooldown,
       ...rc.config,
       packageFile: path.join(dir, 'package.json'),
       cwd: dir,

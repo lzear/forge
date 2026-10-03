@@ -51,7 +51,7 @@ Release needs `@lzear/configs` as a dev dep and the npm trusted publisher set to
 
 Custom jobs: `uses: lzear/forge/actions/setup@<sha>` (node + corepack + cache + install; inputs `node-version`, `cache`, `install-command`).
 
-Renovate: `"extends": ["github>lzear/forge"]` (digest-pinned actions, patches automerged after 7 days).
+Renovate: `"extends": ["github>lzear/forge"]` (digest-pinned actions, updates wait 3 days except own packages, patches automerged after 7).
 
 ## Development
 
