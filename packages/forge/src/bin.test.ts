@@ -2,6 +2,7 @@ import { spawnSync, type SpawnSyncReturns } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import { stripVTControlCharacters } from 'node:util'
 import * as clack from '@clack/prompts'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -52,13 +53,13 @@ const run = async (...arguments_: string[]): Promise<number | undefined> => {
   }
 }
 
-// everything written to stdout, stderr or the console
+// everything written to stdout, stderr or the console, minus colors
 const output: string[] = []
 const capture = (chunk: unknown): boolean => {
   output.push(String(chunk))
   return true
 }
-const printed = (): string => output.join('\n')
+const printed = (): string => stripVTControlCharacters(output.join('\n'))
 const json = (): unknown => JSON.parse(printed())
 
 const report = (...passes: boolean[]): RepoReport => ({
