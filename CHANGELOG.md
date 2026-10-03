@@ -1,3 +1,15 @@
+## 4.7.0
+
+`lzear-prerelease` publishes an alpha or beta of the pending changesets.
+
+`eslint-package-json` back to v1 until v2 is 3 days old.
+
+### Commits
+
+- [`72b0c81`](https://github.com/lzear/forge/commit/72b0c81) fix(eslint-config): revert eslint-package-json to v1
+- [`c6222c6`](https://github.com/lzear/forge/commit/c6222c6) feat(configs): add lzear-prerelease
+- [`95cfbe0`](https://github.com/lzear/forge/commit/95cfbe0) refactor(configs): extract readStatus from lzear-changelog
+
 ## 4.6.0
 
 `lib` and `app` tsconfigs target ES2025.
