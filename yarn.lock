@@ -1537,6 +1537,7 @@ __metadata:
       optional: true
   bin:
     lzear-changelog: ./src/changelog.mjs
+    lzear-prerelease: ./src/prerelease.mjs
     lzear-publish: ./src/publish.mjs
     lzear-sync-jsr: ./src/sync-jsr.mjs
   languageName: unknown

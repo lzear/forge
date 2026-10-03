@@ -6,7 +6,7 @@ import path from 'node:path'
 /**
  * the pending release, as `changeset status` computes it
  * @param {string} root
- * @returns {{ releases: { name: string, newVersion: string }[], changesets: { summary: string }[] }}
+ * @returns {{ releases: { name: string, type: string, newVersion: string }[], changesets: { summary: string }[] }}
  */
 export const readStatus = (root) => {
   const dir = mkdtempSync(path.join(tmpdir(), 'changesets-'))

@@ -77,4 +77,4 @@ yarn qa          # build + typecheck + lint + test + forge check
 yarn changeset   # then merge to main
 ```
 
-`main` → "Version Packages" PR → merge → staged on npm (`npm stage approve`), published to JSR, GitHub release. Prereleases: `yarn changeset pre enter beta|rc`, `yarn changeset pre exit`.
+`main` → "Version Packages" PR → merge → staged on npm (`npm stage approve`), published to JSR, GitHub release. Prereleases: `yarn changeset pre enter beta|rc`, `yarn changeset pre exit`. Alpha/beta without a release: `yarn lzear-prerelease beta --publish`.
