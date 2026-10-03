@@ -325,7 +325,6 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'ci-workflow',
     desc: 'CI calls forge workflow',
     type: 'local',
-    publishedOnly: true,
     check: (dir) => {
       if (callsForgeWorkflow(dir) || isForgeRepo(dir)) return true
       return {
