@@ -10,13 +10,20 @@ tsconfig, tsup, vitest, vite and commitlint configs for [forge](https://github.c
 yarn add -D @lzear/configs
 ```
 
+Peers are optional: install the tools you use (`tsup`, `vite`, `vitest`, `jsdom`, `@vitejs/plugin-react`).
+
 ```jsonc
-// tsconfig.json — presets: app, lib (emits dts), react
+// tsconfig.json
 { "extends": "@lzear/configs/tsconfig/lib" }
 ```
 
+- `base`: `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax`, `erasableSyntaxOnly`, `noUnused*`.
+- `app`: base + ES2025, bundler resolution, `noEmit`.
+- `lib`: base + ES2025, bundler resolution, dts, declaration and source maps.
+- `react`: base + ES2022, DOM, `react-jsx`, `.ts` import extensions, `noEmit`.
+
 ```ts
-// tsup.config.ts
+// tsup.config.ts — ESM; lib emits dts and cleans, bin adds a shebang and doesn't clean
 import { defineBinConfig, defineLibConfig } from '@lzear/configs/tsup'
 
 export default [
@@ -30,8 +37,10 @@ export default [
 export { default } from '@lzear/configs/vitest'
 ```
 
+Globals and v8 coverage (json, lcov, text): add `@vitest/coverage-v8`, and `"types": ["vitest/globals"]` to `tsconfig.json`.
+
 ```ts
-// vite.config.ts
+// vite.config.ts — React plugin; overrides merge shallowly
 import { defineReactConfig } from '@lzear/configs/vite'
 
 export default defineReactConfig()
@@ -55,4 +64,10 @@ export default {
 }
 ```
 
-Bins: `lzear-publish` (stage on npm, GitHub release), `lzear-changelog` (root `CHANGELOG.md`), `lzear-sync-jsr` (generate `deno.json`).
+## Bins
+
+Run from the repo root.
+
+- `lzear-publish [--publish] [--release] [--tag <tag>]` — stage unpublished workspace packages on npm (dry run without `--publish`), create the GitHub release with `--release`. Tag defaults to the prerelease id, else `latest`.
+- `lzear-changelog` — prepend the pending release to the root `CHANGELOG.md`; run before `changeset version`.
+- `lzear-sync-jsr [--check]` — generate each `deno.json` from `package.json` + tsup entries; `--check` fails instead of writing.
