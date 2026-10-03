@@ -163,7 +163,7 @@ const createRelease = (release) => {
   const sha = run('git rev-parse HEAD')
   const flag = prereleaseOf(release.version) ? ' --prerelease' : ''
   run(
-    `gh release create "${release.tag}" --target ${sha} --notes-file ${notes}${flag}`,
+    `gh release create "${release.tag}" --title "${release.tag}" --target ${sha} --notes-file ${notes}${flag}`,
   )
   console.log(`Released ${release.tag}`)
 }

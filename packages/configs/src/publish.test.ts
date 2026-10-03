@@ -39,7 +39,7 @@ const answers: [RegExp, (match: string[]) => string][] = [
     },
   ],
   [
-    /^gh release create "(.+)" --target \S+ --notes-file (\S+)(?: --prerelease)?$/,
+    /^gh release create "(.+)" --title "\1" --target \S+ --notes-file (\S+)(?: --prerelease)?$/,
     ([, tag = '', file = '']) => {
       notes.set(tag, readFileSync(file, 'utf8'))
       return ''
