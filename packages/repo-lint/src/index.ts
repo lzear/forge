@@ -68,6 +68,22 @@ const runChecks = async (
 }
 
 /**
+ * Reads `owner/repo` from the GitHub `origin` remote of `dir`.
+ */
+export const detectRepo = (dir: string = process.cwd()): string | undefined => {
+  try {
+    const remote = execFileSync('git', ['remote', 'get-url', 'origin'], {
+      cwd: dir,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim()
+    return /github\.com[:/](.+?)(?:\.git)?$/.exec(remote)?.[1]
+  } catch {
+    return undefined
+  }
+}
+
+/**
  * Options for {@linkcode checkLocal}.
  */
 export interface CheckLocalOptions {
@@ -87,22 +103,7 @@ export const checkLocal = async (
 ): Promise<RepoReport> => {
   const { dir = process.cwd(), skipRemote = false } = options
 
-  const repo =
-    options.repo ??
-    (() => {
-      try {
-        const remote = execFileSync('git', ['remote', 'get-url', 'origin'], {
-          cwd: dir,
-          encoding: 'utf8',
-          stdio: ['ignore', 'pipe', 'ignore'],
-        }).trim()
-        const match = /github\.com[:/](.+?)(?:\.git)?$/.exec(remote)
-        return match?.[1] ?? path.basename(dir)
-      } catch {
-        return dir
-      }
-    })()
-
+  const repo = options.repo ?? detectRepo(dir) ?? path.basename(dir)
   const isPublished = hasPublishedPackage(dir)
   return runChecks(
     dir,

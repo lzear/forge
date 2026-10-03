@@ -4,10 +4,16 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import * as clack from '@clack/prompts'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { checkLocal, type RepoReport, runUpdate } from '@lzear/repo-lint'
+import {
+  checkLocal,
+  detectRepo,
+  type RepoReport,
+  runUpdate,
+} from '@lzear/repo-lint'
 
 vi.mock('@lzear/repo-lint', () => ({
   checkLocal: vi.fn(),
+  detectRepo: vi.fn(),
   runUpdate: vi.fn(),
 }))
 vi.mock('node:child_process', () => ({ spawnSync: vi.fn() }))
@@ -72,18 +78,17 @@ const spawned = (status: number, stdout = ''): SpawnSyncReturns<string> => ({
   signal: null,
 })
 
-// answers `gh` calls: `git remote`, `gh --version`, `gh secret list`, then `set`
+// answers `detectRepo` and `gh` calls: `--version`, `secret list`, then `set`
 const mockGh = ({
-  remote = 'git@github.com:lzear/x.git',
   gh = 0,
   secrets = [] as string[] | null,
   set = 0,
 } = {}): void => {
+  vi.mocked(detectRepo).mockReturnValue('lzear/x')
   vi.mocked(spawnSync).mockImplementation(((
-    command: string,
+    _command: string,
     args: string[],
   ) => {
-    if (command === 'git') return spawned(remote ? 0 : 1, remote)
     if (args[0] === '--version') return spawned(gh)
     if (args[0] === 'secret' && args[1] === 'list')
       return secrets
@@ -181,7 +186,8 @@ describe('forge check', () => {
 
 describe('forge setup', () => {
   it('needs a repo', async () => {
-    mockGh({ remote: '' })
+    mockGh()
+    vi.mocked(detectRepo).mockReturnValue(undefined)
     expect(await run('setup')).toBe(1)
     expect(printed()).toContain('Could not detect repo')
   })

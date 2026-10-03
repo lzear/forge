@@ -19,6 +19,7 @@ import { Command } from 'commander'
 import pc from 'picocolors'
 import {
   checkLocal,
+  detectRepo,
   type PackageManager,
   type RepoReport,
   runUpdate,
@@ -141,16 +142,6 @@ const REQUIRED_SECRETS = (repo: string) => [
     desc: `Codacy project token — find at app.codacy.com/gh/${repo}/settings/coverage`,
   },
 ]
-
-const detectRepo = (): string | undefined => {
-  const result = spawnSync('git', ['remote', 'get-url', 'origin'], {
-    encoding: 'utf8',
-  })
-  if (result.status !== 0) return undefined
-  const url = result.stdout.trim()
-  const match = /github\.com[:/]([^/]+\/[^/.]+)(?:\.git)?$/.exec(url)
-  return match?.[1]
-}
 
 const listSecrets = (repo: string): string[] => {
   if (spawnSync('gh', ['--version'], { stdio: 'ignore' }).status !== 0) {

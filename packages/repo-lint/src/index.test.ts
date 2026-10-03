@@ -3,7 +3,7 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { expect, it, vi } from 'vitest'
-import { checkLocal } from './index.ts'
+import { checkLocal, detectRepo } from './index.ts'
 
 vi.mock('./checks.ts', () => ({
   CHECKS: [],
@@ -16,9 +16,21 @@ const git = (cwd: string, ...arguments_: string[]): void => {
   execFileSync('git', arguments_, { cwd, stdio: 'ignore' })
 }
 
-it('reads the repo from the origin of dir, not of the cwd', async () => {
+const repoWithOrigin = (url: string): string => {
   const dir = mkdtempSync(path.join(tmpdir(), 'repo-lint-index-test-'))
   git(dir, 'init', '--quiet')
-  git(dir, 'remote', 'add', 'origin', 'git@github.com:a/b.git')
+  git(dir, 'remote', 'add', 'origin', url)
+  return dir
+}
+
+it('reads the repo from the origin of dir, not of the cwd', async () => {
+  const dir = repoWithOrigin('git@github.com:a/b.git')
   expect(await checkLocal({ dir })).toEqual({ repo: 'a/b', results: [] })
+})
+
+it.each([
+  'git@github.com:lzear/lzear.org.git',
+  'https://github.com/lzear/lzear.org',
+])('keeps dots in the repo name of %s', (url) => {
+  expect(detectRepo(repoWithOrigin(url))).toBe('lzear/lzear.org')
 })
