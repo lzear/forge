@@ -5,9 +5,9 @@
 // summary and the final version, which is shared under a `fixed` group.
 
 import { execSync } from 'node:child_process'
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
+import { readStatus } from './changesets.mjs'
 
 const root = process.cwd()
 const changelogPath = path.join(root, 'CHANGELOG.md')
@@ -17,16 +17,6 @@ const changelogPath = path.join(root, 'CHANGELOG.md')
  */
 const run = (command) =>
   execSync(command, { cwd: root, stdio: 'pipe' }).toString().trim()
-
-/**
- * @returns {{ releases: { newVersion: string }[], changesets: { summary: string }[] }}
- */
-const readStatus = () => {
-  const dir = mkdtempSync(path.join(tmpdir(), 'changelog-'))
-  const file = path.join(dir, 'status.json')
-  run(`changeset status --output=${file}`)
-  return JSON.parse(readFileSync(file, 'utf8'))
-}
 
 /**
  * commits since the last release tag, else since the last Version Packages
@@ -75,7 +65,7 @@ const getRepoUrl = () => {
   return repo
 }
 
-const { releases, changesets } = readStatus()
+const { releases, changesets } = readStatus(root)
 const [release] = releases
 if (!release) process.exit(0)
 
