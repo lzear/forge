@@ -80,7 +80,8 @@
     "@lzear/eslint-config": "workspace:*",
     "@lzear/repo-lint": "workspace:*",
     "commander": "^15",
-    "picocolors": "^1"
+    "picocolors": "^1",
+    "std-env": "^4"
   },
   "devDependencies": {
     "@types/node": "^26",

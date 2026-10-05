@@ -1515,6 +1515,7 @@ __metadata:
     "@vitejs/plugin-react": "npm:^6"
     "@vitest/coverage-v8": "npm:^5"
     jsdom: "npm:~30"
+    std-env: "npm:^4"
     tsup: "npm:^8"
     vite: "npm:^8"
     vitest: "npm:^5"
@@ -1601,6 +1602,7 @@ __metadata:
     commander: "npm:^15"
     eslint: "npm:^10"
     picocolors: "npm:^1"
+    std-env: "npm:^4"
     tsup: "npm:^8"
     vite: "npm:^8"
     vitest: "npm:^5"
@@ -7328,7 +7330,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"std-env@npm:^4.2.0":
+"std-env@npm:^4, std-env@npm:^4.2.0":
   version: 4.3.0
   resolution: "std-env@npm:4.3.0"
   checksum: 10c0/1e90dc69f32f853375c6de45dbe7219c8399e2a3ab3a972fdcd1cf3c20fe0e3c13bf58d57d6193b551d37a81c50dfb3f51e07774e9e48a7dc5a22dabcad7acbd

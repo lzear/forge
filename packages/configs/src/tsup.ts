@@ -11,10 +11,12 @@
  * @module
  */
 
+import { isAgent } from 'std-env'
 import { type Options } from 'tsup'
 
 /**
- * ESM library build with type declarations; cleans the output folder.
+ * ESM library build with type declarations; cleans the output folder. Silent
+ * under a coding agent, which re-reads tool output every turn.
  *
  * @param entry tsup entry map, output name to source file
  */
@@ -23,11 +25,13 @@ export const defineLibConfig = (entry: Record<string, string>): Options => ({
   format: ['esm'],
   dts: true,
   clean: true,
+  silent: isAgent,
 })
 
 /**
  * ESM binary build with a node shebang. Does not clean, so it can share
- * the output folder with {@linkcode defineLibConfig}.
+ * the output folder with {@linkcode defineLibConfig}. Silent under a coding
+ * agent.
  *
  * @param entry tsup entry map, output name to source file
  */
@@ -36,4 +40,5 @@ export const defineBinConfig = (entry: Record<string, string>): Options => ({
   format: ['esm'],
   banner: { js: '#!/usr/bin/env node' },
   clean: false,
+  silent: isAgent,
 })

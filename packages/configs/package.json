@@ -76,7 +76,8 @@
   ],
   "dependencies": {
     "@commitlint/config-conventional": "^21",
-    "@commitlint/types": "^21"
+    "@commitlint/types": "^21",
+    "std-env": "^4"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6",

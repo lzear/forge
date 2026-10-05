@@ -39,6 +39,8 @@ export { default } from '@lzear/configs/vitest'
 
 Globals and v8 coverage (json, lcov, text): add `@vitest/coverage-v8`, and `"types": ["vitest/globals"]` to `tsconfig.json`.
 
+Under a coding agent ([std-env](https://github.com/unjs/std-env) `isAgent`, which Vitest also reads for its `minimal` reporter), tsup builds are silent and Vite logs warnings and errors only: agents re-read tool output every turn.
+
 ```ts
 // vite.config.ts — React plugin; overrides merge shallowly
 import { defineReactConfig } from '@lzear/configs/vite'

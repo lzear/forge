@@ -20,6 +20,9 @@ vi.mock('@lzear/repo-lint', () => ({
   runUpdate: vi.fn(),
 }))
 vi.mock('node:child_process', () => ({ spawnSync: vi.fn() }))
+// vitest itself may run under an agent: pin it per test
+const environment = vi.hoisted(() => ({ isAgent: false }))
+vi.mock('std-env', () => environment)
 vi.mock('@clack/prompts', () => ({
   intro: vi.fn(),
   outro: vi.fn(),
@@ -140,6 +143,7 @@ afterEach(() => {
   process.argv = argv
   process.chdir(cwd)
   setTTY(isTTY)
+  environment.isAgent = false
   vi.restoreAllMocks()
   vi.resetAllMocks()
   for (const signal of ['SIGINT', 'SIGTERM'] as const)
@@ -154,8 +158,18 @@ describe('forge check', () => {
     vi.mocked(checkLocal).mockResolvedValue(report(true, false))
     expect(await run('check', '--skip-remote')).toBe(1)
     expect(checkLocal).toHaveBeenCalledWith({ skipRemote: true })
+    expect(printed()).toContain('check 0')
     expect(printed()).toContain('check 1')
     expect(printed()).toContain('it failed')
+    expect(printed()).toContain('1/2')
+  })
+
+  it('lists only failures to a coding agent', async () => {
+    environment.isAgent = true
+    vi.mocked(checkLocal).mockResolvedValue(report(true, false))
+    expect(await run('check')).toBe(1)
+    expect(printed()).not.toContain('check 0')
+    expect(printed()).toContain('check 1')
     expect(printed()).toContain('1/2')
   })
 

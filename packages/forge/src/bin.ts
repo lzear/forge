@@ -17,6 +17,7 @@ import path from 'node:path'
 import * as clack from '@clack/prompts'
 import { Command } from 'commander'
 import pc from 'picocolors'
+import { isAgent } from 'std-env'
 import {
   checkLocal,
   detectRepo,
@@ -79,6 +80,8 @@ const printResults = (report: RepoReport, json: boolean): boolean => {
   const pass = report.results.filter((r) => r.pass).length
   const total = report.results.length
   for (const r of report.results) {
+    // agents re-read tool output every turn: passes would only cost tokens
+    if (isAgent && r.pass) continue
     process.stdout.write(
       `  ${r.pass ? pc.green('✓') : pc.red('✗')}  ${r.desc}\n`,
     )
