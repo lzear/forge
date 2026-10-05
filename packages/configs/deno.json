@@ -1,6 +1,6 @@
 {
   "name": "@lzear/configs",
-  "version": "4.8.2",
+  "version": "4.9.0",
   "license": "MIT",
   "exports": {
     "./commitlint": "./src/commitlint.ts",
