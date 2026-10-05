@@ -23,7 +23,7 @@ Peers are optional: install the tools you use (`tsup`, `vite`, `vitest`, `jsdom`
 - `react`: base + ES2022, DOM, `react-jsx`, `.ts` import extensions, `noEmit`.
 
 ```ts
-// tsup.config.ts — ESM; lib emits dts and cleans, bin adds a shebang and doesn't clean
+// tsup.config.ts — ESM; lib emits dts and cleans, bin keeps the source's shebang and doesn't clean
 import { defineBinConfig, defineLibConfig } from '@lzear/configs/tsup'
 
 export default [

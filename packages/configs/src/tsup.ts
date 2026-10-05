@@ -29,16 +29,16 @@ export const defineLibConfig = (entry: Record<string, string>): Options => ({
 })
 
 /**
- * ESM binary build with a node shebang. Does not clean, so it can share
- * the output folder with {@linkcode defineLibConfig}. Silent under a coding
- * agent.
+ * ESM binary build; esbuild keeps the source's shebang, which
+ * `unicorn/no-process-exit` reads to spot a CLI. Does not clean, so it can
+ * share the output folder with {@linkcode defineLibConfig}. Silent under a
+ * coding agent.
  *
  * @param entry tsup entry map, output name to source file
  */
 export const defineBinConfig = (entry: Record<string, string>): Options => ({
   entry,
   format: ['esm'],
-  banner: { js: '#!/usr/bin/env node' },
   clean: false,
   silent: isAgent,
 })

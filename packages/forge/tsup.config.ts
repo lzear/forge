@@ -11,6 +11,5 @@ export default [
     vite: 'src/vite.ts',
     'repo-lint': 'src/repo-lint.ts',
   }),
-  // src/bin.ts keeps its own shebang: unicorn/no-process-exit reads it
-  { ...defineBinConfig({ bin: 'src/bin.ts' }), banner: {} },
+  defineBinConfig({ bin: 'src/bin.ts' }),
 ]
