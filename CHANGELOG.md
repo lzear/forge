@@ -1,3 +1,14 @@
+## 4.9.0
+
+`@typescript-eslint/consistent-type-definitions` takes `type`: `--fix` rewrites interfaces.
+
+`package-json/no-nested-exports` skips the cwd's workspace manifests.
+
+### Commits
+
+- [`ade6cc4`](https://github.com/lzear/forge/commit/ade6cc4) feat(eslint-config): prefer type aliases over interfaces
+- [`a9aaded`](https://github.com/lzear/forge/commit/a9aaded) fix(eslint-config): allow exports in workspace package.json files
+
 ## 4.8.2
 
 `lzear/prefer-relative-imports` keeps an import's query (`?url`) in its fix.
