@@ -20,3 +20,4 @@ cd packages/<name> && yarn vitest run src/x.test.ts  # one test file
 - `ignoreDeprecations` in `configs/tsconfig/base.json` stays: tsup's dts build injects `baseUrl` (TS5101).
 - `fallow health` CRAP findings mean missing coverage, not complexity: add tests.
 - Release-age gate: Bun's `minimumReleaseAgeExcludes` takes exact names, no globs. Never adopt a dep younger than the gate, even by hand. `bun audit` can't ignore advisories from bunfig (`--ignore` is CLI-only).
+- `forge sync` fetches `template/` and `.github/zizmor.yml` from GitHub `main`, so consumers see template changes only once pushed. The root `.editorconfig`, `.codacy.yml` and `lefthook.yml` are copies of `template/`'s: change both.
