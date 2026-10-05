@@ -1,3 +1,11 @@
+## 4.8.1
+
+`deps-release-age` reads Yarn's gate under `FORCE_COLOR`.
+
+### Commits
+
+- [`a8d31cc`](https://github.com/lzear/forge/commit/a8d31cc) fix(repo-lint): read yarn age gate as JSON so FORCE_COLOR can't zero it
+
 ## 4.8.0
 
 Quiet under coding agents: silent tsup, Vite warnings only, `forge check` failures only.
