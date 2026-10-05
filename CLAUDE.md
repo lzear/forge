@@ -22,3 +22,4 @@ cd packages/<name> && yarn vitest run src/x.test.ts  # one test file
 - Release-age gate: Bun's `minimumReleaseAgeExcludes` takes exact names, no globs. Never adopt a dep younger than the gate, even by hand. `bun audit` can't ignore advisories from bunfig (`--ignore` is CLI-only).
 - `forge sync` fetches `template/` and `.github/zizmor.yml` from GitHub `main`, so consumers see template changes only once pushed. The root `.editorconfig`, `.codacy.yml` and `lefthook.yml` are copies of `template/`'s: change both.
 - Output quiets under coding agents through std-env's `isAgent`, the signal Vitest reads for its `minimal` reporter. Tests of agent-dependent output mock `std-env`: Vitest itself runs under the agent.
+- `deps-fresh` runs `ncu` on peer ranges too, raising `>=` floors: a peer that must not track the latest major (`typescript`: TS 7 has no JS API for typescript-eslint) takes `*` and leaves the range to the plugins.

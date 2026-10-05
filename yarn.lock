@@ -1579,10 +1579,13 @@ __metadata:
     globals: "npm:^17"
     prettier: "npm:^3"
     tsup: "npm:^8"
+    typescript: "npm:@typescript/typescript6@^6"
     typescript-eslint: "npm:^8"
+    vite: "npm:^8"
     vitest: "npm:^5"
   peerDependencies:
     eslint: ^10
+    typescript: "*"
   languageName: unknown
   linkType: soft
 
@@ -1602,12 +1605,14 @@ __metadata:
     picocolors: "npm:^1"
     std-env: "npm:^4"
     tsup: "npm:^8"
+    typescript: "npm:@typescript/typescript6@^6"
     vite: "npm:^8"
     vitest: "npm:^5"
   peerDependencies:
     "@vitejs/plugin-react": ^6
     eslint: ^10
     tsup: ^8
+    typescript: "*"
     vite: ^8
     vitest: ^5
   peerDependenciesMeta:
@@ -1616,6 +1621,8 @@ __metadata:
     eslint:
       optional: true
     tsup:
+      optional: true
+    typescript:
       optional: true
     vite:
       optional: true
@@ -1641,6 +1648,7 @@ __metadata:
     semver: "npm:^7"
     sherif: "npm:^1"
     tsup: "npm:^8"
+    vite: "npm:^8"
     vitest: "npm:^5"
   languageName: unknown
   linkType: soft

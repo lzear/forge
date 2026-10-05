@@ -55,6 +55,7 @@
     "@types/semver": "^7",
     "@vitest/coverage-v8": "^5",
     "tsup": "^8",
+    "vite": "^8",
     "vitest": "^5"
   }
 }

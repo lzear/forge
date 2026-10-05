@@ -70,9 +70,12 @@
     "@vitest/coverage-v8": "^5",
     "eslint": "^10",
     "tsup": "^8",
+    "typescript": "npm:@typescript/typescript6@^6",
+    "vite": "^8",
     "vitest": "^5"
   },
   "peerDependencies": {
-    "eslint": "^10"
+    "eslint": "^10",
+    "typescript": "*"
   }
 }
