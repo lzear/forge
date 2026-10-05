@@ -23,24 +23,24 @@ const isIgnored = (packageName: string, ignore: (string | RegExp)[]): boolean =>
   )
 
 // Momoa AST (@eslint/json)
-interface JsonString {
+type JsonString = {
   type: 'String'
   value: string
 }
-interface JsonObject {
+type JsonObject = {
   type: 'Object'
   members: JsonMember[]
 }
-interface JsonOther {
+type JsonOther = {
   type: 'Array' | 'Number' | 'Boolean' | 'Null'
 }
-interface JsonMember {
+type JsonMember = {
   type: 'Member'
   name: JsonString
   value: JsonString | JsonObject | JsonOther
 }
 
-interface Options {
+type Options = {
   ignore?: (string | { regex: string })[]
 }
 

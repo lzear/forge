@@ -20,7 +20,7 @@ export { react } from './configs/react'
 export { typescript } from './configs/typescript'
 export { vitest } from './configs/vitest'
 
-export interface ConfigOptions {
+export type ConfigOptions = {
   node: boolean
   react: boolean
   typescript: boolean

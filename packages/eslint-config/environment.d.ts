@@ -11,7 +11,7 @@ declare module 'eslint-module-utils/moduleVisitor' {
 
   type SourceNode = Rule.Node & { value: string }
   type CheckFunction = (source: SourceNode, node: Rule.Node) => void
-  interface Options {
+  type Options = {
     amd?: boolean
     commonjs?: boolean
     esmodule?: boolean

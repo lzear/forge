@@ -13,7 +13,7 @@ export type PackageManagerName = 'npm' | 'yarn' | 'pnpm' | 'bun'
 /**
  * A detected package manager and where it was detected from.
  */
-export interface PackageManager {
+export type PackageManager = {
   name: PackageManagerName
   version?: string
   source: 'packageManager' | 'lockfile' | 'default'
@@ -22,7 +22,7 @@ export interface PackageManager {
 /**
  * Outcome of one update step.
  */
-export interface UpdateResult {
+export type UpdateResult = {
   id: string
   desc: string
   pass: boolean
@@ -33,7 +33,7 @@ export interface UpdateResult {
 /**
  * All update step results for one directory.
  */
-export interface UpdateReport {
+export type UpdateReport = {
   dir: string
   packageManager: PackageManager
   results: UpdateResult[]
@@ -42,7 +42,7 @@ export interface UpdateReport {
 /**
  * Options for {@linkcode runUpdate}.
  */
-export interface UpdateOptions {
+export type UpdateOptions = {
   dir?: string
   dry?: boolean
   install?: boolean
@@ -65,7 +65,7 @@ const OWN_PACKAGE_RE = /^(?:@lzear\/|(?:votes|eslint-plugin-ninja)$)/
 const cooldown = (name: string): number =>
   OWN_PACKAGE_RE.test(name) ? 0 : MIN_RELEASE_AGE_DAYS
 
-interface JsonFile {
+type JsonFile = {
   data: Record<string, unknown>
   indent: string
   trailingNewline: boolean

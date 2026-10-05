@@ -19,7 +19,7 @@ const _dirname = path.dirname(fileURLToPath(import.meta.url))
 /**
  * A check result carrying an explanation.
  */
-export interface CheckDetail {
+export type CheckDetail = {
   pass: boolean
   detail?: string
 }
@@ -28,7 +28,7 @@ type CheckResult = boolean | CheckDetail | Promise<boolean | CheckDetail>
 /**
  * A check run against a checkout directory.
  */
-export interface LocalCheck {
+export type LocalCheck = {
   id: string
   desc: string
   type: 'local'
@@ -39,7 +39,7 @@ export interface LocalCheck {
 /**
  * A check run against a GitHub repo through the `gh` CLI.
  */
-export interface RemoteCheck {
+export type RemoteCheck = {
   id: string
   desc: string
   type: 'remote'

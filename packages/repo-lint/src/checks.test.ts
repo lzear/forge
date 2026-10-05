@@ -24,7 +24,7 @@ vi.mock('node:child_process', async (importOriginal) => {
 const fetchMock = vi.fn()
 vi.stubGlobal('fetch', fetchMock)
 
-interface RegistryPackage {
+type RegistryPackage = {
   versions: Record<string, { deprecated?: string }>
   'dist-tags'?: Record<string, string>
 }

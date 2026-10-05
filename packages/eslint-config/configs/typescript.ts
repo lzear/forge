@@ -27,6 +27,8 @@ export const typescript = async (
     files,
 
     rules: {
+      // `stylisticTypeChecked` picks `interface`
+      '@typescript-eslint/consistent-type-definitions': [2, 'type'],
       '@typescript-eslint/consistent-type-imports': [
         2,
         { fixStyle: 'inline-type-imports' },

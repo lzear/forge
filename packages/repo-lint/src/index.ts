@@ -26,7 +26,7 @@ export type { Check, CheckDetail, LocalCheck, RemoteCheck } from './checks.ts'
 /**
  * Outcome of one check.
  */
-export interface CheckResult {
+export type CheckResult = {
   id: string
   desc: string
   pass: boolean
@@ -36,7 +36,7 @@ export interface CheckResult {
 /**
  * All check results for one repo.
  */
-export interface RepoReport {
+export type RepoReport = {
   repo: string
   results: CheckResult[]
 }
@@ -86,7 +86,7 @@ export const detectRepo = (dir: string = process.cwd()): string | undefined => {
 /**
  * Options for {@linkcode checkLocal}.
  */
-export interface CheckLocalOptions {
+export type CheckLocalOptions = {
   dir?: string
   skipRemote?: boolean
   repo?: string

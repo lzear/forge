@@ -74869,6 +74869,10 @@ If a function does not access `this`, it can be annotated with `this: void`.",
     },
     "name": "lzear/typescript",
     "rules": {
+      "@typescript-eslint/consistent-type-definitions": [
+        2,
+        "type",
+      ],
       "@typescript-eslint/consistent-type-imports": [
         2,
         {
