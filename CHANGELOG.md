@@ -1,3 +1,32 @@
+## 4.8.0
+
+Quiet under coding agents: silent tsup, Vite warnings only, `forge check` failures only.
+
+`defineBinConfig` drops its shebang banner: the bin source carries its own.
+
+ESLint 10 plugins only: `jsx-a11y-x` replaces `jsx-a11y` under the same rule names; `@eslint-react` covers `react`, dropped with `react-perf`.
+
+`forgePlugin()` for framework Vite configs: agent log level, dev 404 for `/.well-known/*`.
+
+`git-hooks` check: `lefthook.yml` exists and gets installed.
+
+Type-only imports take `import type`: `verbatimModuleSyntax` kept `import { type A } from 'x'` as `import 'x'`.
+
+Declare the `typescript` peer the plugins need.
+
+### Commits
+
+- [`0c210fa`](https://github.com/lzear/forge/commit/0c210fa) chore: `yarn housekeep`
+- [`854fb7e`](https://github.com/lzear/forge/commit/854fb7e) feat(configs): forgePlugin for framework Vite configs
+- [`2bd43ac`](https://github.com/lzear/forge/commit/2bd43ac) fix(eslint-config): flag type imports kept as side effects
+- [`fcf2f8f`](https://github.com/lzear/forge/commit/fcf2f8f) fix(configs): keep the bin source's shebang instead of a banner
+- [`3a1ba20`](https://github.com/lzear/forge/commit/3a1ba20) fix: clear yarn install's peer warnings
+- [`f751512`](https://github.com/lzear/forge/commit/f751512) feat(eslint-config): use only plugins that support ESLint 10
+- [`327e5ab`](https://github.com/lzear/forge/commit/327e5ab) feat: quiet builds and forge check under coding agents
+- [`cd35904`](https://github.com/lzear/forge/commit/cd35904) feat(repo-lint): check git hooks are installed
+- [`5cbfd0e`](https://github.com/lzear/forge/commit/5cbfd0e) feat(template): lint staged files, run hooks under any package manager
+- [`3af94aa`](https://github.com/lzear/forge/commit/3af94aa) docs: slim CLAUDE.md, add gotchas
+
 ## 4.7.0
 
 `lzear-prerelease` publishes an alpha or beta of the pending changesets.
