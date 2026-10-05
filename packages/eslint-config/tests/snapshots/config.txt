@@ -74875,6 +74875,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
           "fixStyle": "inline-type-imports",
         },
       ],
+      "@typescript-eslint/no-import-type-side-effects": 2,
       "@typescript-eslint/no-misused-promises": [
         2,
         {
@@ -74908,10 +74909,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
           "allowNumber": true,
         },
       ],
-      "import-x/consistent-type-specifier-style": [
-        2,
-        "prefer-inline",
-      ],
+      "import-x/consistent-type-specifier-style": 0,
     },
   },
   {

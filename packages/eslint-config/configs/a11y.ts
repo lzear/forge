@@ -1,6 +1,6 @@
-import { type Linter } from 'eslint'
+import type { Linter } from 'eslint'
 import jsxA11y from 'eslint-plugin-jsx-a11y-x'
-import { type ConfigOptions } from '../index'
+import type { ConfigOptions } from '../index'
 import * as FILES from './files'
 
 export const a11y = (config: ConfigOptions): Linter.Config => {

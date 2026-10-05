@@ -1,5 +1,5 @@
 import e18e from '@e18e/eslint-plugin'
-import { type Linter } from 'eslint'
+import type { Linter } from 'eslint'
 import packageJsonPlugin from 'eslint-package-json'
 import { plugin as lzearPlugin } from '../plugin'
 import * as FILES from './files'

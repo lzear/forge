@@ -1,7 +1,7 @@
-import { type Linter } from 'eslint'
+import type { Linter } from 'eslint'
 import { defineConfig } from 'eslint/config'
 import tseslint from 'typescript-eslint'
-import { type ConfigOptions } from '../index'
+import type { ConfigOptions } from '../index'
 import { interopDefault } from '../utils'
 import * as FILES from './files'
 
@@ -31,6 +31,8 @@ export const typescript = async (
         2,
         { fixStyle: 'inline-type-imports' },
       ],
+      // verbatimModuleSyntax compiles `import { type A } from 'x'` to `import 'x'`
+      '@typescript-eslint/no-import-type-side-effects': 2,
       '@typescript-eslint/no-misused-promises': [
         2,
         { checksVoidReturn: { attributes: false } },
@@ -48,7 +50,8 @@ export const typescript = async (
         2,
         { allowNumber: true },
       ],
-      'import-x/consistent-type-specifier-style': [2, 'prefer-inline'],
+      // Off: `prefer-inline` rewrites `import type { A }` into the side effect above
+      'import-x/consistent-type-specifier-style': 0,
     },
 
     languageOptions: {

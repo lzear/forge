@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { type Rule } from 'eslint'
+import type { Rule } from 'eslint'
 import { interopDefault } from '../../utils'
 
 const moduleVisitor = await interopDefault(

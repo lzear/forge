@@ -13,7 +13,7 @@
 
 import react from '@vitejs/plugin-react'
 import { isAgent } from 'std-env'
-import { type UserConfig } from 'vite'
+import type { UserConfig } from 'vite'
 
 /**
  * Vite config with the React plugin; warnings and errors only under a coding

@@ -1,7 +1,7 @@
 import js from '@eslint/js'
 import eslintCommentsPlugin from '@eslint-community/eslint-plugin-eslint-comments'
 import stylistic from '@stylistic/eslint-plugin'
-import { type Linter } from 'eslint'
+import type { Linter } from 'eslint'
 import deMorganPlugin from 'eslint-plugin-de-morgan'
 import importXPlugin from 'eslint-plugin-import-x'
 import preferArrowPlugin from 'eslint-plugin-prefer-arrow'

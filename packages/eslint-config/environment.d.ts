@@ -1,5 +1,5 @@
 declare module '@eslint-community/eslint-plugin-eslint-comments' {
-  import { type ESLint, type Linter } from 'eslint'
+  import type { ESLint, Linter } from 'eslint'
 
   let plugin: ESLint.Plugin
   let configs: { recommended: { rules: Linter.RulesRecord } }
@@ -7,7 +7,7 @@ declare module '@eslint-community/eslint-plugin-eslint-comments' {
 }
 
 declare module 'eslint-module-utils/moduleVisitor' {
-  import { type Rule } from 'eslint'
+  import type { Rule } from 'eslint'
 
   type SourceNode = Rule.Node & { value: string }
   type CheckFunction = (source: SourceNode, node: Rule.Node) => void
@@ -24,7 +24,7 @@ declare module 'eslint-module-utils/moduleVisitor' {
 }
 
 declare module 'eslint-module-utils/resolve' {
-  import { type Rule } from 'eslint'
+  import type { Rule } from 'eslint'
 
   export default function resolve(
     modulePath: string,
@@ -33,14 +33,14 @@ declare module 'eslint-module-utils/resolve' {
 }
 
 declare module 'eslint-plugin-prefer-arrow' {
-  import { type ESLint } from 'eslint'
+  import type { ESLint } from 'eslint'
 
   let plugin: ESLint.Plugin
   export = plugin
 }
 
 declare module 'eslint-plugin-promise' {
-  import { type ESLint, type Linter } from 'eslint'
+  import type { ESLint, Linter } from 'eslint'
 
   let plugin: ESLint.Plugin
   let configs: { recommended: { rules: Linter.RulesRecord } }
@@ -48,14 +48,14 @@ declare module 'eslint-plugin-promise' {
 }
 
 declare module 'eslint-plugin-react-compiler' {
-  import { type ESLint } from 'eslint'
+  import type { ESLint } from 'eslint'
 
   let plugin: ESLint.Plugin
   export = plugin
 }
 
 declare module 'eslint-plugin-react-hooks' {
-  import { type ESLint, type Linter } from 'eslint'
+  import type { ESLint, Linter } from 'eslint'
 
   let plugin: ESLint.Plugin
   let configs: { recommended: { rules: Linter.RulesRecord } }

@@ -1,4 +1,4 @@
-import { type Linter } from 'eslint'
+import type { Linter } from 'eslint'
 import { a11y } from './configs/a11y'
 import { core } from './configs/core'
 import { ignores } from './configs/ignores'

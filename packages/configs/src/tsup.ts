@@ -12,7 +12,7 @@
  */
 
 import { isAgent } from 'std-env'
-import { type Options } from 'tsup'
+import type { Options } from 'tsup'
 
 /**
  * ESM library build with type declarations; cleans the output folder. Silent

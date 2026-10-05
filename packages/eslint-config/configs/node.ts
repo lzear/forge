@@ -1,5 +1,5 @@
-import { type Linter } from 'eslint'
-import { type ConfigOptions } from '../index'
+import type { Linter } from 'eslint'
+import type { ConfigOptions } from '../index'
 import { interopDefault } from '../utils'
 import * as FILES from './files'
 
