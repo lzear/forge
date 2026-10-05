@@ -262,11 +262,12 @@ const RELEASE_AGE: Record<
   yarn: ['.yarnrc.yml', 'npmMinimalAgeGate', 1440],
 }
 
-// yarn's goes through `yarn config`: it defaults to 1 day and takes `3d`
+// yarn's goes through `yarn config`: it defaults to 1 day and takes `3d`;
+// `--json` keeps FORCE_COLOR (concurrently sets it) from coloring the number
 const releaseAgeDays = (dir: string, pm: PackageManagerName): number => {
   const [file, key, perDay] = RELEASE_AGE[pm]
   if (pm === 'yarn') {
-    const r = spawnSync('yarn', ['config', 'get', key], {
+    const r = spawnSync('yarn', ['config', 'get', key, '--json'], {
       cwd: dir,
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],

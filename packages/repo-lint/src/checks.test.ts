@@ -620,7 +620,7 @@ describe('LOCAL_CHECKS', () => {
       expect(await check('deps-release-age', dir)).toBe(true)
       expect(vi.mocked(childProcess.spawnSync)).toHaveBeenCalledWith(
         'yarn',
-        ['config', 'get', 'npmMinimalAgeGate'],
+        ['config', 'get', 'npmMinimalAgeGate', '--json'],
         expect.objectContaining({ cwd: dir }),
       )
     })

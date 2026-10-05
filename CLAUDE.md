@@ -13,6 +13,7 @@ cd packages/<name> && yarn vitest run src/x.test.ts  # one test file
 
 ## Gotchas
 
+- Parse spawned CLIs' machine output (`--json`): `concurrently` sets `FORCE_COLOR`, so plain output carries ANSI codes.
 - `deno.json` files are generated from `package.json` + tsup entries by `yarn lzear-sync-jsr`; never edit by hand. `@lzear/eslint-config` is npm-only (its untyped plugins' ambient shims don't resolve on JSR), so `@lzear/forge` drops `./eslint` there. The root keeps `@types/node` for `deno publish`. Check JSR changes with `deno publish --dry-run --allow-dirty`.
 - `release.yml` inlines its setup steps: a reusable workflow can't `uses: ./actions/setup` from the caller's checkout.
 - Consumers pin forge workflows by SHA: rewriting history orphans them (zizmor `impostor-commit`; lzear.org's deploy needs its CI).
