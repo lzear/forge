@@ -19,6 +19,7 @@ const files = {
   }),
   'pkg/src/a/file.ts': '',
   'pkg/src/a/sibling.ts': '',
+  'pkg/src/app.css': '',
   'pkg/src/a/index.ts': '',
   'pkg/src/a/dir/index.ts': '',
   'pkg/src/b/c.ts': '',
@@ -70,6 +71,12 @@ ruleTester.run('prefer-relative-imports', preferRelativeImports, {
     {
       code: importOf('@project-root/a/sibling.ts'),
       output: fixed('./sibling.ts'),
+      ...from('a/file.ts'),
+      errors: [{ messageId: 'preferRelative' }],
+    },
+    {
+      code: importOf('@project-root/app.css?url'),
+      output: fixed('../app.css?url'),
       ...from('a/file.ts'),
       errors: [{ messageId: 'preferRelative' }],
     },

@@ -95,7 +95,15 @@ export const preferRelativeImports: Rule.RuleModule = {
       const importPath = source.value
       if (typeof importPath !== 'string' || importPath.startsWith('.')) return
 
-      const relative = toRelative(filename, importPath, context)
+      // resolves without the query (Vite's `?url`, `?raw`), then keeps it
+      const queryStart = importPath.indexOf('?')
+      const query = queryStart === -1 ? '' : importPath.slice(queryStart)
+      const bare = toRelative(
+        filename,
+        importPath.slice(0, importPath.length - query.length),
+        context,
+      )
+      const relative = bare && bare + query
       if (
         !relative ||
         relative.length >= importPath.length ||
