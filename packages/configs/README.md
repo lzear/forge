@@ -48,6 +48,8 @@ import { defineReactConfig } from '@lzear/configs/vite'
 export default defineReactConfig()
 ```
 
+React Router, TanStack Start and other frameworks bring their own config: add `forgePlugin()` to its `plugins` for the same log level, plus a dev 404 for `/.well-known/*` probes (Chrome DevTools), which would otherwise reach SSR.
+
 ```ts
 // commitlint.config.ts — Conventional Commits, header ≤ 100
 export { default } from '@lzear/configs/commitlint'
