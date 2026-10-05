@@ -43673,7 +43673,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-dom",
-          "version": "5.23.5",
+          "version": "5.23.4",
         },
         "rules": {
           "no-dangerously-set-innerhtml": {
@@ -44662,7 +44662,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-web-api",
-          "version": "5.23.5",
+          "version": "5.23.4",
         },
         "rules": {
           "no-leaked-event-listener": {
@@ -45204,7 +45204,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-x",
-          "version": "5.23.5",
+          "version": "5.23.4",
         },
         "rules": {
           "error-boundaries": {
@@ -48010,7 +48010,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         },
         "meta": {
           "name": "eslint-plugin-n",
-          "version": "18.4.1",
+          "version": "18.4.0",
         },
         "rules": {
           "callback-return": {
