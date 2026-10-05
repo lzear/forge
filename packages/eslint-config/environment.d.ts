@@ -6,17 +6,6 @@ declare module '@eslint-community/eslint-plugin-eslint-comments' {
   export = { ...plugin, configs }
 }
 
-declare module 'eslint-plugin-jsx-a11y' {
-  import { type ESLint, type Linter } from 'eslint'
-
-  let plugin: ESLint.Plugin
-  let flatConfigs: {
-    recommended: { rules: Linter.RulesRecord }
-    strict: { rules: Linter.RulesRecord }
-  }
-  export = { ...plugin, flatConfigs }
-}
-
 declare module 'eslint-module-utils/moduleVisitor' {
   import { type Rule } from 'eslint'
 
@@ -66,14 +55,6 @@ declare module 'eslint-plugin-react-compiler' {
 }
 
 declare module 'eslint-plugin-react-hooks' {
-  import { type ESLint, type Linter } from 'eslint'
-
-  let plugin: ESLint.Plugin
-  let configs: { recommended: { rules: Linter.RulesRecord } }
-  export = { ...plugin, configs }
-}
-
-declare module 'eslint-plugin-react-perf' {
   import { type ESLint, type Linter } from 'eslint'
 
   let plugin: ESLint.Plugin

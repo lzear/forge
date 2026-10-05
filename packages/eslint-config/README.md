@@ -36,8 +36,8 @@ Each is exported too, for replacing one wholesale. `prettier` comes last so it o
 |---------------|------------------|------------------------------------------------------------------------------------------------------------------------------------|
 | `core`        | JS, TS, JSX, TSX | `@eslint/js`, stylistic, unicorn, sonarjs, import-x, simple-import-sort, promise, regexp, de-morgan, eslint-comments, prefer-arrow |
 | `typescript`  | TS, TSX          | typescript-eslint `strictTypeChecked` + `stylisticTypeChecked` (project service)                                                   |
-| `react`       | JSX, TSX         | react, react-x, react-dom, react-web-api, react-hooks, react-compiler, react-perf                                                  |
-| `a11y`        | JSX, TSX         | jsx-a11y                                                                                                                           |
+| `react`       | JSX, TSX         | react-x, react-dom, react-web-api, react-hooks, react-compiler                                                                     |
+| `a11y`        | JSX, TSX         | jsx-a11y-x, as `jsx-a11y`                                                                                                          |
 | `node`        | JS, TS, JSX, TSX | n                                                                                                                                  |
 | `vitest`      | tests            | `@vitest/eslint-plugin`; relaxes `no-non-null-assertion`, `no-unsafe-*` and `sonarjs/no-duplicate-string`                          |
 | `packageJson` | `package.json`   | eslint-package-json, `e18e/ban-dependencies`, `lzear/major-version-only`                                                           |
