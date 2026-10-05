@@ -1,3 +1,11 @@
+## 4.8.2
+
+`lzear/prefer-relative-imports` keeps an import's query (`?url`) in its fix.
+
+### Commits
+
+- [`dff5c62`](https://github.com/lzear/forge/commit/dff5c62) fix(eslint-config): keep import query in prefer-relative-imports fix
+
 ## 4.8.1
 
 `deps-release-age` reads Yarn's gate under `FORCE_COLOR`.
