@@ -7,7 +7,6 @@ const config: Linter.Config[] = [
   ...base,
   {
     rules: {
-      'package-json/no-nested-exports': 0,
       'package-json/no-workspace-protocol-in-published-package': 0,
     },
   },
