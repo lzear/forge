@@ -226,6 +226,50 @@ describe('LOCAL_CHECKS', () => {
     })
   })
 
+  describe('git-hooks', () => {
+    it('passes when lefthook.yml is installed by prepare', async () => {
+      write(dir, 'lefthook.yml')
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ scripts: { prepare: 'lefthook install' } }),
+      )
+      expect(await check('git-hooks', dir)).toBe(true)
+    })
+    it('fails listing every missing piece', async () => {
+      write(dir, 'package.json', '{}')
+      const result = await check('git-hooks', dir)
+      expect(result).toMatchObject({ pass: false })
+      const { detail } = result as { detail: string }
+      expect(detail).toContain('lefthook.yml missing')
+      expect(detail).toContain('"prepare": "lefthook install"')
+    })
+    it("trusts Bun to run lefthook's postinstall", async () => {
+      write(dir, 'lefthook.yml')
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ packageManager: 'bun@1.4.2' }),
+      )
+      expect(await check('git-hooks', dir)).toBe(true)
+    })
+    it('fails when Bun trustedDependencies leave lefthook out', async () => {
+      write(dir, 'lefthook.yml')
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({
+          packageManager: 'bun@1.4.2',
+          trustedDependencies: ['esbuild'],
+        }),
+      )
+      expect(await check('git-hooks', dir)).toEqual({
+        pass: false,
+        detail: 'add lefthook to trustedDependencies',
+      })
+    })
+  })
+
   describe('pkg-publint', () => {
     it('passes when no package.json', async () => {
       expect(await check('pkg-publint', dir)).toMatchObject({ pass: true })

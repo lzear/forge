@@ -281,6 +281,22 @@ const releaseAgeDays = (dir: string, pm: PackageManagerName): number => {
   return Number(value ?? 0) / perDay
 }
 
+// Bun runs lefthook's postinstall (trusted by default), which, unlike `prepare`,
+// never fails a git-less Docker install. Yarn repos turn dependency scripts off,
+// so `prepare` installs the hooks there.
+const hookInstallGap = (dir: string): string | null => {
+  const package_ = readPackage(dir)
+  const scripts = package_?.scripts as Record<string, string> | undefined
+  if (scripts?.prepare?.includes('lefthook install')) return null
+  if (detectPackageManager(dir).name !== 'bun')
+    return 'add "prepare": "lefthook install" to package.json scripts'
+  // a trustedDependencies list replaces Bun's default one
+  const trusted = package_?.trustedDependencies
+  return Array.isArray(trusted) && !trusted.includes('lefthook')
+    ? 'add lefthook to trustedDependencies'
+    : null
+}
+
 /**
  * Checks run against a checkout directory.
  */
@@ -390,6 +406,21 @@ export const LOCAL_CHECKS: LocalCheck[] = [
           detail: 'add "github>lzear/forge" to renovate.json extends',
         }
       )
+    },
+  },
+  {
+    id: 'git-hooks',
+    desc: 'git hooks',
+    type: 'local',
+    // a missing commitlint config fails loudly at commit, unlike missing hooks
+    check: (dir) => {
+      const missing = [
+        existsSync(path.join(dir, 'lefthook.yml'))
+          ? null
+          : 'lefthook.yml missing — run: forge sync',
+        hookInstallGap(dir),
+      ].filter((m): m is string => m !== null)
+      return missing.length === 0 || { pass: false, detail: missing.join('\n') }
     },
   },
   {
