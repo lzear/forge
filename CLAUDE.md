@@ -5,7 +5,7 @@ Yarn workspaces monorepo of shared dev tooling, published to npm and JSR. Packag
 ## Commands
 
 ```bash
-CI=true yarn qa                                      # build + typecheck + lint + test + forge check
+CI=true yarn qa                                      # build, then typecheck, lint, test, forge check at once
 cd packages/<name> && yarn vitest run src/x.test.ts  # one test file
 ```
 
