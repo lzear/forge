@@ -4,10 +4,10 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 
 /**
- * the pending release, as `changeset status` computes it
- * @param {string} root
- * @returns {{ releases: { name: string, type: string, newVersion: string }[], changesets: { summary: string }[] }}
- */
+the pending release, as `changeset status` computes it
+@param {string} root
+@returns {{ releases: { name: string, type: string, newVersion: string }[], changesets: { summary: string }[] }}
+*/
 export const readStatus = (root) => {
   const dir = mkdtempSync(path.join(tmpdir(), 'changesets-'))
   const file = path.join(dir, 'status.json')

@@ -75,7 +75,8 @@ const setWorkspaces = (...locations: [name: string, location: string][]) => {
   )
 }
 
-const lib = (dir = 'packages/lib'): void => {
+const dir = 'packages/lib'
+const lib = (): void => {
   write(dir, 'package.json', {
     name: '@x/lib',
     version: '1.2.3',

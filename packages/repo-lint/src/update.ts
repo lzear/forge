@@ -6,13 +6,13 @@ import { pathToFileURL } from 'node:url'
 import { run as ncuRun } from 'npm-check-updates'
 
 /**
- * Package managers `forge update` can install with.
- */
+Package managers `forge update` can install with.
+*/
 export type PackageManagerName = 'npm' | 'yarn' | 'pnpm' | 'bun'
 
 /**
- * A detected package manager and where it was detected from.
- */
+A detected package manager and where it was detected from.
+*/
 export type PackageManager = {
   name: PackageManagerName
   version?: string
@@ -20,8 +20,8 @@ export type PackageManager = {
 }
 
 /**
- * Outcome of one update step.
- */
+Outcome of one update step.
+*/
 export type UpdateResult = {
   id: string
   desc: string
@@ -31,8 +31,8 @@ export type UpdateResult = {
 }
 
 /**
- * All update step results for one directory.
- */
+All update step results for one directory.
+*/
 export type UpdateReport = {
   dir: string
   packageManager: PackageManager
@@ -40,8 +40,8 @@ export type UpdateReport = {
 }
 
 /**
- * Options for {@linkcode runUpdate}.
- */
+Options for {@linkcode runUpdate}.
+*/
 export type UpdateOptions = {
   dir?: string
   dry?: boolean
@@ -152,9 +152,9 @@ const ownWorkspaces = (dir: string): string[] | null => {
 }
 
 /**
- * Detects the package manager from the `packageManager` field, then the
- * lockfile, defaulting to npm.
- */
+Detects the package manager from the `packageManager` field, then the
+lockfile, defaulting to npm.
+*/
 export const detectPackageManager = (dir: string): PackageManager => {
   const field = readPackage(dir)?.packageManager
   const match = typeof field === 'string' ? PM_FIELD_RE.exec(field) : null
@@ -187,7 +187,7 @@ const pmRegistryName = (
 const latestPackageVersion = async (name: string): Promise<string> => {
   const data = await fetchJson(`https://registry.npmjs.org/${name}/latest`)
   if (typeof data.version !== 'string')
-    throw new Error(`no version in registry response for ${name}`)
+    throw new TypeError(`no version in registry response for ${name}`)
   return data.version
 }
 
@@ -514,11 +514,11 @@ const stepInstall = (dir: string, pm: PackageManager): UpdateResult => {
 }
 
 /**
- * Bumps dependency ranges, the `packageManager` field, Node and Bun version
- * files and the LICENSE year, then installs.
- *
- * @param options `dry` writes nothing, `install: false` skips the install
- */
+Bumps dependency ranges, the `packageManager` field, Node and Bun version
+files and the LICENSE year, then installs.
+
+@param options `dry` writes nothing, `install: false` skips the install
+*/
 export const runUpdate = async (
   options: UpdateOptions = {},
 ): Promise<UpdateReport> => {

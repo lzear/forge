@@ -13,17 +13,17 @@ const root = process.cwd()
 const changelogPath = path.join(root, 'CHANGELOG.md')
 
 /**
- * @param {string} command
- */
+@param {string} command
+*/
 const run = (command) =>
   execSync(command, { cwd: root, stdio: 'pipe' }).toString().trim()
 
 /**
- * commits since the last release tag, else since the last Version Packages
- * commit, else the last 20. A stable release skips prerelease tags, so it
- * lists everything its betas and rcs shipped.
- * @param {string} version
- */
+commits since the last release tag, else since the last Version Packages
+commit, else the last 20. A stable release skips prerelease tags, so it
+lists everything its betas and rcs shipped.
+@param {string} version
+*/
 const getCommits = (version) => {
   const exclude = version.includes('-') ? '' : " --exclude 'v*-*'"
   let base
@@ -45,8 +45,8 @@ const SKIP_PREFIXES = [
 ]
 
 /**
- * @param {string} raw
- */
+@param {string} raw
+*/
 const filterCommits = (raw) =>
   raw.split('\n').filter((l) => {
     const subject = l.slice(l.indexOf(' ') + 1)

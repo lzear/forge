@@ -22,30 +22,30 @@ const root = process.cwd()
 const tarball = path.join(tmpdir(), 'lzear-prerelease.tgz')
 
 /**
- * @param {string} command
- */
+@param {string} command
+*/
 const run = (command) =>
   execSync(command, { cwd: root, stdio: 'pipe' }).toString().trim()
 
 /**
- * @param {string} command
- */
+@param {string} command
+*/
 const show = (command) => execSync(command, { cwd: root, stdio: 'inherit' })
 
 /**
- * @param {string} message
- */
+@param {string} message
+*/
 const fail = (message) => {
   console.error(message)
   process.exit(1)
 }
 
 /**
- * N of every `<prefix><N>` version of the package on npm
- * @param {string} name
- * @param {string} prefix
- * @returns {number[]}
- */
+N of every `<prefix><N>` version of the package on npm
+@param {string} name
+@param {string} prefix
+@returns {number[]}
+*/
 const takenNumbers = (name, prefix) => {
   let versions
   try {

@@ -62,7 +62,7 @@ const commands = (): string[] =>
 const staged = (): string[] =>
   commands().flatMap((c) => {
     const pack = /^yarn workspace "(.+)" pack/.exec(c)
-    return pack ? [pack[1] ?? ''] : []
+    return pack ? (pack[1] ?? '') : []
   })
 
 // runs the script like its bin does

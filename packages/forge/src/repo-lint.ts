@@ -1,14 +1,14 @@
 /**
- * Re-export of `@lzear/repo-lint`: repo compliance checks and dependency updates.
- *
- * ```ts
- * import { checkLocal } from '@lzear/forge/repo-lint'
- *
- * const report = await checkLocal()
- * ```
- *
- * @module
- */
+Re-export of `@lzear/repo-lint`: repo compliance checks and dependency updates.
+
+```ts
+import { checkLocal } from '@lzear/forge/repo-lint'
+
+const report = await checkLocal()
+```
+
+@module
+*/
 
 export type {
   Check,

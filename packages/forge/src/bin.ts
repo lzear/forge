@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * The `forge` CLI: `check`, `update`, `setup` and `sync`.
- *
- * ```sh
- * npx @lzear/forge check
- * ```
- *
- * @module
- */
+The `forge` CLI: `check`, `update`, `setup` and `sync`.
+
+```sh
+npx @lzear/forge check
+```
+
+@module
+*/
 
 import { spawnSync } from 'node:child_process'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'

@@ -648,12 +648,6 @@ describe('LOCAL_CHECKS', () => {
 
 // ── REMOTE_CHECKS ─────────────────────────────────────────────────────────────
 
-const remoteCheck = (id: string, repo: string): boolean => {
-  const c = REMOTE_CHECKS.find((c) => c.id === id)
-  if (!c) throw new Error(`unknown check: ${id}`)
-  return c.check(repo)
-}
-
 const mockSecrets = (names: string[]): void => {
   vi.mocked(childProcess.spawnSync).mockReturnValue({
     status: 0,
@@ -665,17 +659,25 @@ const mockSecrets = (names: string[]): void => {
   })
 }
 
+const id = 'secret-codacy-token'
+const repo = 'lzear/repo'
+const remoteCheck = (): boolean => {
+  const c = REMOTE_CHECKS.find((c) => c.id === id)
+  if (!c) throw new Error(`unknown check: ${id}`)
+  return c.check(repo)
+}
+
 describe('REMOTE_CHECKS', () => {
   afterEach(() => vi.clearAllMocks())
 
   describe('secret-codacy-token', () => {
     it('passes when secret present', () => {
       mockSecrets(['CODACY_PROJECT_TOKEN'])
-      expect(remoteCheck('secret-codacy-token', 'lzear/repo')).toBe(true)
+      expect(remoteCheck()).toBe(true)
     })
     it('fails when secret absent', () => {
       mockSecrets(['OTHER_TOKEN'])
-      expect(remoteCheck('secret-codacy-token', 'lzear/repo')).toBe(false)
+      expect(remoteCheck()).toBe(false)
     })
   })
 })

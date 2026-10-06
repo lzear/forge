@@ -1,16 +1,16 @@
 /**
- * Repo compliance checks (local files, CI, badges, package quality) and
- * dependency updates.
- *
- * ```ts
- * import { checkLocal } from '@lzear/repo-lint'
- *
- * const { results } = await checkLocal({ skipRemote: true })
- * for (const r of results) console.log(r.pass ? '✓' : '✗', r.desc)
- * ```
- *
- * @module
- */
+Repo compliance checks (local files, CI, badges, package quality) and
+dependency updates.
+
+```ts
+import { checkLocal } from '@lzear/repo-lint'
+
+const { results } = await checkLocal({ skipRemote: true })
+for (const r of results) console.log(r.pass ? '✓' : '✗', r.desc)
+```
+
+@module
+*/
 
 import { execFileSync } from 'node:child_process'
 import path from 'node:path'
@@ -24,8 +24,8 @@ import {
 export type { Check, CheckDetail, LocalCheck, RemoteCheck } from './checks.ts'
 
 /**
- * Outcome of one check.
- */
+Outcome of one check.
+*/
 export type CheckResult = {
   id: string
   desc: string
@@ -34,8 +34,8 @@ export type CheckResult = {
 }
 
 /**
- * All check results for one repo.
- */
+All check results for one repo.
+*/
 export type RepoReport = {
   repo: string
   results: CheckResult[]
@@ -68,8 +68,8 @@ const runChecks = async (
 }
 
 /**
- * Reads `owner/repo` from the GitHub `origin` remote of `dir`.
- */
+Reads `owner/repo` from the GitHub `origin` remote of `dir`.
+*/
 export const detectRepo = (dir: string = process.cwd()): string | undefined => {
   try {
     const remote = execFileSync('git', ['remote', 'get-url', 'origin'], {
@@ -84,8 +84,8 @@ export const detectRepo = (dir: string = process.cwd()): string | undefined => {
 }
 
 /**
- * Options for {@linkcode checkLocal}.
- */
+Options for {@linkcode checkLocal}.
+*/
 export type CheckLocalOptions = {
   dir?: string
   skipRemote?: boolean
@@ -93,11 +93,11 @@ export type CheckLocalOptions = {
 }
 
 /**
- * Runs the checks against a local checkout. Package-quality checks only run
- * when the repo publishes a package.
- *
- * @param options `dir` defaults to the cwd, `repo` to the `origin` remote
- */
+Runs the checks against a local checkout. Package-quality checks only run
+when the repo publishes a package.
+
+@param options `dir` defaults to the cwd, `repo` to the `origin` remote
+*/
 export const checkLocal = async (
   options: CheckLocalOptions = {},
 ): Promise<RepoReport> => {

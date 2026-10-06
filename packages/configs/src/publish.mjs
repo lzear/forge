@@ -15,11 +15,11 @@ import { parseArgs } from 'node:util'
 import { listWorkspaces } from './workspaces.mjs'
 
 /**
- * @typedef {{ name: string, version: string, location: string }} Package
- */
+@typedef {{ name: string, version: string, location: string }} Package
+*/
 /**
- * @typedef {{ tag: string, version: string, changelog: string | undefined, packages: Package[] }} Release
- */
+@typedef {{ tag: string, version: string, changelog: string | undefined, packages: Package[] }} Release
+*/
 
 const { values: options } = parseArgs({
   options: {
@@ -32,19 +32,19 @@ const root = process.cwd()
 const tarball = path.join(tmpdir(), 'lzear-publish.tgz')
 
 /**
- * @param {string} command
- */
+@param {string} command
+*/
 const run = (command) =>
   execSync(command, { cwd: root, stdio: 'pipe' }).toString().trim()
 
 /**
- * @param {string} file
- */
+@param {string} file
+*/
 const readJson = (file) => JSON.parse(readFileSync(file, 'utf8'))
 
 /**
- * @type {Package[]}
- */
+@type {Package[]}
+*/
 const packages = listWorkspaces(root)
   .map(({ location }) => ({
     location,
@@ -58,15 +58,15 @@ const versions = new Set(packages.map((p) => p.version))
 const fixed =
   packages.length > 1 && versions.size === 1 ? [...versions][0] : undefined
 /**
- * @param {string} location
- */
+@param {string} location
+*/
 const changelogOf = (location) =>
   [path.join(location, 'CHANGELOG.md'), 'CHANGELOG.md'].find((f) =>
     existsSync(path.join(root, f)),
   )
 /**
- * @type {Release[]}
- */
+@type {Release[]}
+*/
 const releases = fixed
   ? [
       {
@@ -84,8 +84,8 @@ const releases = fixed
     }))
 
 /**
- * @param {string} tag
- */
+@param {string} tag
+*/
 const isReleased = (tag) => {
   try {
     run(`gh release view "${tag}"`)
@@ -96,17 +96,17 @@ const isReleased = (tag) => {
 }
 
 /**
- * `1.0.0-rc.2` → `rc`, `1.0.0` → undefined
- * @param {string} version
- */
+`1.0.0-rc.2` → `rc`, `1.0.0` → undefined
+@param {string} version
+*/
 const prereleaseOf = (version) => {
   const pre = version.split('-', 2)[1]
   return pre && (/^[a-z]+/i.exec(pre)?.[0] ?? 'next')
 }
 
 /**
- * @param {Pick<Package, 'name' | 'version'>} package_
- */
+@param {Pick<Package, 'name' | 'version'>} package_
+*/
 const isPublished = ({ name, version }) => {
   try {
     return run(`npm view "${name}@${version}" version`) === version
@@ -116,8 +116,8 @@ const isPublished = ({ name, version }) => {
 }
 
 /**
- * @param {Package} package_
- */
+@param {Package} package_
+*/
 const stage = ({ name, version }) => {
   if (isPublished({ name, version })) {
     console.log(`${name}@${version} already published, skipping`)
@@ -141,9 +141,9 @@ const stage = ({ name, version }) => {
 }
 
 /**
- * the changelog section under `## <version>`, without its heading
- * @param {Release} release
- */
+the changelog section under `## <version>`, without its heading
+@param {Release} release
+*/
 const notesOf = ({ changelog, version }) => {
   const text = changelog ? readFileSync(path.join(root, changelog), 'utf8') : ''
   const section = text.split(/^## /m).find((s) => s.startsWith(`${version}\n`))
@@ -151,8 +151,8 @@ const notesOf = ({ changelog, version }) => {
 }
 
 /**
- * @param {Release} release
- */
+@param {Release} release
+*/
 const createRelease = (release) => {
   if (!options.publish) {
     console.log(`[dry-run] would release ${release.tag}`)

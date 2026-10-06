@@ -18,8 +18,8 @@ import {
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /**
- * A check result carrying an explanation.
- */
+A check result carrying an explanation.
+*/
 export type CheckDetail = {
   pass: boolean
   detail?: string
@@ -27,8 +27,8 @@ export type CheckDetail = {
 type CheckResult = boolean | CheckDetail | Promise<boolean | CheckDetail>
 
 /**
- * A check run against a checkout directory.
- */
+A check run against a checkout directory.
+*/
 export type LocalCheck = {
   id: string
   desc: string
@@ -38,8 +38,8 @@ export type LocalCheck = {
 }
 
 /**
- * A check run against a GitHub repo through the `gh` CLI.
- */
+A check run against a GitHub repo through the `gh` CLI.
+*/
 export type RemoteCheck = {
   id: string
   desc: string
@@ -49,8 +49,8 @@ export type RemoteCheck = {
 }
 
 /**
- * Any local or remote check.
- */
+Any local or remote check.
+*/
 export type Check = LocalCheck | RemoteCheck
 
 const findBin = (name: string, startDir: string): string | null => {
@@ -81,9 +81,7 @@ const eachPublishedPackage = async (
     )
     const failures = results.filter((r) => !r.pass)
     if (failures.length === 0) return { pass: true }
-    const detail = failures
-      .flatMap((r) => (r.detail ? [r.detail] : []))
-      .join('\n')
+    const detail = failures.flatMap((r) => r.detail ?? []).join('\n')
     return { pass: false, ...(detail && { detail }) }
   }
   return function_(dir)
@@ -273,8 +271,8 @@ const hookInstallGap = (dir: string): string | null => {
 }
 
 /**
- * Checks run against a checkout directory.
- */
+Checks run against a checkout directory.
+*/
 export const LOCAL_CHECKS: LocalCheck[] = [
   {
     id: 'readme-exists',
@@ -449,14 +447,14 @@ export const LOCAL_CHECKS: LocalCheck[] = [
         .filter((d) => hasSizeLimit(d))
         .flatMap((d) => {
           const bin = findBin('size-limit', d)
-          if (!bin) return [`${d}: size-limit not installed`]
+          if (!bin) return `${d}: size-limit not installed`
           const r = spawnSync(process.execPath, [bin], {
             cwd: d,
             encoding: 'utf8',
             stdio: ['ignore', 'pipe', 'pipe'],
             env: { ...process.env, NO_COLOR: '1' },
           })
-          return r.status === 0 ? [] : [head(r.stdout + r.stderr)]
+          return r.status === 0 ? [] : head(r.stdout + r.stderr)
         })
       return (
         failures.length === 0 || { pass: false, detail: failures.join('\n') }
@@ -581,8 +579,8 @@ export const LOCAL_CHECKS: LocalCheck[] = [
 ]
 
 /**
- * Lists the repo's GitHub Actions secret names, or `null` when `gh` fails.
- */
+Lists the repo's GitHub Actions secret names, or `null` when `gh` fails.
+*/
 export const listSecrets = (repo: string): string[] | null => {
   try {
     const result = spawnSync(
@@ -602,8 +600,8 @@ export const listSecrets = (repo: string): string[] | null => {
 }
 
 /**
- * Checks run against the GitHub repo.
- */
+Checks run against the GitHub repo.
+*/
 export const REMOTE_CHECKS: RemoteCheck[] = [
   {
     id: 'secret-codacy-token',
@@ -618,6 +616,6 @@ export const REMOTE_CHECKS: RemoteCheck[] = [
 ]
 
 /**
- * Every check, local then remote.
- */
+Every check, local then remote.
+*/
 export const CHECKS: Check[] = [...LOCAL_CHECKS, ...REMOTE_CHECKS]
