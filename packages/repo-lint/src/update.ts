@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { run as ncuRun } from 'npm-check-updates'
@@ -110,6 +110,47 @@ export const getWorkspacePatterns = (
     : []
 }
 
+const patternToBase = (rootDir: string, pattern: string): string | null => {
+  const parts = pattern.split('/')
+  if (parts.length === 2 && parts[1] === '*')
+    return path.join(rootDir, parts[0] ?? '')
+  return parts.length === 1 && parts[0] === '*' ? rootDir : null
+}
+
+export const getWorkspaceDirectories = (rootDir: string): string[] => {
+  const package_ = readPackage(rootDir)
+  if (!package_) return []
+  const directories: string[] = []
+  for (const pattern of getWorkspacePatterns(package_)) {
+    // a glob-free pattern names the package directory itself
+    if (!pattern.includes('*')) {
+      const packageDir = path.join(rootDir, pattern)
+      if (existsSync(packageDir)) directories.push(packageDir)
+      continue
+    }
+    const base = patternToBase(rootDir, pattern)
+    if (!base || !existsSync(base)) continue
+    const entries = readdirSync(base, { withFileTypes: true })
+    for (const entry of entries)
+      if (entry.isDirectory()) directories.push(path.join(base, entry.name))
+  }
+  return directories
+}
+
+// ncu's names for the workspaces, or null when it may take them all: a git
+// submodule's manifest is its own repo's to update
+const ownWorkspaces = (dir: string): string[] | null => {
+  const directories = getWorkspaceDirectories(dir).filter((d) =>
+    existsSync(path.join(d, 'package.json')),
+  )
+  const own = directories.filter((d) => !existsSync(path.join(d, '.git')))
+  if (own.length === directories.length) return null
+  return own.map((d) => {
+    const name = readPackage(d)?.name
+    return typeof name === 'string' ? name : path.basename(d)
+  })
+}
+
 /**
  * Detects the package manager from the `packageManager` field, then the
  * lockfile, defaulting to npm.
@@ -189,6 +230,7 @@ export const stepDeps = async (
   const base = { id: 'deps', desc: 'dependency ranges (ncu)' }
   try {
     const isWorkspaces = getWorkspacePatterns(readPackage(dir) ?? {}).length > 0
+    const own = isWorkspaces ? ownWorkspaces(dir) : null
     const rc = await loadNcuRc(dir)
     const result = (await ncuRun({
       cooldown,
@@ -198,14 +240,16 @@ export const stepDeps = async (
       upgrade: !isDry,
       silent: true,
       dep: ['prod', 'dev', 'optional', 'peer'],
-      ...(isWorkspaces && { workspaces: true, root: true }),
-    })) as Record<string, string> | Record<string, Record<string, string>>
+      ...(isWorkspaces && {
+        root: true,
+        ...(own ? { workspace: own } : { workspaces: true }),
+      }),
+    })) as Record<string, string | Record<string, string>>
 
-    const entries = isWorkspaces
-      ? Object.values(result as Record<string, Record<string, string>>).flatMap(
-          (x) => Object.entries(x),
-        )
-      : Object.entries(result as Record<string, string>)
+    // keyed by package file in workspaces mode, flat for a lone package
+    const entries = Object.entries(result).flatMap(([k, v]) =>
+      typeof v === 'string' ? [[k, v]] : Object.entries(v),
+    )
 
     const rcNote = rc.file ? ` (using ${rc.file})` : ''
     if (entries.length === 0)

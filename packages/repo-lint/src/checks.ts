@@ -6,6 +6,7 @@ import { publint } from 'publint'
 import { maxSatisfying, satisfies } from 'semver'
 import {
   detectPackageManager,
+  getWorkspaceDirectories,
   getWorkspacePatterns,
   MIN_RELEASE_AGE_DAYS,
   type PackageManager,
@@ -51,33 +52,6 @@ export type RemoteCheck = {
  * Any local or remote check.
  */
 export type Check = LocalCheck | RemoteCheck
-
-const patternToBase = (rootDir: string, pattern: string): string | null => {
-  const parts = pattern.split('/')
-  if (parts.length === 2 && parts[1] === '*')
-    return path.join(rootDir, parts[0] ?? '')
-  return parts.length === 1 && parts[0] === '*' ? rootDir : null
-}
-
-const getWorkspaceDirectories = (rootDir: string): string[] => {
-  const package_ = readPackage(rootDir)
-  if (!package_) return []
-  const directories: string[] = []
-  for (const pattern of getWorkspacePatterns(package_)) {
-    // a glob-free pattern names the package directory itself
-    if (!pattern.includes('*')) {
-      const packageDir = path.join(rootDir, pattern)
-      if (existsSync(packageDir)) directories.push(packageDir)
-      continue
-    }
-    const base = patternToBase(rootDir, pattern)
-    if (!base || !existsSync(base)) continue
-    const entries = readdirSync(base, { withFileTypes: true })
-    for (const entry of entries)
-      if (entry.isDirectory()) directories.push(path.join(base, entry.name))
-  }
-  return directories
-}
 
 const findBin = (name: string, startDir: string): string | null => {
   let dir = startDir

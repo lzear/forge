@@ -1,5 +1,5 @@
 import * as childProcess from 'node:child_process'
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { run as ncuRun } from 'npm-check-updates'
@@ -252,6 +252,26 @@ describe('runUpdate', () => {
     expect(vi.mocked(ncuRun)).toHaveBeenCalledWith(
       expect.objectContaining({ workspaces: true, root: true }),
     )
+  })
+
+  it('leaves workspaces that are git submodules alone', async () => {
+    write(dir, 'package.json', JSON.stringify({ workspaces: ['packages/*'] }))
+    for (const name of ['a', 'b', 'vendored']) {
+      mkdirSync(path.join(dir, 'packages', name), { recursive: true })
+      write(dir, `packages/${name}/package.json`, JSON.stringify({ name }))
+    }
+    write(dir, 'packages/vendored/.git', 'gitdir: ../../.git/modules/vendored')
+    mockRegistry({})
+    vi.mocked(ncuRun).mockResolvedValue({
+      [path.join(dir, 'packages/a/package.json')]: { react: '^19' },
+    })
+    const report = await runUpdate({ dir, dry: true })
+    const options = vi.mocked(ncuRun).mock.calls[0]?.[0]
+    expect(options).toMatchObject({ root: true })
+    expect(options).not.toHaveProperty('workspaces')
+    expect(options?.workspace).toEqual(expect.arrayContaining(['a', 'b']))
+    expect(options?.workspace).toHaveLength(2)
+    expect(resultById(report.results, 'deps')?.detail).toContain('react')
   })
 
   it('bumps the packageManager field and preserves indentation', async () => {
