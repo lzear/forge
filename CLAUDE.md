@@ -9,7 +9,7 @@ CI=true yarn qa                                      # build + typecheck + lint 
 cd packages/<name> && yarn vitest run src/x.test.ts  # one test file
 ```
 
-`CI=true` keeps colors on when output is piped: color-dependent tests otherwise pass locally and fail in CI.
+`CI=true` keeps colors on when output is piped: color-dependent tests otherwise pass locally and fail in CI. Run Vitest through `yarn`: the config snapshot holds a rule message naming the package manager that runs it (`npm i` from a bare `vitest -u`).
 
 ## Gotchas
 

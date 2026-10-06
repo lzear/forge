@@ -49,6 +49,13 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
       'react-x/no-missing-component-display-name': 2,
       'react-dom/no-unknown-property': [2, { ignore: ['jsx', 'global'] }],
       'react-dom/no-unsafe-target-blank': 2,
+      'no-restricted-syntax': [
+        2,
+        {
+          selector: "JSXAttribute[name.name='type'][value.value='number']",
+          message: 'No number inputs: use a slider.',
+        },
+      ],
 
       ...reactWebApiPlugin.configs.recommended.rules,
     },
