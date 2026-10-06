@@ -13,6 +13,7 @@ vi.mock('node:child_process', async (importOriginal) => {
   const module_ = await importOriginal<typeof childProcess>()
   return {
     ...module_,
+    execFile: vi.fn(module_.execFile),
     spawnSync: vi.fn((...arguments_: Parameters<typeof module_.spawnSync>) =>
       module_.spawnSync(...arguments_),
     ),
@@ -50,15 +51,25 @@ const write = (dir: string, file: string, content = ''): void => {
   writeFileSync(full, content)
 }
 
-const mockSpawn = (status: number, stdout = ''): void => {
-  vi.mocked(childProcess.spawnSync).mockReturnValue({
-    status,
-    stdout,
-    stderr: '',
-    pid: 0,
-    output: [],
-    signal: null,
-  })
+// execFile's callback, as on a process that exits with `status`; a string
+// status is a spawn error code
+type ExecFileCallback = (
+  error: (Error & { code: number | string }) | null,
+  stdout: string,
+  stderr: string,
+) => void
+
+const mockSpawn = (status: number | string, stdout = ''): void => {
+  const error =
+    status === 0
+      ? null
+      : Object.assign(new Error(String(status)), { code: status })
+  vi.mocked(childProcess.execFile).mockImplementation(((
+    ...arguments_: unknown[]
+  ) => {
+    const callback = arguments_.at(-1) as ExecFileCallback
+    callback(error, stdout, '')
+  }) as never)
 }
 
 const check = async (
@@ -374,7 +385,7 @@ describe('LOCAL_CHECKS', () => {
     it('skips repos without a size-limit config', async () => {
       write(dir, 'package.json', JSON.stringify({}))
       expect(await check('pkg-size-limit', dir)).toBe(true)
-      expect(vi.mocked(childProcess.spawnSync)).not.toHaveBeenCalled()
+      expect(vi.mocked(childProcess.execFile)).not.toHaveBeenCalled()
     })
     it('fails when configured but not installed', async () => {
       write(dir, '.size-limit.json', '[]')
@@ -396,10 +407,11 @@ describe('LOCAL_CHECKS', () => {
       )
       mockSpawn(0)
       expect(await check('pkg-size-limit', dir)).toBe(true)
-      expect(vi.mocked(childProcess.spawnSync)).toHaveBeenCalledWith(
+      expect(vi.mocked(childProcess.execFile)).toHaveBeenCalledWith(
         process.execPath,
         [path.join(dir, 'node_modules/.bin/size-limit')],
         expect.objectContaining({ cwd: path.join(dir, 'packages/a') }),
+        expect.any(Function),
       )
     })
     it('fails with output when over the limit', async () => {
@@ -452,10 +464,11 @@ describe('LOCAL_CHECKS', () => {
       write(dir, 'package.json', JSON.stringify({}))
       mockSpawn(0)
       expect(await check('deps-audit', dir)).toBe(true)
-      expect(vi.mocked(childProcess.spawnSync)).toHaveBeenCalledWith(
+      expect(vi.mocked(childProcess.execFile)).toHaveBeenCalledWith(
         'npm',
         expect.arrayContaining(['audit']),
         expect.objectContaining({ cwd: dir }),
+        expect.any(Function),
       )
     })
     it('uses the detected package manager', async () => {
@@ -466,11 +479,20 @@ describe('LOCAL_CHECKS', () => {
       )
       mockSpawn(0)
       await check('deps-audit', dir)
-      expect(vi.mocked(childProcess.spawnSync)).toHaveBeenCalledWith(
+      expect(vi.mocked(childProcess.execFile)).toHaveBeenCalledWith(
         'yarn',
         expect.arrayContaining(['npm', 'audit']),
         expect.objectContaining({ cwd: dir }),
+        expect.any(Function),
       )
+    })
+    it('fails with the error when the command cannot spawn', async () => {
+      write(dir, 'package.json', JSON.stringify({}))
+      mockSpawn('ENOENT')
+      expect(await check('deps-audit', dir)).toEqual({
+        pass: false,
+        detail: 'Error: ENOENT',
+      })
     })
     it('fails with output when audit exits non-zero', async () => {
       write(dir, 'package.json', JSON.stringify({}))
@@ -618,10 +640,11 @@ describe('LOCAL_CHECKS', () => {
       write(dir, 'package.json', yarn4)
       mockSpawn(0, '4320\n')
       expect(await check('deps-release-age', dir)).toBe(true)
-      expect(vi.mocked(childProcess.spawnSync)).toHaveBeenCalledWith(
+      expect(vi.mocked(childProcess.execFile)).toHaveBeenCalledWith(
         'yarn',
         ['config', 'get', 'npmMinimalAgeGate', '--json'],
         expect.objectContaining({ cwd: dir }),
+        expect.any(Function),
       )
     })
     it("fails on yarn's 1-day default", async () => {

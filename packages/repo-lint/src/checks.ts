@@ -1,4 +1,4 @@
-import { spawnSync } from 'node:child_process'
+import { execFile, spawnSync } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -63,6 +63,34 @@ const findBin = (name: string, startDir: string): string | null => {
     dir = parent
   }
 }
+
+type Spawned = {
+  status: number | null
+  stdout: string
+  stderr: string
+  error?: Error
+}
+
+// spawnSync's result without blocking the event loop, so checks overlap
+const run = (
+  command: string,
+  arguments_: string[],
+  options: { cwd: string; env?: NodeJS.ProcessEnv },
+): Promise<Spawned> =>
+  new Promise((resolve) => {
+    execFile(
+      command,
+      arguments_,
+      { ...options, encoding: 'utf8' },
+      (error, stdout, stderr) => {
+        // a numeric code is the exit status; anything else failed to spawn
+        if (!error) resolve({ status: 0, stdout, stderr })
+        else if (typeof error.code === 'number')
+          resolve({ status: error.code, stdout, stderr })
+        else resolve({ status: null, stdout, stderr, error })
+      },
+    )
+  })
 
 const head = (output: string): string =>
   output.trim().split('\n').slice(0, 20).join('\n')
@@ -236,14 +264,13 @@ const RELEASE_AGE: Record<
 
 // yarn's goes through `yarn config`: it defaults to 1 day and takes `3d`;
 // `--json` keeps FORCE_COLOR (concurrently sets it) from coloring the number
-const releaseAgeDays = (dir: string, pm: PackageManagerName): number => {
+const releaseAgeDays = async (
+  dir: string,
+  pm: PackageManagerName,
+): Promise<number> => {
   const [file, key, perDay] = RELEASE_AGE[pm]
   if (pm === 'yarn') {
-    const r = spawnSync('yarn', ['config', 'get', key, '--json'], {
-      cwd: dir,
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-    })
+    const r = await run('yarn', ['config', 'get', key, '--json'], { cwd: dir })
     return (Number(r.stdout) || 0) / perDay
   }
   const f = path.join(dir, file)
@@ -421,15 +448,11 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     check: (dir) => {
       const bin = findBin('attw', _dirname)
       if (!bin) return { pass: false, detail: 'attw not available' }
-      return eachPublishedPackage(dir, (pkgDir) => {
-        const r = spawnSync(
+      return eachPublishedPackage(dir, async (pkgDir) => {
+        const r = await run(
           process.execPath,
           [bin, '--pack', '--profile', 'esm-only'],
-          {
-            cwd: pkgDir,
-            encoding: 'utf8',
-            stdio: ['ignore', 'pipe', 'pipe'],
-          },
+          { cwd: pkgDir },
         )
         return r.status === 0
           ? { pass: true }
@@ -442,20 +465,21 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     desc: 'size-limit',
     type: 'local',
     // the repo's own bin: size-limit loads only plugins its package.json lists
-    check: (dir) => {
-      const failures = [dir, ...getWorkspaceDirectories(dir)]
-        .filter((d) => hasSizeLimit(d))
-        .flatMap((d) => {
-          const bin = findBin('size-limit', d)
-          if (!bin) return `${d}: size-limit not installed`
-          const r = spawnSync(process.execPath, [bin], {
-            cwd: d,
-            encoding: 'utf8',
-            stdio: ['ignore', 'pipe', 'pipe'],
-            env: { ...process.env, NO_COLOR: '1' },
-          })
-          return r.status === 0 ? [] : head(r.stdout + r.stderr)
-        })
+    check: async (dir) => {
+      const outputs = await Promise.all(
+        [dir, ...getWorkspaceDirectories(dir)]
+          .filter((d) => hasSizeLimit(d))
+          .map(async (d) => {
+            const bin = findBin('size-limit', d)
+            if (!bin) return `${d}: size-limit not installed`
+            const r = await run(process.execPath, [bin], {
+              cwd: d,
+              env: { ...process.env, NO_COLOR: '1' },
+            })
+            return r.status === 0 ? [] : head(r.stdout + r.stderr)
+          }),
+      )
+      const failures = outputs.flat()
       return (
         failures.length === 0 || { pass: false, detail: failures.join('\n') }
       )
@@ -465,18 +489,13 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'pkg-fallow',
     desc: 'fallow',
     type: 'local',
-    check: (dir) => {
+    check: async (dir) => {
       const bin = findBin('fallow', _dirname)
       if (!bin) return { pass: false, detail: 'fallow not available' }
-      const r = spawnSync(
+      const r = await run(
         process.execPath,
         [bin, 'dead-code', '--format', 'compact'],
-        {
-          cwd: dir,
-          encoding: 'utf8',
-          stdio: ['ignore', 'pipe', 'pipe'],
-          env: { ...process.env, NO_COLOR: '1' },
-        },
+        { cwd: dir, env: { ...process.env, NO_COLOR: '1' } },
       )
       if (r.status === 0) return { pass: true }
       const detail = (r.stdout + r.stderr).trim()
@@ -487,16 +506,14 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'monorepo-lint',
     desc: 'sherif (workspaces)',
     type: 'local',
-    check: (dir) => {
+    check: async (dir) => {
       const package_ = readPackage(dir)
       if (!package_ || getWorkspacePatterns(package_).length === 0)
         return { pass: true, detail: 'not a monorepo' }
       const bin = findBin('sherif', _dirname)
       if (!bin) return { pass: false, detail: 'sherif not available' }
-      const r = spawnSync(process.execPath, [bin], {
+      const r = await run(process.execPath, [bin], {
         cwd: dir,
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'pipe'],
         env: { ...process.env, NO_COLOR: '1' },
       })
       if (r.status === 0) return true
@@ -508,14 +525,10 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'deps-audit',
     desc: 'audit',
     type: 'local',
-    check: (dir) => {
+    check: async (dir) => {
       const pm = detectPackageManager(dir)
       const [command, ...arguments_] = auditCommand(pm)
-      const r = spawnSync(command, arguments_, {
-        cwd: dir,
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'pipe'],
-      })
+      const r = await run(command, arguments_, { cwd: dir })
       if (r.error) return { pass: false, detail: String(r.error) }
       if (r.status === 0) return true
       const detail = head(r.stdout + r.stderr)
@@ -562,11 +575,11 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'deps-release-age',
     desc: 'minimum release age',
     type: 'local',
-    check: (dir) => {
+    check: async (dir) => {
       const { name, version } = detectPackageManager(dir)
       if (name === 'yarn' && version?.startsWith('1.'))
         return { pass: false, detail: 'Yarn 1 has none; move to Yarn 4' }
-      const days = releaseAgeDays(dir, name)
+      const days = await releaseAgeDays(dir, name)
       if (days >= MIN_RELEASE_AGE_DAYS) return true
       const [file, key, perDay] = RELEASE_AGE[name]
       const value = MIN_RELEASE_AGE_DAYS * perDay
