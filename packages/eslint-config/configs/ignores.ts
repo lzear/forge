@@ -1,4 +1,4 @@
-export const ignores = [
+export const ignores: string[] = [
   '**/.eslint-config-inspector/**',
   '**/vite.config.*.timestamp-*',
   '**/.vitepress/cache/**',

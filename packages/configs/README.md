@@ -4,13 +4,13 @@
 [![jsr](https://jsr.io/badges/@lzear/configs)](https://jsr.io/@lzear/configs)
 [![license](https://img.shields.io/npm/l/@lzear/configs)](../../LICENSE)
 
-tsconfig, tsup, vitest, vite and commitlint configs for [forge](https://github.com/lzear/forge) repos. Node ≥ 24.
+tsconfig, tsdown, vitest, vite and commitlint configs for [forge](https://github.com/lzear/forge) repos. Node ≥ 24.
 
 ```sh
 yarn add -D @lzear/configs
 ```
 
-Peers are optional: install the tools you use (`tsup`, `vite`, `vitest`, `jsdom`, `@vitejs/plugin-react`).
+Peers are optional: install the tools you use (`tsdown`, `vite`, `vitest`, `jsdom`, `@vitejs/plugin-react`).
 
 ```jsonc
 // tsconfig.json
@@ -23,14 +23,16 @@ Peers are optional: install the tools you use (`tsup`, `vite`, `vitest`, `jsdom`
 - `react`: base + ES2022, DOM, `react-jsx`, `.ts` import extensions, `noEmit`.
 
 ```ts
-// tsup.config.ts — ESM; lib emits dts and cleans, bin keeps the source's shebang and doesn't clean
-import { defineBinConfig, defineLibConfig } from '@lzear/configs/tsup'
+// tsdown.config.ts — ESM; lib emits dts (oxc: exports need `isolatedDeclarations` types) and cleans, bin keeps the source's shebang and doesn't clean
+import { defineBinConfig, defineLibConfig } from '@lzear/configs/tsdown'
 
 export default [
   defineLibConfig({ index: 'src/index.ts' }),
   defineBinConfig({ bin: 'src/bin.ts' }),
 ]
 ```
+
+`@lzear/configs/tsup` keeps the same factories for tsup (unmaintained).
 
 ```ts
 // vitest.config.ts — or '@lzear/configs/vitest/react' (jsdom)
@@ -39,7 +41,7 @@ export { default } from '@lzear/configs/vitest'
 
 Globals and v8 coverage (json, lcov, text): add `@vitest/coverage-v8`, and `"types": ["vitest/globals"]` to `tsconfig.json`.
 
-Under a coding agent ([std-env](https://github.com/unjs/std-env) `isAgent`, which Vitest also reads for its `minimal` reporter), tsup builds are silent and Vite logs warnings and errors only: agents re-read tool output every turn.
+Under a coding agent ([std-env](https://github.com/unjs/std-env) `isAgent`, which Vitest also reads for its `minimal` reporter), tsdown builds are silent bar their startup lines and Vite logs warnings and errors only: agents re-read tool output every turn.
 
 ```ts
 // vite.config.ts — React plugin; overrides merge shallowly
@@ -75,4 +77,4 @@ Run from the repo root.
 - `lzear-publish [--publish] [--release] [--tag <tag>]` — stage unpublished workspace packages on npm (dry run without `--publish`), create the GitHub release with `--release`. Tag defaults to the prerelease id, else `latest`.
 - `lzear-prerelease <alpha|beta|…> [--publish]` — publish the pending changesets as `<next version>-<id>.<N>` under dist-tag `<id>`, without committing (dry run without `--publish`); npm asks for 2FA.
 - `lzear-changelog` — prepend the pending release to the root `CHANGELOG.md`; run before `changeset version`.
-- `lzear-sync-jsr [--check]` — generate each `deno.json` from `package.json` + tsup entries; `--check` fails instead of writing.
+- `lzear-sync-jsr [--check]` — generate each `deno.json` from `package.json` + tsdown (or tsup) entries; `--check` fails instead of writing.

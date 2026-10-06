@@ -19,7 +19,7 @@
 ## Packages
 
 - **[`@lzear/forge`](packages/forge)** — umbrella: one dep for everything + `forge` CLI
-- **[`@lzear/configs`](packages/configs)** — tsconfig, vitest, tsup, vite, commitlint configs
+- **[`@lzear/configs`](packages/configs)** — tsconfig, vitest, tsdown, vite, commitlint configs
 - **[`@lzear/eslint-config`](packages/eslint-config)** — ESLint flat config (npm only, [inspector](https://lzear.github.io/forge/))
 - **[`@lzear/repo-lint`](packages/repo-lint)** — repo compliance checker
 

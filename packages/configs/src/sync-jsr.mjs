@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Generates each workspace's deno.json from its package.json + tsup entries:
+// Generates each workspace's deno.json from its package.json + build entries:
 // a package opts into JSR by having a deno.json at all, everything inside it
 // is derived. --check fails instead of writing, for CI.
 
@@ -37,8 +37,11 @@ dist output ("./dist/commitlint.emoji.js") -> source ("./src/commitlint-emoji.ts
 @returns {Promise<Record<string, string>>}
 */
 const distToSource = async (dir) => {
-  const configFile = path.join(dir, 'tsup.config.ts')
-  if (!existsSync(configFile)) return {}
+  // tsdown's, or tsup's where a repo still builds with it
+  const configFile = ['tsdown.config.ts', 'tsup.config.ts']
+    .map((name) => path.join(dir, name))
+    .find((file) => existsSync(file))
+  if (!configFile) return {}
   const module_ = await import(pathToFileURL(configFile).href)
   const entries = [module_.default].flat().flatMap((c) => {
     const entry = c.entry ?? {}

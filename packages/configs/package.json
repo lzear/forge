@@ -1,7 +1,7 @@
 {
   "name": "@lzear/configs",
   "version": "4.10.0",
-  "description": "Shared configs for lzear repos — tsconfig, vitest, tsup, vite",
+  "description": "Shared configs for lzear repos — tsconfig, vitest, tsdown, vite",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -23,6 +23,10 @@
     "./tsconfig/base": "./tsconfig/base.json",
     "./tsconfig/lib": "./tsconfig/lib.json",
     "./tsconfig/react": "./tsconfig/react.json",
+    "./tsdown": {
+      "types": "./dist/tsdown.d.ts",
+      "default": "./dist/tsdown.js"
+    },
     "./tsup": {
       "types": "./dist/tsup.d.ts",
       "default": "./dist/tsup.js"
@@ -55,8 +59,8 @@
     "provenance": true
   },
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build": "tsdown",
+    "dev": "tsdown --watch",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
@@ -70,6 +74,7 @@
   "keywords": [
     "config",
     "tsconfig",
+    "tsdown",
     "tsup",
     "vite",
     "vitest"
@@ -83,6 +88,7 @@
     "@vitejs/plugin-react": "^6",
     "@vitest/coverage-v8": "^5",
     "jsdom": "~30",
+    "tsdown": "^0.23",
     "tsup": "^8",
     "vite": "^8",
     "vitest": "^5"
@@ -90,6 +96,7 @@
   "peerDependencies": {
     "@vitejs/plugin-react": "^6",
     "jsdom": "~30",
+    "tsdown": "^0.23",
     "tsup": "^8",
     "vite": "^8",
     "vitest": "^5"
@@ -99,6 +106,9 @@
       "optional": true
     },
     "jsdom": {
+      "optional": true
+    },
+    "tsdown": {
       "optional": true
     },
     "tsup": {

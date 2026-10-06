@@ -1,4 +1,4 @@
-import { defineBinConfig, defineLibConfig } from '@lzear/configs/tsup'
+import { defineBinConfig, defineLibConfig } from '@lzear/configs/tsdown'
 
 export default [
   defineLibConfig({
@@ -8,6 +8,7 @@ export default [
     vitest: 'src/vitest.ts',
     'vitest.react': 'src/vitest.react.ts',
     tsup: 'src/tsup.ts',
+    tsdown: 'src/tsdown.ts',
     vite: 'src/vite.ts',
     'repo-lint': 'src/repo-lint.ts',
   }),

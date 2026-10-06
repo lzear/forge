@@ -14,11 +14,12 @@ cd packages/<name> && yarn vitest run src/x.test.ts  # one test file
 ## Gotchas
 
 - Parse spawned CLIs' machine output (`--json`): `concurrently` sets `FORCE_COLOR`, so plain output carries ANSI codes.
-- `deno.json` files are generated from `package.json` + tsup entries by `yarn lzear-sync-jsr`; never edit by hand. `@lzear/eslint-config` is npm-only (its untyped plugins' ambient shims don't resolve on JSR), so `@lzear/forge` drops `./eslint` there. The root keeps `@types/node` for `deno publish`. Check JSR changes with `deno publish --dry-run --allow-dirty`.
+- `deno.json` files are generated from `package.json` + tsdown entries by `yarn lzear-sync-jsr`; never edit by hand. `@lzear/eslint-config` is npm-only (its untyped plugins' ambient shims don't resolve on JSR), so `@lzear/forge` drops `./eslint` there. The root keeps `@types/node` for `deno publish`. Check JSR changes with `deno publish --dry-run --allow-dirty`.
 - `release.yml` inlines its setup steps: a reusable workflow can't `uses: ./actions/setup` from the caller's checkout.
 - Consumers pin forge workflows by SHA: rewriting history orphans them (zizmor `impostor-commit`; lzear.org's deploy needs its CI).
 - `@lzear/eslint-config` loads Prettier last so it overrides the rest.
-- `ignoreDeprecations` in `configs/tsconfig/base.json` stays: tsup's dts build injects `baseUrl` (TS5101).
+- `ignoreDeprecations` in `configs/tsconfig/base.json` stays while consumers build with tsup: its dts build injects `baseUrl` (TS5101).
+- Builds emit dts with oxc: an exported value needs a type `isolatedDeclarations` can read (TS9017 on an untyped array). JSR checks the same, but not on npm-only `eslint-config`.
 - `fallow health` CRAP findings mean missing coverage, not complexity: add tests.
 - Release-age gate: Bun's `minimumReleaseAgeExcludes` takes exact names, no globs. Never adopt a dep younger than the gate, even by hand. `bun audit` can't ignore advisories from bunfig (`--ignore` is CLI-only).
 - `forge sync` fetches `template/` and `.github/zizmor.yml` from GitHub `main`, so consumers see template changes only once pushed. The root `.editorconfig`, `.codacy.yml` and `lefthook.yml` are copies of `template/`'s: change both.

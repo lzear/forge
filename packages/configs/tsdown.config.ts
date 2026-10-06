@@ -1,4 +1,4 @@
-import { defineLibConfig } from './src/tsup.ts'
+import { defineLibConfig } from './src/tsdown.ts'
 
 export default defineLibConfig({
   commitlint: 'src/commitlint.ts',
@@ -6,5 +6,6 @@ export default defineLibConfig({
   vitest: 'src/vitest.ts',
   'vitest.react': 'src/vitest.react.ts',
   tsup: 'src/tsup.ts',
+  tsdown: 'src/tsdown.ts',
   vite: 'src/vite.ts',
 })

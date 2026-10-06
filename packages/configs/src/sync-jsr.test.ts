@@ -76,7 +76,7 @@ const setWorkspaces = (...locations: [name: string, location: string][]) => {
 }
 
 const dir = 'packages/lib'
-const lib = (): void => {
+const lib = (buildConfig = 'tsdown.config.ts'): void => {
   write(dir, 'package.json', {
     name: '@x/lib',
     version: '1.2.3',
@@ -92,7 +92,7 @@ const lib = (): void => {
   })
   write(
     dir,
-    'tsup.config.ts',
+    buildConfig,
     `export default [
       { entry: { index: 'src/index.ts', bin: 'src/bin.ts' } },
       { entry: ['src/nested.ts', 'src/off-jsr.ts'] },
@@ -117,7 +117,7 @@ const jsrDep = (): void => {
 // ── tests ────────────────────────────────────────────────────────────────────
 
 describe('sync-jsr', () => {
-  it('derives deno.json from package.json and tsup entries', async () => {
+  it('derives deno.json from package.json and tsdown entries', async () => {
     lib()
     jsrDep()
     setWorkspaces(
@@ -147,6 +147,16 @@ describe('sync-jsr', () => {
       version: '1.0.0',
       exports: {},
       publish: { include: ['package.json', 'README.md'] },
+    })
+  })
+
+  it('falls back on tsup entries', async () => {
+    lib('tsup.config.ts')
+    setWorkspaces(['@x/lib', 'packages/lib'])
+
+    expect(await run()).toBeUndefined()
+    expect(readDeno('packages/lib')).toMatchObject({
+      exports: { '.': './src/index.ts', './bin': './src/bin.ts' },
     })
   })
 

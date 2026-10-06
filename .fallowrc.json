@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
-  // tsup renames it to dist/commitlint.emoji.js, so exports don't map back
+  // the build renames it to dist/commitlint.emoji.js, so exports don't map back
   "entry": [
     "packages/*/src/commitlint-emoji.ts",
     // loaded by changesets from .changeset/config.json

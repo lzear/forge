@@ -7,6 +7,7 @@
     "./commitlint": "./src/commitlint.ts",
     "./commitlint/emoji": "./src/commitlint-emoji.ts",
     "./repo-lint": "./src/repo-lint.ts",
+    "./tsdown": "./src/tsdown.ts",
     "./tsup": "./src/tsup.ts",
     "./vite": "./src/vite.ts",
     "./vitest": "./src/vitest.ts",
