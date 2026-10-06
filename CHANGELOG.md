@@ -1,3 +1,19 @@
+## 4.10.0
+
+`unicorn/no-top-level-side-effects` is off in `*.config.*` files.
+
+`no-restricted-syntax` rejects `type="number"` in JSX.
+
+`forge update` skips workspaces that are git submodules.
+
+### Commits
+
+- [`68d7d13`](https://github.com/lzear/forge/commit/68d7d13) fix: lint
+- [`a1b0335`](https://github.com/lzear/forge/commit/a1b0335) feat(eslint-config): allow top-level side effects in config files
+- [`5a1d0ac`](https://github.com/lzear/forge/commit/5a1d0ac) chore: `yarn housekeep`
+- [`c45e7d2`](https://github.com/lzear/forge/commit/c45e7d2) feat(eslint-config): reject number inputs in JSX
+- [`ae98a3b`](https://github.com/lzear/forge/commit/ae98a3b) feat(repo-lint): forge update skips git submodule workspaces
+
 ## 4.9.0
 
 `@typescript-eslint/consistent-type-definitions` takes `type`: `--fix` rewrites interfaces.
