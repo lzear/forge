@@ -1,6 +1,7 @@
 import type { Linter } from 'eslint'
 import { a11y } from './configs/a11y'
 import { core } from './configs/core'
+import * as FILES from './configs/files'
 import { ignores } from './configs/ignores'
 import { node } from './configs/node'
 import { packageJson } from './configs/package-json'
@@ -57,6 +58,12 @@ const configGenerator = async (
       },
     },
     core(config.local),
+    {
+      name: 'lzear/config-files',
+      files: FILES.CONFIGS,
+      // tools import them for their default export, often a `defineConfig()`
+      rules: { 'unicorn/no-top-level-side-effects': 0 as const },
+    },
     a11y(config),
     reactConfig,
     nodeConfig,

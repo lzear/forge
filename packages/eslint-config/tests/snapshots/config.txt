@@ -42130,6 +42130,15 @@
   },
   {
     "files": [
+      "**/*.config.*",
+    ],
+    "name": "lzear/config-files",
+    "rules": {
+      "unicorn/no-top-level-side-effects": 0,
+    },
+  },
+  {
+    "files": [
       "**/*.jsx",
       "**/*.tsx",
     ],
