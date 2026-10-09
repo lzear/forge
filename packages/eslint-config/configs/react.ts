@@ -52,7 +52,8 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
       'no-restricted-syntax': [
         2,
         {
-          selector: "JSXAttribute[name.name='type'][value.value='number']",
+          selector:
+            "JSXOpeningElement[name.name='input'] > JSXAttribute[name.name='type'][value.value='number']",
           message: 'No number inputs: use a slider.',
         },
       ],

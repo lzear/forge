@@ -46333,7 +46333,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         2,
         {
           "message": "No number inputs: use a slider.",
-          "selector": "JSXAttribute[name.name='type'][value.value='number']",
+          "selector": "JSXOpeningElement[name.name='input'] > JSXAttribute[name.name='type'][value.value='number']",
         },
       ],
       "react-compiler/react-compiler": 2,
