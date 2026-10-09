@@ -2,6 +2,7 @@ import js from '@eslint/js'
 import eslintCommentsPlugin from '@eslint-community/eslint-plugin-eslint-comments'
 import stylistic from '@stylistic/eslint-plugin'
 import type { Linter } from 'eslint'
+import { defaultConditionNames } from 'eslint-import-resolver-typescript'
 import deMorganPlugin from 'eslint-plugin-de-morgan'
 import importXPlugin from 'eslint-plugin-import-x'
 import preferArrowPlugin from 'eslint-plugin-prefer-arrow'
@@ -13,6 +14,11 @@ import unicornPlugin from 'eslint-plugin-unicorn'
 import globals from 'globals'
 import { plugin as lzearPlugin } from '../plugin'
 import * as FILES from './files'
+
+// TS's versioned `types@>=5.5` condition (jotai 3 hides its types behind it): without it, `import-x/no-duplicates --fix` merges `jotai/utils` into `jotai`
+const typescriptResolver = {
+  conditionNames: ['types@>=5.5', ...defaultConditionNames],
+}
 
 export const core = (local?: string): Linter.Config => {
   const l = local?.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`)
@@ -137,8 +143,8 @@ export const core = (local?: string): Linter.Config => {
 
     settings: {
       // import-x uses import-x/resolver; eslint-module-utils (used by lzear/prefer-relative-imports) reads import/resolver
-      'import-x/resolver': { typescript: true },
-      'import/resolver': { typescript: true },
+      'import-x/resolver': { typescript: typescriptResolver },
+      'import/resolver': { typescript: typescriptResolver },
     },
   }
 }

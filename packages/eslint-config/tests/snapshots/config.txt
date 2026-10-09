@@ -42121,10 +42121,38 @@
     },
     "settings": {
       "import-x/resolver": {
-        "typescript": true,
+        "typescript": {
+          "conditionNames": [
+            "types@>=5.5",
+            "types",
+            "import",
+            "esm2020",
+            "es2020",
+            "es2015",
+            "require",
+            "node",
+            "node-addons",
+            "browser",
+            "default",
+          ],
+        },
       },
       "import/resolver": {
-        "typescript": true,
+        "typescript": {
+          "conditionNames": [
+            "types@>=5.5",
+            "types",
+            "import",
+            "esm2020",
+            "es2020",
+            "es2015",
+            "require",
+            "node",
+            "node-addons",
+            "browser",
+            "default",
+          ],
+        },
       },
     },
   },
