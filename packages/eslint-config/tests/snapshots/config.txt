@@ -43833,12 +43833,12 @@
         },
         "meta": {
           "name": "eslint-plugin-react-dom",
-          "version": "5.23.5",
+          "version": "5.24.7",
         },
         "rules": {
           "no-dangerously-set-innerhtml": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows DOM elements from using 'dangerouslySetInnerHTML'.",
@@ -43854,7 +43854,7 @@
           },
           "no-dangerously-set-innerhtml-with-children": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows DOM elements from using 'dangerouslySetInnerHTML' and 'children' at the same time.",
@@ -43870,7 +43870,7 @@
           },
           "no-find-dom-node": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows 'findDOMNode'.",
@@ -43886,7 +43886,7 @@
           },
           "no-flush-sync": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows 'flushSync'.",
@@ -43902,7 +43902,7 @@
           },
           "no-hydrate": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Replaces usage of 'ReactDOM.hydrate()' with 'hydrateRoot()'.",
@@ -43919,7 +43919,7 @@
           },
           "no-missing-button-type": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Enforces an explicit 'type' attribute for 'button' elements.",
@@ -43927,8 +43927,8 @@
               },
               "hasSuggestions": true,
               "messages": {
-                "addTypeAttribute": "Add type attribute with value '{{ type }}'.",
-                "missingTypeAttribute": "Missing an explicit type attribute for button.",
+                "add-type-attribute": "Add type attribute with value '{{ type }}'.",
+                "missing-type-attribute": "Missing an explicit type attribute for button.",
               },
               "schema": [],
               "type": "problem",
@@ -43937,7 +43937,7 @@
           },
           "no-missing-iframe-sandbox": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Enforces an explicit 'sandbox' attribute for 'iframe' elements.",
@@ -43946,8 +43946,8 @@
               "fixable": "code",
               "hasSuggestions": true,
               "messages": {
-                "addSandboxAttribute": "Add sandbox attribute with value '{{ value }}'.",
-                "missingSandboxAttribute": "Missing an explicit sandbox attribute for iframe.",
+                "add-sandbox-attribute": "Add sandbox attribute with value '{{ value }}'.",
+                "missing-sandbox-attribute": "Missing an explicit sandbox attribute for iframe.",
               },
               "schema": [],
               "type": "problem",
@@ -43956,7 +43956,7 @@
           },
           "no-render": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Replaces usage of 'ReactDOM.render()' with 'createRoot(node).render()'.",
@@ -43973,7 +43973,7 @@
           },
           "no-render-return-value": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows the return value of 'ReactDOM.render'.",
@@ -43989,7 +43989,7 @@
           },
           "no-script-url": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows 'javascript:' URLs as attribute values.",
@@ -44005,7 +44005,7 @@
           },
           "no-string-style-prop": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows the use of string style prop in JSX. Use an object instead.",
@@ -44021,31 +44021,38 @@
           },
           "no-unknown-property": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
+              "defaultOptions": [
+                {
+                  "ignore": [],
+                  "requireDataLowercase": false,
+                },
+              ],
               "docs": {
                 "description": "Disallows unknown 'DOM' properties.",
                 "url": "https://eslint-react.xyz/docs/rules/dom-no-unknown-property",
               },
               "fixable": "code",
               "messages": {
-                "dataLowercaseRequired": "React does not recognize data-* props with uppercase characters on a DOM element. Found '{{name}}', use '{{lowerCaseName}}' instead",
-                "invalidPropOnTag": "Invalid property '{{name}}' found on tag '{{tagName}}', but it is only allowed on: {{allowedTags}}",
-                "unknownProp": "Unknown property '{{name}}' found",
-                "unknownPropWithStandardName": "Unknown property '{{name}}' found, use '{{standardName}}' instead",
+                "data-lowercase-required": "React does not recognize data-* props with uppercase characters on a DOM element. Found '{{name}}', use '{{lowerCaseName}}' instead",
+                "invalid-prop-on-tag": "Invalid property '{{name}}' found on tag '{{tagName}}', but it is only allowed on: {{allowedTags}}",
+                "unknown-prop": "Unknown property '{{name}}' found",
+                "unknown-prop-with-standard-name": "Unknown property '{{name}}' found, use '{{standardName}}' instead",
               },
               "schema": [
                 {
                   "additionalProperties": false,
                   "properties": {
                     "ignore": {
+                      "description": "Property names to ignore.",
                       "items": {
                         "type": "string",
                       },
                       "type": "array",
                     },
                     "requireDataLowercase": {
-                      "default": false,
+                      "description": "Require lowercase names for data-* attributes.",
                       "type": "boolean",
                     },
                   },
@@ -44058,7 +44065,7 @@
           },
           "no-unsafe-iframe-sandbox": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Enforces that the 'sandbox' attribute for 'iframe' elements is not set to unsafe combinations.",
@@ -44074,7 +44081,7 @@
           },
           "no-unsafe-target-blank": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows 'target="_blank"' without 'rel="noreferrer noopener"'.",
@@ -44083,7 +44090,7 @@
               "fixable": "code",
               "hasSuggestions": true,
               "messages": {
-                "addRelNoreferrerNoopener": "Add 'rel="noreferrer noopener"' to the link to prevent security risks.",
+                "add-rel-noreferrer-noopener": "Add 'rel="noreferrer noopener"' to the link to prevent security risks.",
                 "default": "Using 'target="_blank"' on an external link without 'rel="noreferrer noopener"' is a security risk.",
               },
               "schema": [],
@@ -44093,7 +44100,7 @@
           },
           "no-use-form-state": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Replaces usage of 'useFormState' with 'useActionState'.",
@@ -44110,7 +44117,7 @@
           },
           "no-void-elements-with-children": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows 'children' in void DOM elements.",
@@ -44822,20 +44829,20 @@
         },
         "meta": {
           "name": "eslint-plugin-react-web-api",
-          "version": "5.23.5",
+          "version": "5.24.7",
         },
         "rules": {
           "no-leaked-event-listener": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Enforces that every 'addEventListener' in a component or custom hook has a corresponding 'removeEventListener'.",
                 "url": "https://eslint-react.xyz/docs/rules/web-api-no-leaked-event-listener",
               },
               "messages": {
-                "expectedRemoveEventListenerInCleanup": "An 'addEventListener' in '{{effectMethodKind}}' should have a corresponding 'removeEventListener' in its cleanup function.",
-                "unexpectedInlineFunction": "A/an '{{eventMethodKind}}' should not have an inline listener function.",
+                "expected-remove-event-listener-in-cleanup": "An 'addEventListener' in '{{effectMethodKind}}' should have a corresponding 'removeEventListener' in its cleanup function.",
+                "unexpected-inline-function": "A/an '{{eventMethodKind}}' should not have an inline listener function.",
               },
               "schema": [],
               "type": "problem",
@@ -44844,15 +44851,15 @@
           },
           "no-leaked-fetch": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Enforces that every 'fetch' in a component or custom hook has a corresponding 'AbortController' abort in the cleanup function.",
                 "url": "https://eslint-react.xyz/docs/rules/web-api-no-leaked-fetch",
               },
               "messages": {
-                "expectedAbortController": "A 'fetch' must be provided with an 'AbortController' for proper cleanup.",
-                "expectedAbortInCleanup": "A 'fetch' started in effect must be aborted with 'AbortController.abort' in the cleanup function.",
+                "expected-abort-controller": "A 'fetch' must be provided with an 'AbortController' for proper cleanup.",
+                "expected-abort-in-cleanup": "A 'fetch' started in effect must be aborted with 'AbortController.abort' in the cleanup function.",
               },
               "schema": [],
               "type": "problem",
@@ -44861,16 +44868,16 @@
           },
           "no-leaked-intersection-observer": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Enforces that every 'IntersectionObserver' created in a component or custom hook has a corresponding 'IntersectionObserver.disconnect()'.",
                 "url": "https://eslint-react.xyz/docs/rules/web-api-no-leaked-intersection-observer",
               },
               "messages": {
-                "expectedDisconnectInControlFlow": "Dynamically added 'IntersectionObserver.observe' should be cleared all at once using 'IntersectionObserver.disconnect' in the cleanup function.",
-                "expectedDisconnectOrUnobserveInCleanup": "An 'IntersectionObserver' instance created in 'useEffect' must be disconnected in the cleanup function.",
-                "unexpectedFloatingInstance": "An 'IntersectionObserver' instance created in component or custom hook must be assigned to a variable for proper cleanup.",
+                "expected-disconnect-in-control-flow": "Dynamically added 'IntersectionObserver.observe' should be cleared all at once using 'IntersectionObserver.disconnect' in the cleanup function.",
+                "expected-disconnect-or-unobserve-in-cleanup": "An 'IntersectionObserver' instance created in 'useEffect' must be disconnected in the cleanup function.",
+                "unexpected-floating-instance": "An 'IntersectionObserver' instance created in component or custom hook must be assigned to a variable for proper cleanup.",
               },
               "schema": [],
               "type": "problem",
@@ -44879,15 +44886,15 @@
           },
           "no-leaked-interval": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Enforces that every 'setInterval' in a component or custom hook has a corresponding 'clearInterval'.",
                 "url": "https://eslint-react.xyz/docs/rules/web-api-no-leaked-interval",
               },
               "messages": {
-                "expectedClearIntervalInCleanup": "A 'setInterval' created in '{{ kind }}' must be cleared with 'clearInterval' in the cleanup function.",
-                "expectedIntervalId": "A 'setInterval' must be assigned to a variable for proper cleanup.",
+                "expected-clear-interval-in-cleanup": "A 'setInterval' created in '{{ kind }}' must be cleared with 'clearInterval' in the cleanup function.",
+                "expected-interval-id": "A 'setInterval' must be assigned to a variable for proper cleanup.",
               },
               "schema": [],
               "type": "problem",
@@ -44896,16 +44903,16 @@
           },
           "no-leaked-resize-observer": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Enforces that every 'ResizeObserver' created in a component or custom hook has a corresponding 'ResizeObserver.disconnect()'.",
                 "url": "https://eslint-react.xyz/docs/rules/web-api-no-leaked-resize-observer",
               },
               "messages": {
-                "expectedDisconnectInControlFlow": "Dynamically added 'ResizeObserver.observe' should be cleared all at once using 'ResizeObserver.disconnect' in the cleanup function.",
-                "expectedDisconnectOrUnobserveInCleanup": "A 'ResizeObserver' instance created in 'useEffect' must be disconnected in the cleanup function.",
-                "unexpectedFloatingInstance": "A 'ResizeObserver' instance created in component or custom hook must be assigned to a variable for proper cleanup.",
+                "expected-disconnect-in-control-flow": "Dynamically added 'ResizeObserver.observe' should be cleared all at once using 'ResizeObserver.disconnect' in the cleanup function.",
+                "expected-disconnect-or-unobserve-in-cleanup": "A 'ResizeObserver' instance created in 'useEffect' must be disconnected in the cleanup function.",
+                "unexpected-floating-instance": "A 'ResizeObserver' instance created in component or custom hook must be assigned to a variable for proper cleanup.",
               },
               "schema": [],
               "type": "problem",
@@ -44914,15 +44921,15 @@
           },
           "no-leaked-timeout": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Enforces that every 'setTimeout' in a component or custom hook has a corresponding 'clearTimeout'.",
                 "url": "https://eslint-react.xyz/docs/rules/web-api-no-leaked-timeout",
               },
               "messages": {
-                "expectedClearTimeoutInCleanup": "A 'setTimeout' created in '{{ kind }}' must be cleared with 'clearTimeout' in the cleanup function.",
-                "expectedTimeoutId": "A 'setTimeout' must be assigned to a variable for proper cleanup.",
+                "expected-clear-timeout-in-cleanup": "A 'setTimeout' created in '{{ kind }}' must be cleared with 'clearTimeout' in the cleanup function.",
+                "expected-timeout-id": "A 'setTimeout' must be assigned to a variable for proper cleanup.",
               },
               "schema": [],
               "type": "problem",
@@ -45364,20 +45371,20 @@
         },
         "meta": {
           "name": "eslint-plugin-react-x",
-          "version": "5.23.5",
+          "version": "5.24.7",
         },
         "rules": {
           "error-boundaries": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Validates usage of Error Boundaries instead of try/catch for errors in child components.",
                 "url": "https://eslint-react.xyz/docs/rules/error-boundaries",
               },
               "messages": {
-                "tryCatchWithJsx": "Use an Error Boundary to catch errors in child components. Try/catch can't catch errors during React's rendering process.",
-                "tryCatchWithUse": "Use an Error Boundary instead of try/catch around the 'use' hook. The 'use' hook suspends the component, and its errors can only be caught by Error Boundaries.",
+                "try-catch-with-jsx": "Use an Error Boundary to catch errors in child components. Try/catch can't catch errors during React's rendering process.",
+                "try-catch-with-use": "Use an Error Boundary instead of try/catch around the 'use' hook. The 'use' hook suspends the component, and its errors can only be caught by Error Boundaries.",
               },
               "schema": [],
               "type": "problem",
@@ -45423,16 +45430,16 @@
           },
           "globals": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Validates against assignment/mutation of globals during render, part of ensuring that side effects must run outside of render.",
                 "url": "https://eslint-react.xyz/docs/rules/globals",
               },
               "messages": {
-                "mutatingGlobal": "Do not mutate '{{name}}' during render. Global variables exist outside React's control and make rendering impure.",
-                "mutatingGlobalArrayMethod": "Do not call '{{method}}()' on '{{name}}' during render. Mutating global arrays during render makes rendering impure.",
-                "mutatingGlobalProperty": "Do not mutate '{{name}}' during render. Modifying global objects during render makes rendering impure.",
+                "mutating-global": "Do not mutate '{{name}}' during render. Global variables exist outside React's control and make rendering impure.",
+                "mutating-global-array-method": "Do not call '{{method}}()' on '{{name}}' during render. Mutating global arrays during render makes rendering impure.",
+                "mutating-global-property": "Do not mutate '{{name}}' during render. Modifying global objects during render makes rendering impure.",
               },
               "schema": [],
               "type": "problem",
@@ -45441,16 +45448,16 @@
           },
           "immutability": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Validates against mutating props, state, and other immutable values, including through functions passed into frozen contexts such as JSX props, hook arguments, and hook return values.",
                 "url": "https://eslint-react.xyz/docs/rules/immutability",
               },
               "messages": {
-                "default": "This function may (indirectly) reassign or modify '{{name}}' after render, which can cause inconsistent behavior on subsequent renders. Consider using state instead.",
-                "direct": "Do not mutate '{{name}}' directly. {{detail}}",
-                "mutates": "This modifies '{{name}}'.",
+                "direct-mutation": "Do not mutate '{{name}}' directly. {{detail}}",
+                "indirect-mutation": "This function may (indirectly) reassign or modify '{{name}}' after render, which can cause inconsistent behavior on subsequent renders. Consider using state instead.",
+                "mutation-site": "This modifies '{{name}}'.",
               },
               "schema": [],
               "type": "problem",
@@ -45459,7 +45466,7 @@
           },
           "no-access-state-in-setstate": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows accessing 'this.state' inside 'setState' calls.",
@@ -45475,7 +45482,7 @@
           },
           "no-array-index-key": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows using an item's index in the array as its key.",
@@ -45491,7 +45498,7 @@
           },
           "no-children-count": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows the use of 'Children.count' from the 'react' package.",
@@ -45507,7 +45514,7 @@
           },
           "no-children-for-each": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows the use of 'Children.forEach' from the 'react' package.",
@@ -45523,7 +45530,7 @@
           },
           "no-children-map": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows the use of 'Children.map' from the 'react' package.",
@@ -45539,7 +45546,7 @@
           },
           "no-children-only": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows the use of 'Children.only' from the 'react' package.",
@@ -45555,7 +45562,7 @@
           },
           "no-children-to-array": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows the use of 'Children.toArray' from the 'react' package.",
@@ -45571,7 +45578,7 @@
           },
           "no-class-component": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows class components except for error boundaries.",
@@ -45587,7 +45594,7 @@
           },
           "no-clone-element": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows 'cloneElement'.",
@@ -45603,7 +45610,7 @@
           },
           "no-component-will-mount": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Replaces usage of 'componentWillMount' with 'UNSAFE_componentWillMount'.",
@@ -45620,7 +45627,7 @@
           },
           "no-component-will-receive-props": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Replaces usage of 'componentWillReceiveProps' with 'UNSAFE_componentWillReceiveProps'.",
@@ -45637,7 +45644,7 @@
           },
           "no-component-will-update": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Replaces usage of 'componentWillUpdate' with 'UNSAFE_componentWillUpdate'.",
@@ -45654,7 +45661,7 @@
           },
           "no-context-provider": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Replaces usage of '<Context.Provider>' with '<Context>'.",
@@ -45673,7 +45680,7 @@
           },
           "no-create-ref": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows 'createRef' in function components and Hooks.",
@@ -45689,7 +45696,7 @@
           },
           "no-direct-mutation-state": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows direct mutation of 'this.state'.",
@@ -45705,7 +45712,7 @@
           },
           "no-duplicate-key": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Prevents duplicate 'key' props on sibling elements when rendering lists.",
@@ -45721,7 +45728,7 @@
           },
           "no-forward-ref": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Replaces usage of 'forwardRef' with passing 'ref' as a prop.",
@@ -45740,7 +45747,7 @@
           },
           "no-implicit-children": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Prevents implicitly passing the 'children' prop to components.",
@@ -45756,7 +45763,7 @@
           },
           "no-implicit-key": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Prevents implicitly passing the 'key' prop to components.",
@@ -45772,7 +45779,7 @@
           },
           "no-implicit-ref": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Prevents implicitly passing the 'ref' prop to components.",
@@ -45788,7 +45795,7 @@
           },
           "no-leaked-conditional-rendering": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Prevents problematic leaked values from being rendered.",
@@ -45804,7 +45811,7 @@
           },
           "no-missing-component-display-name": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Enforces that all components have a 'displayName' that can be used in DevTools.",
@@ -45820,7 +45827,7 @@
           },
           "no-missing-context-display-name": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Enforces that all contexts have a 'displayName' that can be used in DevTools.",
@@ -45837,7 +45844,7 @@
           },
           "no-missing-key": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows missing 'key' on items in list rendering.",
@@ -45845,7 +45852,7 @@
               },
               "messages": {
                 "default": "Missing 'key' for element when rendering list.",
-                "unexpectedFragmentSyntax": "Use fragment component instead of '<>' because it does not support `key`.",
+                "unexpected-fragment-syntax": "Use fragment component instead of '<>' because it does not support `key`.",
               },
               "schema": [],
               "type": "problem",
@@ -45854,15 +45861,15 @@
           },
           "no-misused-capture-owner-stack": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Prevents incorrect usage of 'captureOwnerStack'.",
                 "url": "https://eslint-react.xyz/docs/rules/no-misused-capture-owner-stack",
               },
               "messages": {
-                "missingDevelopmentOnlyCheck": "Don't call 'captureOwnerStack' directly. Use 'if (process.env.NODE_ENV !== "production") {...}' to conditionally access it.",
-                "useNamespaceImport": "Don't use named imports of 'captureOwnerStack' in files that are bundled for development and production. Use a namespace import instead.",
+                "missing-development-only-check": "Don't call 'captureOwnerStack' directly. Use 'if (process.env.NODE_ENV !== "production") {...}' to conditionally access it.",
+                "use-namespace-import": "Don't use named imports of 'captureOwnerStack' in files that are bundled for development and production. Use a namespace import instead.",
               },
               "schema": [],
               "type": "problem",
@@ -45871,7 +45878,7 @@
           },
           "no-nested-component-definitions": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows nesting component definitions inside other components.",
@@ -45887,7 +45894,7 @@
           },
           "no-nested-lazy-component-declarations": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows nesting lazy component declarations inside other components or hooks.",
@@ -45903,7 +45910,7 @@
           },
           "no-set-state-in-component-did-mount": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows calling 'this.setState' in 'componentDidMount' outside functions such as callbacks.",
@@ -45919,7 +45926,7 @@
           },
           "no-set-state-in-component-did-update": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows calling 'this.setState' in 'componentDidUpdate' outside functions such as callbacks.",
@@ -45935,7 +45942,7 @@
           },
           "no-set-state-in-component-will-update": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Disallows calling 'this.setState' in 'componentWillUpdate' outside functions such as callbacks.",
@@ -45951,7 +45958,7 @@
           },
           "no-unnecessary-use-prefix": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Enforces that a function with the 'use' prefix uses at least one Hook inside it.",
@@ -45967,7 +45974,7 @@
           },
           "no-unsafe-component-will-mount": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Warns about the use of 'UNSAFE_componentWillMount' in class components.",
@@ -45983,7 +45990,7 @@
           },
           "no-unsafe-component-will-receive-props": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Warns about the use of 'UNSAFE_componentWillReceiveProps' in class components.",
@@ -45999,7 +46006,7 @@
           },
           "no-unsafe-component-will-update": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Warns about the use of 'UNSAFE_componentWillUpdate' in class components.",
@@ -46015,14 +46022,14 @@
           },
           "no-unstable-context-value": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Prevents non-stable values (i.e., object literals) from being used as a value for 'Context.Provider'.",
                 "url": "https://eslint-react.xyz/docs/rules/no-unstable-context-value",
               },
               "messages": {
-                "unstableContextValue": "A/an '{{kind}}' passed as the value prop to the context provider should not be constructed. It will change on every render. {{suggestion}}",
+                "unstable-context-value": "A/an '{{kind}}' passed as the value prop to the context provider should not be constructed. It will change on every render. {{suggestion}}",
               },
               "schema": [],
               "type": "problem",
@@ -46031,12 +46038,13 @@
           },
           "no-unstable-default-props": {
             "create": [Function],
-            "defaultOptions": [
-              {
-                "safeDefaultProps": [],
-              },
-            ],
+            "defaultOptions": undefined,
             "meta": {
+              "defaultOptions": [
+                {
+                  "safeDefaultProps": [],
+                },
+              ],
               "docs": {
                 "description": "Prevents using referential-type values as default props in object destructuring.",
                 "url": "https://eslint-react.xyz/docs/rules/no-unstable-default-props",
@@ -46064,7 +46072,7 @@
           },
           "no-unused-class-component-members": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Warns about unused class component methods and properties.",
@@ -46080,7 +46088,7 @@
           },
           "no-unused-props": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Warns about component props that are defined but never used.",
@@ -46096,7 +46104,7 @@
           },
           "no-unused-state": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Warns about state variables that are defined but never used.",
@@ -46112,7 +46120,7 @@
           },
           "no-use-context": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Replaces usage of 'useContext' with 'use'.",
@@ -46131,7 +46139,7 @@
           },
           "purity": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Validates that components and hooks are pure by checking that they do not call known-impure functions during render.",
@@ -46147,17 +46155,17 @@
           },
           "refs": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Validates correct usage of refs by checking that 'ref.current' is not read or written during render.",
                 "url": "https://eslint-react.xyz/docs/rules/refs",
               },
               "messages": {
-                "duplicateRefInit": "Ref is initialized more than once during render. Only a single 'if (ref.current == null)' initialization is allowed; move any additional initialization into an effect or event handler.",
-                "readDuringRender": "Cannot access refs during render",
-                "refPassedToFunction": "Passing a ref to a function may read its value during render",
-                "writeDuringRender": "Cannot update ref during render",
+                "duplicate-ref-init": "Ref is initialized more than once during render. Only a single 'if (ref.current == null)' initialization is allowed; move any additional initialization into an effect or event handler.",
+                "read-during-render": "Cannot access refs during render",
+                "ref-passed-to-function": "Passing a ref to a function may read its value during render",
+                "write-during-render": "Cannot update ref during render",
               },
               "schema": [],
               "type": "problem",
@@ -46188,7 +46196,7 @@
           },
           "set-state-in-effect": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Validates against setting state synchronously in an effect, which can lead to re-renders that degrade performance.",
@@ -46204,7 +46212,7 @@
           },
           "set-state-in-render": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Validates against unconditionally setting state during render, which can trigger additional renders and potential infinite render loops.",
@@ -46220,14 +46228,14 @@
           },
           "static-components": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Validates that components are static, not recreated every render.",
                 "url": "https://eslint-react.xyz/docs/rules/static-components",
               },
               "messages": {
-                "createdHere": "The component is created during render here.",
+                "created-here": "The component is created during render here.",
                 "default": "Cannot create components during render. Components created during render will reset their state each time they are created. Declare components outside of render.",
               },
               "schema": [],
@@ -46237,7 +46245,7 @@
           },
           "unsupported-syntax": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Validates against syntax that React Compiler does not support.",
@@ -46254,26 +46262,26 @@
           },
           "use-memo": {
             "create": [Function],
-            "defaultOptions": [],
+            "defaultOptions": undefined,
             "meta": {
               "docs": {
                 "description": "Validates that 'useMemo' is called with a callback that returns a value.",
                 "url": "https://eslint-react.xyz/docs/rules/use-memo",
               },
               "messages": {
-                "mustReturnAValue": "useMemo() callbacks must return a value.
+                "must-return-a-value": "useMemo() callbacks must return a value.
 
 This useMemo() callback doesn't return a value. useMemo() is for computing and caching values, not for arbitrary side effects.",
-                "noAsyncOrGeneratorFunctions": "useMemo() callbacks may not be async or generator functions.
+                "no-async-or-generator-functions": "useMemo() callbacks may not be async or generator functions.
 
 useMemo() callbacks are called once and must synchronously return a value.",
-                "noParameters": "useMemo() callbacks may not accept parameters.
+                "no-parameters": "useMemo() callbacks may not accept parameters.
 
 useMemo() callbacks are called by React to cache calculations across re-renders. They should not take parameters. Instead, directly reference the props, state, or local variables needed for the computation.",
-                "noReassigningOuterVariables": "useMemo() callbacks may not reassign variables declared outside of the callback.
+                "no-reassigning-outer-variables": "useMemo() callbacks may not reassign variables declared outside of the callback.
 
 useMemo() callbacks must be pure functions and cannot reassign variables defined outside of the callback function.",
-                "resultMustBeUsed": "useMemo() result is unused.
+                "result-must-be-used": "useMemo() result is unused.
 
 This useMemo() value is unused. useMemo() is for computing and caching values, not for arbitrary side effects.",
               },
@@ -46284,22 +46292,23 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
           },
           "use-state": {
             "create": [Function],
-            "defaultOptions": [
-              {
-                "enforceAssignment": true,
-                "enforceLazyInitialization": true,
-                "enforceSetterName": true,
-              },
-            ],
+            "defaultOptions": undefined,
             "meta": {
+              "defaultOptions": [
+                {
+                  "enforceAssignment": true,
+                  "enforceLazyInitialization": true,
+                  "enforceSetterName": true,
+                },
+              ],
               "docs": {
                 "description": "Enforces correct usage of 'useState', including destructuring, symmetric naming of the value and setter, and wrapping expensive initializers in a lazy initializer function.",
                 "url": "https://eslint-react.xyz/docs/rules/use-state",
               },
               "messages": {
-                "invalidAssignment": "useState should be destructured into a value and setter pair, e.g., const [state, setState] = useState(...).",
-                "invalidInitialization": "To prevent re-computation, consider using lazy initial state for useState calls that involve function calls. Ex: 'useState(() => getValue())'.",
-                "invalidSetterName": "The setter should be named 'set' followed by the capitalized state variable name, e.g., 'setState' for 'state'.",
+                "invalid-assignment": "useState should be destructured into a value and setter pair, e.g., const [state, setState] = useState(...).",
+                "invalid-initialization": "To prevent re-computation, consider using lazy initial state for useState calls that involve function calls. Ex: 'useState(() => getValue())'.",
+                "invalid-setter-name": "The setter should be named 'set' followed by the capitalized state variable name, e.g., 'setState' for 'state'.",
               },
               "schema": [
                 {
@@ -52889,7 +52898,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.71.0",
+          "version": "8.71.1",
         },
         "parseForESLint": [Function],
       },
@@ -53182,7 +53191,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -53389,7 +53398,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
               "parser": {
                 "meta": {
                   "name": "typescript-eslint/parser",
-                  "version": "8.71.0",
+                  "version": "8.71.1",
                 },
                 "parseForESLint": [Function],
               },
@@ -53515,7 +53524,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -53595,7 +53604,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -53702,7 +53711,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -53786,7 +53795,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -53880,7 +53889,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -54041,7 +54050,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -54167,7 +54176,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -54238,7 +54247,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -54318,7 +54327,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -54870,7 +54879,7 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
         "meta": {
           "name": "@typescript-eslint/eslint-plugin",
           "namespace": "@typescript-eslint",
-          "version": "8.71.0",
+          "version": "8.71.1",
         },
         "rules": {
           "adjacent-overload-signatures": {
@@ -63996,7 +64005,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.71.0",
+          "version": "8.71.1",
         },
         "parseForESLint": [Function],
       },
@@ -64289,7 +64298,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -64496,7 +64505,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
               "parser": {
                 "meta": {
                   "name": "typescript-eslint/parser",
-                  "version": "8.71.0",
+                  "version": "8.71.1",
                 },
                 "parseForESLint": [Function],
               },
@@ -64622,7 +64631,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -64702,7 +64711,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -64809,7 +64818,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -64893,7 +64902,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -64987,7 +64996,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65150,7 +65159,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65276,7 +65285,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65347,7 +65356,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65425,7 +65434,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "parser": {
                   "meta": {
                     "name": "typescript-eslint/parser",
-                    "version": "8.71.0",
+                    "version": "8.71.1",
                   },
                   "parseForESLint": [Function],
                 },
@@ -65977,7 +65986,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
         "meta": {
           "name": "@typescript-eslint/eslint-plugin",
           "namespace": "@typescript-eslint",
-          "version": "8.71.0",
+          "version": "8.71.1",
         },
         "rules": {
           "adjacent-overload-signatures": {
@@ -75020,7 +75029,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.71.0",
+          "version": "8.71.1",
         },
         "parseForESLint": [Function],
       },
@@ -77643,7 +77652,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
         "meta": {
           "name": "@eslint/json",
           "namespace": "json",
-          "version": "2.1.0",
+          "version": "2.1.1",
         },
         "rules": {
           "no-duplicate-keys": {
@@ -77977,7 +77986,7 @@ If a function does not access `this`, it can be annotated with `this: void`.",
                 "meta": {
                   "name": "@eslint/json",
                   "namespace": "json",
-                  "version": "2.1.0",
+                  "version": "2.1.1",
                 },
                 "rules": {
                   "no-duplicate-keys": {
