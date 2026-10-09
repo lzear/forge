@@ -25,6 +25,7 @@ vi.stubGlobal('fetch', fetchMock)
 const tmpDir = (): string => mkdtempSync(path.join(tmpdir(), 'update-test-'))
 
 const write = (dir: string, file: string, content = ''): void => {
+  mkdirSync(path.dirname(path.join(dir, file)), { recursive: true })
   writeFileSync(path.join(dir, file), content)
 }
 
@@ -142,9 +143,10 @@ describe('installCommands', () => {
     ])
   })
 
-  it('uses a single bun update for bun', () => {
+  it('updates all bun workspaces, then reinstalls', () => {
     expect(installCommands({ name: 'bun', source: 'lockfile' })).toEqual([
-      ['bun', 'update'],
+      ['bun', 'update', '--recursive'],
+      ['bun', 'install'],
     ])
   })
 
@@ -423,6 +425,34 @@ describe('runUpdate', () => {
       ['update', '--recursive'],
       expect.objectContaining({ cwd: dir }),
     )
+  })
+
+  it('keeps the ranges bun update rewrites', async () => {
+    const root = JSON.stringify({
+      packageManager: 'bun@1.3.5',
+      workspaces: ['packages/*'],
+      dependencies: { ms: '^2' },
+    })
+    const member = JSON.stringify({ dependencies: { picocolors: '^1' } })
+    write(dir, 'package.json', root)
+    write(dir, 'packages/a/package.json', member)
+    mockRegistry({ bun: '1.3.5' })
+    vi.mocked(childProcess.spawnSync).mockImplementation(() => {
+      write(dir, 'package.json', root.replace('^2', '^2.1.3'))
+      write(dir, 'packages/a/package.json', member.replace('^1', '^1.1.1'))
+      return {
+        status: 0,
+        stdout: '',
+        stderr: '',
+        pid: 0,
+        output: [],
+        signal: null,
+      }
+    })
+    const report = await runUpdate({ dir })
+    expect(resultById(report.results, 'install')).toMatchObject({ pass: true })
+    expect(read(dir, 'package.json')).toBe(root)
+    expect(read(dir, 'packages/a/package.json')).toBe(member)
   })
 
   it('fails the install step when a command exits non-zero', async () => {

@@ -449,7 +449,10 @@ export const installCommands = (
 ): [string, ...string[]][] => {
   switch (pm.name) {
     case 'bun':
-      return [['bun', 'update']]
+      return [
+        ['bun', 'update', '--recursive'],
+        ['bun', 'install'],
+      ]
     case 'pnpm':
       return [
         ['pnpm', 'install'],
@@ -483,12 +486,23 @@ const lockfileHash = (dir: string): string =>
     .map((f) => createHash('sha256').update(readFileSync(f)).digest('hex'))
     .join('|')
 
+// bun update rewrites each range to the version it resolves (^21 → ^21.2.3):
+// stepInstall puts the manifests back, and bun install keeps the lockfile's
+const manifests = (dir: string): Map<string, string> =>
+  new Map(
+    [dir, ...getWorkspaceDirectories(dir)]
+      .map((d) => path.join(d, 'package.json'))
+      .filter((f) => existsSync(f))
+      .map((f) => [f, readFileSync(f, 'utf8')]),
+  )
+
 const stepInstall = (dir: string, pm: PackageManager): UpdateResult => {
   const base = {
     id: 'install',
     desc: `install & refresh lockfile (${pm.name})`,
   }
   const before = lockfileHash(dir)
+  const ranges = pm.name === 'bun' ? manifests(dir) : new Map<string, string>()
   const lines: string[] = []
   for (const [command, ...arguments_] of installCommands(pm)) {
     lines.push(`$ ${[command, ...arguments_].join(' ')}`)
@@ -496,6 +510,7 @@ const stepInstall = (dir: string, pm: PackageManager): UpdateResult => {
       cwd: dir,
       stdio: 'inherit',
     })
+    for (const [file, raw] of ranges) writeFileSync(file, raw, 'utf8')
     if (result.status !== 0)
       return {
         ...base,
