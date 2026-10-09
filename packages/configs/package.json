@@ -82,9 +82,12 @@
   "dependencies": {
     "@commitlint/config-conventional": "^21",
     "@commitlint/types": "^21",
+    "conventional-changelog-conventionalcommits": "^10",
     "std-env": "^4"
   },
   "devDependencies": {
+    "@commitlint/lint": "^21",
+    "@commitlint/load": "^21",
     "@vitejs/plugin-react": "^6",
     "@vitest/coverage-v8": "^5",
     "jsdom": "~30",

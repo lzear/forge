@@ -664,7 +664,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/lint@npm:^21.2.3":
+"@commitlint/lint@npm:^21, @commitlint/lint@npm:^21.2.3":
   version: 21.2.3
   resolution: "@commitlint/lint@npm:21.2.3"
   dependencies:
@@ -676,7 +676,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/load@npm:^21.2.3":
+"@commitlint/load@npm:^21, @commitlint/load@npm:^21.2.3":
   version: 21.2.3
   resolution: "@commitlint/load@npm:21.2.3"
   dependencies:
@@ -1511,9 +1511,12 @@ __metadata:
   resolution: "@lzear/configs@workspace:packages/configs"
   dependencies:
     "@commitlint/config-conventional": "npm:^21"
+    "@commitlint/lint": "npm:^21"
+    "@commitlint/load": "npm:^21"
     "@commitlint/types": "npm:^21"
     "@vitejs/plugin-react": "npm:^6"
     "@vitest/coverage-v8": "npm:^5"
+    conventional-changelog-conventionalcommits: "npm:^10"
     jsdom: "npm:~30"
     std-env: "npm:^4"
     tsdown: "npm:^0.23"
@@ -3422,7 +3425,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"conventional-changelog-conventionalcommits@npm:^10.0.0":
+"conventional-changelog-conventionalcommits@npm:^10, conventional-changelog-conventionalcommits@npm:^10.0.0":
   version: 10.4.1
   resolution: "conventional-changelog-conventionalcommits@npm:10.4.1"
   dependencies:
