@@ -5,7 +5,6 @@ export default defineLibConfig({
   'commitlint.emoji': 'src/commitlint-emoji.ts',
   vitest: 'src/vitest.ts',
   'vitest.react': 'src/vitest.react.ts',
-  tsup: 'src/tsup.ts',
   tsdown: 'src/tsdown.ts',
   vite: 'src/vite.ts',
 })

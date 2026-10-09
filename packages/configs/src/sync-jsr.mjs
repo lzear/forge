@@ -37,11 +37,8 @@ dist output ("./dist/commitlint.emoji.js") -> source ("./src/commitlint-emoji.ts
 @returns {Promise<Record<string, string>>}
 */
 const distToSource = async (dir) => {
-  // tsdown's, or tsup's where a repo still builds with it
-  const configFile = ['tsdown.config.ts', 'tsup.config.ts']
-    .map((name) => path.join(dir, name))
-    .find((file) => existsSync(file))
-  if (!configFile) return {}
+  const configFile = path.join(dir, 'tsdown.config.ts')
+  if (!existsSync(configFile)) return {}
   const module_ = await import(pathToFileURL(configFile).href)
   const entries = [module_.default].flat().flatMap((c) => {
     const entry = c.entry ?? {}

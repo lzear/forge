@@ -32,8 +32,6 @@ export default [
 ]
 ```
 
-`@lzear/configs/tsup` keeps the same factories for tsup (unmaintained).
-
 ```ts
 // vitest.config.ts — or '@lzear/configs/vitest/react' (jsdom)
 export { default } from '@lzear/configs/vitest'
@@ -77,4 +75,4 @@ Run from the repo root.
 - `lzear-publish [--publish] [--release] [--tag <tag>]` — stage unpublished workspace packages on npm (dry run without `--publish`), create the GitHub release with `--release`. Tag defaults to the prerelease id, else `latest`.
 - `lzear-prerelease <alpha|beta|…> [--publish]` — publish the pending changesets as `<next version>-<id>.<N>` under dist-tag `<id>`, without committing (dry run without `--publish`); npm asks for 2FA.
 - `lzear-changelog` — prepend the pending release to the root `CHANGELOG.md`; run before `changeset version`.
-- `lzear-sync-jsr [--check]` — generate each `deno.json` from `package.json` + tsdown (or tsup) entries; `--check` fails instead of writing.
+- `lzear-sync-jsr [--check]` — generate each `deno.json` from `package.json` + tsdown entries; `--check` fails instead of writing.

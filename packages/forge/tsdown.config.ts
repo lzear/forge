@@ -7,7 +7,6 @@ export default [
     eslint: 'src/eslint.ts',
     vitest: 'src/vitest.ts',
     'vitest.react': 'src/vitest.react.ts',
-    tsup: 'src/tsup.ts',
     tsdown: 'src/tsdown.ts',
     vite: 'src/vite.ts',
     'repo-lint': 'src/repo-lint.ts',

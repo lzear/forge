@@ -22,5 +22,5 @@ yarn add -D @lzear/forge
 ## Re-exports
 
 - `@lzear/forge/eslint` → [`@lzear/eslint-config`](https://www.npmjs.com/package/@lzear/eslint-config) (npm only)
-- `@lzear/forge/{tsconfig/*,tsdown,tsup,vite,vitest,vitest/react,commitlint,commitlint/emoji}` → [`@lzear/configs`](https://www.npmjs.com/package/@lzear/configs)
+- `@lzear/forge/{tsconfig/*,tsdown,vite,vitest,vitest/react,commitlint,commitlint/emoji}` → [`@lzear/configs`](https://www.npmjs.com/package/@lzear/configs)
 - `@lzear/forge/repo-lint` → [`@lzear/repo-lint`](https://www.npmjs.com/package/@lzear/repo-lint)

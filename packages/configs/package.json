@@ -27,10 +27,6 @@
       "types": "./dist/tsdown.d.ts",
       "default": "./dist/tsdown.js"
     },
-    "./tsup": {
-      "types": "./dist/tsup.d.ts",
-      "default": "./dist/tsup.js"
-    },
     "./vite": {
       "types": "./dist/vite.d.ts",
       "default": "./dist/vite.js"
@@ -75,7 +71,6 @@
     "config",
     "tsconfig",
     "tsdown",
-    "tsup",
     "vite",
     "vitest"
   ],
@@ -92,7 +87,6 @@
     "@vitest/coverage-v8": "^5",
     "jsdom": "~30",
     "tsdown": "^0.23",
-    "tsup": "^8",
     "vite": "^8",
     "vitest": "^5"
   },
@@ -100,7 +94,6 @@
     "@vitejs/plugin-react": "^6",
     "jsdom": "~30",
     "tsdown": "^0.23",
-    "tsup": "^8",
     "vite": "^8",
     "vitest": "^5"
   },
@@ -112,9 +105,6 @@
       "optional": true
     },
     "tsdown": {
-      "optional": true
-    },
-    "tsup": {
       "optional": true
     },
     "vite": {
