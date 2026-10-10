@@ -23,7 +23,13 @@ import {
 } from './checks.ts'
 import { readPackage } from './update.ts'
 
-export type { Check, CheckDetail, LocalCheck, RemoteCheck } from './checks.ts'
+export type {
+  Check,
+  CheckDetail,
+  ForgeRelease,
+  LocalCheck,
+  RemoteCheck,
+} from './checks.ts'
 
 /**
 Outcome of one check.
@@ -217,7 +223,13 @@ export const checkLocal = async (
   }
 }
 
-export { CHECKS, listSecrets, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.ts'
+export {
+  CHECKS,
+  latestForgeRelease,
+  listSecrets,
+  LOCAL_CHECKS,
+  REMOTE_CHECKS,
+} from './checks.ts'
 export type {
   SyncOptions,
   SyncReport,

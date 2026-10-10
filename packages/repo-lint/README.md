@@ -24,6 +24,7 @@ const sync = await syncTemplates({ dir, dry }) // [{ file, status }], from templ
 | `license`             | `LICENSE` exists                                          |
 | `jsr-config`          | `deno.json` name & version match `package.json`           |
 | `ci-workflow`         | a workflow calls the forge reusable CI workflow           |
+| `forge-pins`          | forge workflow/action pins are the latest `v*` tag        |
 | `renovate`            | `renovate.json` extends `github>lzear/forge`              |
 | `git-hooks`           | `lefthook.yml`, installed by `prepare` (Yarn) or Bun      |
 | `template-sync`       | shared files match [`templates/`](templates)              |

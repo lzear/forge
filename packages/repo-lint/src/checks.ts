@@ -144,6 +144,84 @@ const callsForgeWorkflow = (dir: string): boolean => {
   )
 }
 
+const FORGE_REMOTE = 'https://github.com/lzear/forge'
+// `uses: lzear/forge/<path>@<ref> # <comment>`
+const FORGE_PIN_RE = /lzear\/forge\/([^@\s]+)@([^\s#]+)(?:[ \t]*#[ \t]*(\S+))?/g
+
+/**
+A forge release: its `vX.Y.Z` tag and the commit it points to.
+*/
+export type ForgeRelease = { tag: string; sha: string }
+
+// tag per commit, from `git ls-remote --tags`; an annotated tag's peeled
+// `^{}` line gives its commit, overriding the tag object's SHA
+const forgeTags = async (cwd: string): Promise<Map<string, string> | null> => {
+  const r = await run('git', ['ls-remote', '--tags', FORGE_REMOTE], {
+    cwd,
+    env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+  })
+  if (r.status !== 0) return null
+  const tags = new Map<string, string>()
+  for (const line of r.stdout.split('\n')) {
+    const match = /^([\da-f]{40})\trefs\/tags\/(v[^^]+)(\^\{\})?$/.exec(line)
+    if (!match) continue
+    const [, sha = '', tag = '', peeled] = match
+    if (peeled || !tags.has(tag)) tags.set(tag, sha)
+  }
+  return tags
+}
+
+const newestRelease = (tags: Map<string, string>): ForgeRelease | null => {
+  // `*` skips prereleases
+  const version = maxSatisfying(
+    tags
+      .keys()
+      .map((t) => t.slice(1))
+      .toArray(),
+    '*',
+  )
+  const tag = version && `v${version}`
+  const sha = tag && tags.get(tag)
+  return tag && sha ? { tag, sha } : null
+}
+
+/**
+The newest forge release, or `null` when its tags can't be read (offline).
+*/
+export const latestForgeRelease = async (
+  cwd: string = process.cwd(),
+): Promise<ForgeRelease | null> => {
+  const tags = await forgeTags(cwd)
+  return tags && newestRelease(tags)
+}
+
+type ForgePin = { file: string; path: string; ref: string; comment?: string }
+
+const forgePinFiles = (dir: string): string[] => {
+  const workflows = path.join('.github', 'workflows')
+  const actions = path.join('.github', 'actions')
+  const list = (sub: string, recursive: boolean): string[] =>
+    existsSync(path.join(dir, sub))
+      ? readdirSync(path.join(dir, sub), { recursive, encoding: 'utf8' })
+          .filter((f) => /\.ya?ml$/.test(f))
+          .map((f) => path.join(sub, f))
+      : []
+  return [...list(workflows, false), ...list(actions, true)]
+}
+
+const findForgePins = (dir: string): ForgePin[] =>
+  forgePinFiles(dir).flatMap((file) =>
+    readFileSync(path.join(dir, file), 'utf8')
+      .matchAll(FORGE_PIN_RE)
+      .map(([, pinPath = '', ref = '', comment]) => ({
+        file,
+        path: pinPath,
+        ref,
+        ...(comment && { comment }),
+      }))
+      .toArray(),
+  )
+
 // size-limit's config files; it also reads a `size-limit` package.json field
 const SIZE_LIMIT_FILE_RE = /^\.size-limit(?:\.json|\.[cm]?[jt]s)?$/
 
@@ -380,6 +458,39 @@ export const LOCAL_CHECKS: LocalCheck[] = [
           '      uses: lzear/forge/.github/workflows/ci.yml@<sha> # vX.Y.Z\n' +
           '(pin to a commit SHA; renovate keeps it fresh)',
       }
+    },
+  },
+  {
+    id: 'forge-pins',
+    desc: 'forge pins latest',
+    type: 'local',
+    check: async (dir) => {
+      if (isForgeRepo(dir)) return { pass: true, detail: 'forge itself' }
+      const pins = findForgePins(dir)
+      if (pins.length === 0) return true
+      const tags = await forgeTags(dir)
+      const latest = tags && newestRelease(tags)
+      if (!tags || !latest)
+        return { pass: true, detail: 'not checked: forge tags unreachable' }
+      const tagOf = new Map([...tags].map(([tag, sha]) => [sha, tag]))
+      const stale = pins
+        .filter((p) => p.ref !== latest.sha || p.comment !== latest.tag)
+        .map((p) => {
+          const current = tagOf.get(p.ref) ?? p.comment ?? p.ref.slice(0, 7)
+          const shown =
+            tagOf.has(p.ref) && p.comment !== current
+              ? `${current} (# ${p.comment ?? 'none'})`
+              : current
+          return `${p.file}: ${p.path} ${shown} → ${latest.tag}`
+        })
+      return (
+        stale.length === 0 || {
+          pass: false,
+          detail: [...stale, `Pin to: @${latest.sha} # ${latest.tag}`].join(
+            '\n',
+          ),
+        }
+      )
     },
   },
   {

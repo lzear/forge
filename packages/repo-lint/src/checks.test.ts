@@ -5,7 +5,12 @@ import path from 'node:path'
 import { run as ncuRun } from 'npm-check-updates'
 import { publint } from 'publint'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { type CheckDetail, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.ts'
+import {
+  type CheckDetail,
+  latestForgeRelease,
+  LOCAL_CHECKS,
+  REMOTE_CHECKS,
+} from './checks.ts'
 import { syncTemplates } from './templates.ts'
 
 vi.mock('publint', () => ({ publint: vi.fn() }))
@@ -81,6 +86,11 @@ const check = async (
   if (!c) throw new Error(`unknown check: ${id}`)
   return c.check(dir)
 }
+
+const sha = (c: string): string => c.repeat(40)
+
+const pin = (path: string, ref: string, comment: string): string =>
+  `      uses: lzear/forge/${path}@${ref} # ${comment}\n`
 
 // ── LOCAL_CHECKS ─────────────────────────────────────────────────────────────
 
@@ -217,6 +227,108 @@ describe('LOCAL_CHECKS', () => {
       )
       write(dir, '.github/workflows/ci.yml', 'on: workflow_call\njobs: {}')
       expect(await check('ci-workflow', dir)).toBe(true)
+    })
+  })
+
+  describe('forge-pins', () => {
+    // v4.10.0 annotated: its tag object's SHA, then the peeled commit
+    const LS_REMOTE = [
+      `${sha('a')}\trefs/tags/v4.7.0`,
+      `${sha('f')}\trefs/tags/v4.10.0`,
+      `${sha('b')}\trefs/tags/v4.10.0^{}`,
+      `${sha('c')}\trefs/tags/v4.9.0`,
+      `${sha('d')}\trefs/tags/v5.0.0-beta.1`,
+      `${sha('e')}\trefs/tags/@lzear/forge@9.0.0`,
+    ].join('\n')
+
+    it('passes in the forge repo itself, without the network', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ private: true, workspaces: ['packages/*'] }),
+      )
+      write(
+        dir,
+        'packages/forge/package.json',
+        JSON.stringify({ name: '@lzear/forge' }),
+      )
+      write(
+        dir,
+        '.github/workflows/main.yml',
+        pin('.github/workflows/ci.yml', sha('a'), 'v4.7.0'),
+      )
+      expect(await check('forge-pins', dir)).toMatchObject({ pass: true })
+      expect(vi.mocked(childProcess.execFile)).not.toHaveBeenCalled()
+    })
+    it('passes without pins, without the network', async () => {
+      write(dir, '.github/workflows/ci.yml', 'jobs: {}')
+      expect(await check('forge-pins', dir)).toBe(true)
+      expect(vi.mocked(childProcess.execFile)).not.toHaveBeenCalled()
+    })
+    it('passes when every pin is the latest release', async () => {
+      mockSpawn(0, LS_REMOTE)
+      write(
+        dir,
+        '.github/workflows/main.yml',
+        pin('.github/workflows/ci.yml', sha('b'), 'v4.10.0'),
+      )
+      write(
+        dir,
+        '.github/actions/x/action.yaml',
+        pin('actions/setup', sha('b'), 'v4.10.0'),
+      )
+      expect(await check('forge-pins', dir)).toBe(true)
+      expect(vi.mocked(childProcess.execFile)).toHaveBeenCalledWith(
+        'git',
+        ['ls-remote', '--tags', 'https://github.com/lzear/forge'],
+        expect.objectContaining({ cwd: dir }),
+        expect.any(Function),
+      )
+    })
+    it('lists stale refs in workflows and actions', async () => {
+      mockSpawn(0, LS_REMOTE)
+      write(
+        dir,
+        '.github/workflows/main.yml',
+        pin('.github/workflows/ci.yml', sha('a'), 'v4.7.0') +
+          pin('.github/workflows/release.yml', sha('9'), 'main'),
+      )
+      write(
+        dir,
+        '.github/actions/x/action.yml',
+        pin('actions/setup', sha('b'), 'v4.9.0'),
+      )
+      const result = await check('forge-pins', dir)
+      expect(result).toMatchObject({ pass: false })
+      expect((result as CheckDetail).detail).toBe(
+        [
+          '.github/workflows/main.yml: .github/workflows/ci.yml v4.7.0 → v4.10.0',
+          '.github/workflows/main.yml: .github/workflows/release.yml main → v4.10.0',
+          '.github/actions/x/action.yml: actions/setup v4.10.0 (# v4.9.0) → v4.10.0',
+          `Pin to: @${sha('b')} # v4.10.0`,
+        ].join('\n'),
+      )
+    })
+    it('passes, unchecked, offline', async () => {
+      mockSpawn(128)
+      write(
+        dir,
+        '.github/workflows/main.yml',
+        pin('.github/workflows/ci.yml', sha('a'), 'v4.7.0'),
+      )
+      expect(await check('forge-pins', dir)).toEqual({
+        pass: true,
+        detail: 'not checked: forge tags unreachable',
+      })
+    })
+    it('latestForgeRelease gives the newest tag and its commit', async () => {
+      mockSpawn(0, LS_REMOTE)
+      expect(await latestForgeRelease(dir)).toEqual({
+        tag: 'v4.10.0',
+        sha: sha('b'),
+      })
+      mockSpawn(128)
+      expect(await latestForgeRelease(dir)).toBeNull()
     })
   })
 
