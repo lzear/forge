@@ -1,5 +1,5 @@
 import * as childProcess from 'node:child_process'
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { run as ncuRun } from 'npm-check-updates'
@@ -86,6 +86,15 @@ const check = async (
   if (!c) throw new Error(`unknown check: ${id}`)
   return c.check(dir)
 }
+
+const fix = async (id: string, dir: string): Promise<string> => {
+  const c = LOCAL_CHECKS.find((c) => c.id === id)
+  if (!c?.fix) throw new Error(`no fix: ${id}`)
+  return c.fix(dir)
+}
+
+const read = (dir: string, file: string): string =>
+  readFileSync(path.join(dir, file), 'utf8')
 
 const sha = (c: string): string => c.repeat(40)
 
@@ -797,6 +806,200 @@ describe('LOCAL_CHECKS', () => {
       expect(await check('deps-release-age', dir)).toMatchObject({
         pass: false,
         detail: expect.stringContaining('Yarn 1'),
+      })
+    })
+  })
+
+  // ── fixes ──────────────────────────────────────────────────────────────────
+
+  describe('fixes', () => {
+    it('has none for deps-fresh: forge update does that', () => {
+      expect(
+        LOCAL_CHECKS.find((c) => c.id === 'deps-fresh')?.fix,
+      ).toBeUndefined()
+    })
+
+    describe('git-hooks', () => {
+      it('writes lefthook.yml and a prepare script, keeping indentation', async () => {
+        write(dir, 'package.json', '{\n\t"scripts": { "build": "x" }\n}\n')
+        expect(await fix('git-hooks', dir)).toBe(
+          'created lefthook.yml\nprepare: lefthook install',
+        )
+        expect(read(dir, 'package.json')).toBe(
+          '{\n\t"scripts": {\n\t\t"build": "x",\n\t\t"prepare": "lefthook install"\n\t}\n}\n',
+        )
+        expect(read(dir, 'lefthook.yml')).toContain('lefthook')
+        expect(await check('git-hooks', dir)).toBe(true)
+      })
+      it('chains onto an existing prepare script', async () => {
+        write(dir, 'lefthook.yml')
+        write(
+          dir,
+          'package.json',
+          JSON.stringify({ scripts: { prepare: 'husky' } }),
+        )
+        expect(await fix('git-hooks', dir)).toBe(
+          'prepare: husky && lefthook install',
+        )
+        expect(await check('git-hooks', dir)).toBe(true)
+      })
+      it('adds lefthook to Bun trustedDependencies', async () => {
+        write(dir, 'lefthook.yml', 'pre-commit: {}')
+        write(
+          dir,
+          'package.json',
+          JSON.stringify({
+            packageManager: 'bun@1.4.2',
+            trustedDependencies: ['esbuild'],
+          }),
+        )
+        expect(await fix('git-hooks', dir)).toBe(
+          'trustedDependencies: + lefthook',
+        )
+        expect(read(dir, 'lefthook.yml')).toBe('pre-commit: {}')
+        expect(await check('git-hooks', dir)).toBe(true)
+      })
+    })
+
+    describe('renovate', () => {
+      it('creates renovate.json', async () => {
+        expect(await fix('renovate', dir)).toBe('created renovate.json')
+        expect(await check('renovate', dir)).toBe(true)
+      })
+      it('adds the preset to extends, keeping indentation', async () => {
+        write(dir, 'renovate.json', '{\n    "extends": ["config:base"]\n}')
+        await fix('renovate', dir)
+        expect(read(dir, 'renovate.json')).toBe(
+          '{\n    "extends": [\n        "config:base",\n        "github>lzear/forge"\n    ]\n}',
+        )
+        expect(await check('renovate', dir)).toBe(true)
+      })
+      it('throws on invalid JSON', async () => {
+        write(dir, 'renovate.json', '{')
+        await expect(fix('renovate', dir)).rejects.toThrow()
+      })
+    })
+
+    describe('deps-release-age', () => {
+      it.each([
+        ['bunfig.toml', '', '[install]\nminimumReleaseAge = 259200\n'],
+        [
+          'bunfig.toml',
+          '[test]\nroot = "x"\n',
+          '[test]\nroot = "x"\n\n[install]\nminimumReleaseAge = 259200\n',
+        ],
+        [
+          'bunfig.toml',
+          '[install]\nexact = true\n',
+          '[install]\nminimumReleaseAge = 259200\nexact = true\n',
+        ],
+        [
+          'bunfig.toml',
+          '[install]\nminimumReleaseAge = 60\n',
+          '[install]\nminimumReleaseAge = 259200\n',
+        ],
+      ])('writes %s from %j', async (file, before, after) => {
+        write(dir, 'package.json', '{}')
+        write(dir, 'bun.lock')
+        if (before) write(dir, file, before)
+        expect(await fix('deps-release-age', dir)).toBe(
+          'minimumReleaseAge = 259200 in bunfig.toml',
+        )
+        expect(read(dir, file)).toBe(after)
+        expect(await check('deps-release-age', dir)).toBe(true)
+      })
+      it.each([
+        [
+          'package-lock.json',
+          '.npmrc',
+          'save-exact=true',
+          'save-exact=true\nmin-release-age=3\n',
+        ],
+        [
+          'pnpm-lock.yaml',
+          'pnpm-workspace.yaml',
+          'packages:\n  - a\nminimumReleaseAge: 10\n',
+          'packages:\n  - a\nminimumReleaseAge: 4320\n',
+        ],
+      ])('writes %s: %s', async (lockfile, file, before, after) => {
+        write(dir, 'package.json', '{}')
+        write(dir, lockfile)
+        write(dir, file, before)
+        await fix('deps-release-age', dir)
+        expect(read(dir, file)).toBe(after)
+        expect(await check('deps-release-age', dir)).toBe(true)
+      })
+      it('sets yarn gate through yarn config', async () => {
+        write(
+          dir,
+          'package.json',
+          JSON.stringify({ packageManager: 'yarn@4.18.1' }),
+        )
+        mockSpawn(0)
+        expect(await fix('deps-release-age', dir)).toBe(
+          'npmMinimalAgeGate: 3d in .yarnrc.yml',
+        )
+        expect(vi.mocked(childProcess.execFile)).toHaveBeenCalledWith(
+          'yarn',
+          ['config', 'set', 'npmMinimalAgeGate', '3d'],
+          expect.objectContaining({ cwd: dir }),
+          expect.any(Function),
+        )
+        mockSpawn(1, 'nope')
+        await expect(fix('deps-release-age', dir)).rejects.toThrow('nope')
+      })
+      it('throws on Yarn 1', async () => {
+        write(
+          dir,
+          'package.json',
+          JSON.stringify({ packageManager: 'yarn@1.22.22' }),
+        )
+        await expect(fix('deps-release-age', dir)).rejects.toThrow('Yarn 1')
+      })
+    })
+
+    describe('template-sync', () => {
+      it('syncs, listing what changed', async () => {
+        await syncTemplates({ dir })
+        write(dir, 'lefthook.yml', 'pre-commit: {}')
+        expect(await fix('template-sync', dir)).toBe('lefthook.yml updated')
+        expect(await check('template-sync', dir)).toBe(true)
+      })
+    })
+
+    describe('forge-pins', () => {
+      const LS_REMOTE = [
+        `${sha('a')}\trefs/tags/v4.7.0`,
+        `${sha('b')}\trefs/tags/v4.10.0`,
+      ].join('\n')
+
+      it('repins stale refs to the latest release', async () => {
+        mockSpawn(0, LS_REMOTE)
+        write(
+          dir,
+          '.github/workflows/main.yml',
+          'on: push\njobs:\n  ci:\n' +
+            pin('.github/workflows/ci.yml', sha('a'), 'v4.7.0') +
+            '      uses: lzear/forge/.github/workflows/release.yml@main\n',
+        )
+        write(
+          dir,
+          '.github/actions/x/action.yml',
+          pin('actions/setup', sha('b'), 'v4.10.0'),
+        )
+        expect(await fix('forge-pins', dir)).toBe(
+          '.github/workflows/main.yml → v4.10.0',
+        )
+        expect(read(dir, '.github/workflows/main.yml')).toBe(
+          'on: push\njobs:\n  ci:\n' +
+            pin('.github/workflows/ci.yml', sha('b'), 'v4.10.0') +
+            pin('.github/workflows/release.yml', sha('b'), 'v4.10.0'),
+        )
+        expect(await check('forge-pins', dir)).toBe(true)
+      })
+      it('throws offline', async () => {
+        mockSpawn(128)
+        await expect(fix('forge-pins', dir)).rejects.toThrow('unreachable')
       })
     })
   })

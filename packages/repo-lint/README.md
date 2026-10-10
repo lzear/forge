@@ -9,7 +9,7 @@ Engine behind `forge check`, `forge update` and `forge sync` ([forge](https://gi
 ```ts
 import { checkLocal, runUpdate, syncTemplates } from '@lzear/repo-lint'
 
-const { results, skipped } = await checkLocal({ dir, skipRemote, only, skip }) // [{ pass, desc, detail? }], [{ id, desc, skipped }]
+const { results, skipped, fixed } = await checkLocal({ dir, skipRemote, only, skip, fix }) // [{ pass, desc, detail? }], [{ id, desc, skipped }], fix runs: [{ pass, desc, detail? }]
 const update = await runUpdate({ dir, dry, install })
 const sync = await syncTemplates({ dir, dry }) // [{ file, status }], from templates/
 ```
@@ -49,3 +49,17 @@ A repo opts out of a check in its root `package.json`, with a reason (`ForgeConf
 ```
 
 An empty reason or an unknown id fails `forge-config`. One run: `forge check --only <ids>` / `--skip <ids>` (comma-separated). Skips show in `--json` as `{ id, desc, skipped: reason }`.
+
+## Fixes
+
+`forge check --fix` (`checkLocal({ fix: true })`) runs the failing checks' fixes, then every check again; `fixed` (also in `--json`) lists what each changed, or why it couldn't.
+
+| Check              | Fix                                                                                        |
+|--------------------|--------------------------------------------------------------------------------------------|
+| `git-hooks`        | writes `lefthook.yml`; adds `"prepare": "lefthook install"`, or Bun's `trustedDependencies` |
+| `renovate`         | creates `renovate.json`, or adds `github>lzear/forge` to `extends`                          |
+| `deps-release-age` | sets the age gate (`bunfig.toml`, `.npmrc`, `pnpm-workspace.yaml`, `yarn config set`)      |
+| `template-sync`    | `forge sync`                                                                               |
+| `forge-pins`       | repins forge refs to the latest release: `@<sha> # vX.Y.Z`                                 |
+
+`deps-fresh` is `forge update`'s job.

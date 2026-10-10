@@ -57,6 +57,10 @@ export type RepoReport = {
   repo: string
   results: CheckResult[]
   skipped: SkippedCheck[]
+  /**
+  with `fix`: each fix run, `detail` being what it changed or why it failed
+  */
+  fixed?: CheckResult[]
 }
 
 /**
@@ -146,6 +150,30 @@ const runChecks = async (
   return [...localResults, ...remoteResults]
 }
 
+// fixes the failures one by one, in check order: some share files
+const runFixes = async (
+  dir: string,
+  results: CheckResult[],
+): Promise<CheckResult[]> => {
+  const fixed: CheckResult[] = []
+  for (const c of LOCAL_CHECKS) {
+    if (!c.fix || results.every((r) => r.id !== c.id || r.pass)) continue
+    try {
+      const detail = await c.fix(dir)
+      fixed.push({
+        id: c.id,
+        desc: c.desc,
+        pass: true,
+        ...(detail && { detail }),
+      })
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error)
+      fixed.push({ id: c.id, desc: c.desc, pass: false, detail })
+    }
+  }
+  return fixed
+}
+
 /**
 Reads `owner/repo` from the GitHub `origin` remote of `dir`.
 */
@@ -177,6 +205,10 @@ export type CheckLocalOptions = {
   skip these check ids, on top of the config's
   */
   skip?: string[]
+  /**
+  run the failing checks' fixes, then every check again
+  */
+  fix?: boolean
 }
 
 /**
@@ -185,13 +217,22 @@ when the repo publishes a package. The root `package.json`'s `forge` field
 ({@linkcode ForgeConfig}) skips checks; when present, a `forge-config` result
 validates it.
 
+With `fix`, failing checks that have a fix run it, then every check runs
+again; `fixed` lists the fixes.
+
 @param options `dir` defaults to the cwd, `repo` to the `origin` remote
 @throws on an unknown id in `only` or `skip`
 */
 export const checkLocal = async (
   options: CheckLocalOptions = {},
 ): Promise<RepoReport> => {
-  const { dir = process.cwd(), skipRemote = false, only, skip = [] } = options
+  const {
+    dir = process.cwd(),
+    skipRemote = false,
+    only,
+    skip = [],
+    fix: isFix = false,
+  } = options
   const unknown = unknownIds([...(only ?? []), ...skip])
   if (unknown.length > 0)
     throw new Error(`Unknown check: ${unknown.join(', ')} (${validIds()})`)
@@ -207,12 +248,16 @@ export const checkLocal = async (
     (!c.publishedOnly || isPublished) &&
     (!only || only.includes(c.id)) &&
     (!skipRemote || c.type !== 'remote')
-  const results = await runChecks(
-    dir,
-    repo,
-    skipRemote,
-    (c) => isApplicable(c) && !reasons.has(c.id),
-  )
+  const check = (): Promise<CheckResult[]> =>
+    runChecks(
+      dir,
+      repo,
+      skipRemote,
+      (c) => isApplicable(c) && !reasons.has(c.id),
+    )
+  let results = await check()
+  const fixed = isFix ? await runFixes(dir, results) : []
+  if (fixed.length > 0) results = await check()
   const skipped = CHECKS.filter(
     (c) => isApplicable(c) && reasons.has(c.id),
   ).map((c) => ({ id: c.id, desc: c.desc, skipped: reasons.get(c.id) ?? '' }))
@@ -220,6 +265,7 @@ export const checkLocal = async (
     repo,
     results: config.result ? [config.result, ...results] : results,
     skipped,
+    ...(isFix && { fixed }),
   }
 }
 

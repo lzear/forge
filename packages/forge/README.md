@@ -14,7 +14,7 @@ yarn add -D @lzear/forge
 
 `check`, `update` and `setup` take `--json`.
 
-- `forge check [--skip-remote] [--only <ids>] [--skip <ids>]` — audit the repo against forge standards ([checks](https://www.npmjs.com/package/@lzear/repo-lint#checks), [skipping](https://www.npmjs.com/package/@lzear/repo-lint#skipping-checks)); a coding agent sees failures only.
+- `forge check [--skip-remote] [--only <ids>] [--skip <ids>] [--fix]` — audit the repo against forge standards ([checks](https://www.npmjs.com/package/@lzear/repo-lint#checks), [skipping](https://www.npmjs.com/package/@lzear/repo-lint#skipping-checks)); `--fix` repairs what it can ([fixes](https://www.npmjs.com/package/@lzear/repo-lint#fixes)), then checks again; a coding agent sees failures only.
 - `forge update [--dry] [--no-install]` — bump dependency ranges (ncu, versions ≥ 3 days old except own packages, honors `.ncurc`, skips workspaces that are git submodules), `packageManager`, `.nvmrc`/`.node-version`/`.bun-version` and the LICENSE year, then install and dedupe.
 - `forge setup [--repo owner/name] [--dry]` — set the `CODACY_PROJECT_TOKEN` GitHub secret.
 - `forge sync [--dry] [--check]` — write `.editorconfig`, `.codacy.yml`, `lefthook.yml` and `.github/zizmor.yml` from the templates bundled with this version; `--check` exits 1 on drift.

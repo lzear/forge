@@ -84,6 +84,18 @@ const syncFile = async (
 }
 
 /**
+Writes one of forge's shared files, e.g. `lefthook.yml`.
+*/
+export const syncTemplate = async (
+  dir: string,
+  file: string,
+): Promise<SyncResult> => {
+  const template = TEMPLATES[file]
+  if (!template) throw new Error(`no template for ${file}`)
+  return syncFile(dir, file, template, false)
+}
+
+/**
 Writes forge's shared files (`.editorconfig`, `.codacy.yml`, `lefthook.yml`,
 `.github/zizmor.yml`) from the templates bundled with this version.
 

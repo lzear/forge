@@ -125,3 +125,52 @@ it('throws on unknown ids in only or skip', async () => {
     'Unknown check: yy',
   )
 })
+
+// ── fix ──────────────────────────────────────────────────────────────────────
+
+it('fixes failures in check order, then checks again', async () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'repo-lint-fix-test-'))
+  const state = { a: false, b: false }
+  const order: string[] = []
+  checks.local = [
+    {
+      id: 'a',
+      desc: 'a desc',
+      type: 'local',
+      check: () => state.a,
+      fix: () => {
+        order.push('a')
+        state.a = true
+        return 'a fixed'
+      },
+    },
+    { ...passing('ok'), fix: vi.fn() },
+    {
+      id: 'b',
+      desc: 'b desc',
+      type: 'local',
+      check: () => state.b,
+      fix: () => {
+        order.push('b')
+        return Promise.reject(new Error('cannot'))
+      },
+    },
+    { id: 'c', desc: 'c desc', type: 'local', check: () => false },
+  ]
+  const report = await checkLocal({ dir, repo: 'r', fix: true })
+  expect(order).toEqual(['a', 'b'])
+  expect(checks.local[1]?.fix).not.toHaveBeenCalled()
+  expect(report.fixed).toEqual([
+    { id: 'a', desc: 'a desc', pass: true, detail: 'a fixed' },
+    { id: 'b', desc: 'b desc', pass: false, detail: 'cannot' },
+  ])
+  expect(report.results.map((r) => r.pass)).toEqual([true, true, false, false])
+})
+
+it('lists no fixes when nothing failed, and none without fix', async () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'repo-lint-fix-test-'))
+  checks.local = [passing('a')]
+  const report = await checkLocal({ dir, repo: 'r', fix: true })
+  expect(report.fixed).toEqual([])
+  expect(await checkLocal({ dir, repo: 'r' })).not.toHaveProperty('fixed')
+})

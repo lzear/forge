@@ -75,7 +75,7 @@ type JsonFile = {
   trailingNewline: boolean
 }
 
-const readJsonFile = (file: string): JsonFile => {
+export const readJsonFile = (file: string): JsonFile => {
   const raw = readFileSync(file, 'utf8')
   return {
     data: JSON.parse(raw) as Record<string, unknown>,
@@ -84,7 +84,7 @@ const readJsonFile = (file: string): JsonFile => {
   }
 }
 
-const writeJsonFile = (file: string, json: JsonFile): void => {
+export const writeJsonFile = (file: string, json: JsonFile): void => {
   writeFileSync(
     file,
     JSON.stringify(json.data, null, json.indent) +

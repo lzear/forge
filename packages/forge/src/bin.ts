@@ -66,6 +66,17 @@ program
   .version(version, '-v, --version')
   .helpOption('-h, --help', 'show help')
 
+const printFixes = (fixed: NonNullable<RepoReport['fixed']>): void => {
+  for (const f of fixed) {
+    const mark = f.pass ? pc.cyan('⚒') : pc.red('✗')
+    const label = pc.dim(f.pass ? '(fixed)' : '(fix failed)')
+    process.stdout.write(`  ${mark}  ${f.desc} ${label}\n`)
+    const lines = f.detail?.split('\n') ?? []
+    for (const line of lines) process.stdout.write(`       ${pc.dim(line)}\n`)
+  }
+  if (fixed.length > 0) process.stdout.write('\n')
+}
+
 const printSummary = (report: RepoReport): void => {
   const pass = report.results.filter((r) => r.pass).length
   const total = report.results.length
@@ -98,6 +109,7 @@ const printResults = (report: RepoReport, json: boolean): boolean => {
           repo: report.repo,
           results: report.results,
           skipped: report.skipped,
+          ...(report.fixed && { fixed: report.fixed }),
           pass: !isAnyFail,
         },
         null,
@@ -106,6 +118,7 @@ const printResults = (report: RepoReport, json: boolean): boolean => {
     )
     return isAnyFail
   }
+  if (report.fixed) printFixes(report.fixed)
   printSummary(report)
   return isAnyFail
 }
@@ -122,12 +135,14 @@ program
   .option('--skip-remote', 'skip secret checks', false)
   .option('--only <ids>', 'run only these checks (comma-separated)', splitIds)
   .option('--skip <ids>', 'skip these checks (comma-separated)', splitIds)
+  .option('--fix', 'fix failures, then check again')
   .option('--json', 'output results as JSON', false)
   .action(
     async (options: {
       skipRemote: boolean
       only?: string[]
       skip?: string[]
+      fix?: boolean
       json: boolean
     }) => {
       const { json, ...checkOptions } = options

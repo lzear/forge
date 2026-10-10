@@ -1,10 +1,10 @@
 import { execFile, spawnSync } from 'node:child_process'
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { publint } from 'publint'
 import { maxSatisfying, satisfies } from 'semver'
-import { isForgeRepo, syncTemplates } from './templates.ts'
+import { isForgeRepo, syncTemplate, syncTemplates } from './templates.ts'
 import {
   detectPackageManager,
   getWorkspaceDirectories,
@@ -12,8 +12,10 @@ import {
   MIN_RELEASE_AGE_DAYS,
   type PackageManager,
   type PackageManagerName,
+  readJsonFile,
   readPackage,
   stepDeps,
+  writeJsonFile,
 } from './update.ts'
 
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -36,6 +38,10 @@ export type LocalCheck = {
   type: 'local'
   publishedOnly?: boolean
   check: (dir: string) => CheckResult
+  /**
+  repairs a failure, resolving to what it changed
+  */
+  fix?: (dir: string) => string | Promise<string>
 }
 
 /**
@@ -130,6 +136,7 @@ const readmeIncludes = (dir: string, needle: string): boolean => {
 }
 
 const FORGE_WORKFLOW_RE = /uses:\s*lzear\/forge\/\.github\/workflows\/ci\.yml@/
+const FORGE_PRESET = 'github>lzear/forge'
 const FORGE_PRESET_RE = /^github>lzear\/forge(?:$|[#:])/
 
 const callsForgeWorkflow = (dir: string): boolean => {
@@ -221,6 +228,21 @@ const findForgePins = (dir: string): ForgePin[] =>
       }))
       .toArray(),
   )
+
+// rewrites every pin to `release`, resolving to the files it changed
+const repin = (dir: string, release: ForgeRelease): string[] =>
+  forgePinFiles(dir).filter((file) => {
+    const f = path.join(dir, file)
+    const content = readFileSync(f, 'utf8')
+    const pinned = content.replaceAll(
+      FORGE_PIN_RE,
+      (_, pinPath: string) =>
+        `lzear/forge/${pinPath}@${release.sha} # ${release.tag}`,
+    )
+    if (pinned === content) return false
+    writeFileSync(f, pinned, 'utf8')
+    return true
+  })
 
 // size-limit's config files; it also reads a `size-limit` package.json field
 const SIZE_LIMIT_FILE_RE = /^\.size-limit(?:\.json|\.[cm]?[jt]s)?$/
@@ -335,6 +357,30 @@ const RELEASE_AGE: Record<
   yarn: ['.yarnrc.yml', 'npmMinimalAgeGate', 1440],
 }
 
+// how each file-based config writes its line
+const RELEASE_AGE_SEPARATOR: Record<
+  Exclude<PackageManagerName, 'yarn'>,
+  string
+> = { bun: ' = ', npm: '=', pnpm: ': ' }
+
+// replaces the key's line, else adds it (to bunfig.toml's `[install]`)
+const withReleaseAge = (
+  config: string,
+  pm: Exclude<PackageManagerName, 'yarn'>,
+  key: string,
+  value: number,
+): string => {
+  const line = `${key}${RELEASE_AGE_SEPARATOR[pm]}${value}`
+  const existing = new RegExp(String.raw`^${key}\s*[=:].*$`, 'm')
+  if (existing.test(config)) return config.replace(existing, () => line)
+  const install = /^\[install\][ \t]*$/m
+  if (pm === 'bun' && install.test(config))
+    return config.replace(install, (header) => `${header}\n${line}`)
+  const block = pm === 'bun' ? `[install]\n${line}\n` : `${line}\n`
+  if (config.trim() === '') return block
+  return `${config.trimEnd()}\n${pm === 'bun' ? '\n' : ''}${block}`
+}
+
 // yarn's goes through `yarn config`: it defaults to 1 day and takes `3d`;
 // `--json` keeps FORCE_COLOR (concurrently sets it) from coloring the number
 const releaseAgeDays = async (
@@ -368,6 +414,27 @@ const hookInstallGap = (dir: string): string | null => {
   return Array.isArray(trusted) && !trusted.includes('lefthook')
     ? 'add lefthook to trustedDependencies'
     : null
+}
+
+const fixHookInstall = (dir: string): string | null => {
+  if (!hookInstallGap(dir)) return null
+  const file = path.join(dir, 'package.json')
+  const json = readJsonFile(file)
+  if (detectPackageManager(dir).name === 'bun') {
+    json.data.trustedDependencies = [
+      ...(json.data.trustedDependencies as string[]),
+      'lefthook',
+    ]
+    writeJsonFile(file, json)
+    return 'trustedDependencies: + lefthook'
+  }
+  const scripts = (json.data.scripts ?? {}) as Record<string, string>
+  scripts.prepare = scripts.prepare
+    ? `${scripts.prepare} && lefthook install`
+    : 'lefthook install'
+  json.data.scripts = scripts
+  writeJsonFile(file, json)
+  return `prepare: ${scripts.prepare}`
 }
 
 /**
@@ -492,6 +559,13 @@ export const LOCAL_CHECKS: LocalCheck[] = [
         }
       )
     },
+    fix: async (dir) => {
+      const latest = await latestForgeRelease(dir)
+      if (!latest) throw new Error('forge tags unreachable')
+      return repin(dir, latest)
+        .map((file) => `${file} → ${latest.tag}`)
+        .join('\n')
+    },
   },
   {
     id: 'renovate',
@@ -513,6 +587,25 @@ export const LOCAL_CHECKS: LocalCheck[] = [
         }
       )
     },
+    fix: (dir) => {
+      const file = path.join(dir, 'renovate.json')
+      if (!existsSync(file)) {
+        const config = {
+          $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+          extends: [FORGE_PRESET],
+        }
+        writeFileSync(file, `${JSON.stringify(config, null, 2)}\n`, 'utf8')
+        return 'created renovate.json'
+      }
+      const json = readJsonFile(file)
+      const presets = json.data.extends
+      json.data.extends = [
+        ...((Array.isArray(presets) ? presets : []) as unknown[]),
+        FORGE_PRESET,
+      ]
+      writeJsonFile(file, json)
+      return `renovate.json extends: + ${FORGE_PRESET}`
+    },
   },
   {
     id: 'git-hooks',
@@ -528,6 +621,13 @@ export const LOCAL_CHECKS: LocalCheck[] = [
       ].filter((m): m is string => m !== null)
       return missing.length === 0 || { pass: false, detail: missing.join('\n') }
     },
+    fix: async (dir) => {
+      const isMissing = !existsSync(path.join(dir, 'lefthook.yml'))
+      if (isMissing) await syncTemplate(dir, 'lefthook.yml')
+      return [isMissing ? 'created lefthook.yml' : null, fixHookInstall(dir)]
+        .filter((m): m is string => m !== null)
+        .join('\n')
+    },
   },
   {
     id: 'template-sync',
@@ -541,6 +641,13 @@ export const LOCAL_CHECKS: LocalCheck[] = [
         (r) => `${r.file} ${r.status === 'created' ? 'missing' : 'differs'}`,
       )
       return { pass: false, detail: [...files, 'Run: forge sync'].join('\n') }
+    },
+    fix: async (dir) => {
+      const { results } = await syncTemplates({ dir })
+      return results
+        .filter((r) => r.status !== 'unchanged')
+        .map((r) => `${r.file} ${r.status}`)
+        .join('\n')
     },
   },
   {
@@ -707,6 +814,24 @@ export const LOCAL_CHECKS: LocalCheck[] = [
         pass: false,
         detail: `${days} days — set ${key} to ${value} in ${file}`,
       }
+    },
+    fix: async (dir) => {
+      const { name, version } = detectPackageManager(dir)
+      if (name === 'yarn' && version?.startsWith('1.'))
+        throw new Error('Yarn 1 has none; move to Yarn 4')
+      const [file, key, perDay] = RELEASE_AGE[name]
+      if (name === 'yarn') {
+        const gate = `${MIN_RELEASE_AGE_DAYS}d`
+        const r = await run('yarn', ['config', 'set', key, gate], { cwd: dir })
+        if (r.status !== 0)
+          throw new Error(head(r.stdout + r.stderr) || String(r.error))
+        return `${key}: ${gate} in ${file}`
+      }
+      const value = MIN_RELEASE_AGE_DAYS * perDay
+      const f = path.join(dir, file)
+      const config = existsSync(f) ? readFileSync(f, 'utf8') : ''
+      writeFileSync(f, withReleaseAge(config, name, key, value), 'utf8')
+      return `${key}${RELEASE_AGE_SEPARATOR[name]}${value} in ${file}`
     },
   },
 ]

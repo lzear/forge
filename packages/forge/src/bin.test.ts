@@ -214,6 +214,26 @@ describe('forge check', () => {
     expect(json()).toMatchObject({ skipped: [skipped], pass: true })
   })
 
+  const fixed = [
+    { id: 'f0', desc: 'fixed check', pass: true, detail: 'wrote x' },
+    { id: 'f1', desc: 'stuck check', pass: false, detail: 'cannot' },
+  ]
+
+  it('--fix lists the fixes, then the checks', async () => {
+    vi.mocked(checkLocal).mockResolvedValue({ ...report(true), fixed })
+    expect(await run('check', '--fix')).toBe(0)
+    expect(checkLocal).toHaveBeenCalledWith({ skipRemote: false, fix: true })
+    expect(printed()).toMatch(/fixed check \(fixed\)\n\s+wrote x/)
+    expect(printed()).toMatch(/stuck check \(fix failed\)\n\s+cannot/)
+    expect(printed()).toContain('1/1')
+  })
+
+  it('--fix --json adds the fixed list', async () => {
+    vi.mocked(checkLocal).mockResolvedValue({ ...report(false), fixed })
+    expect(await run('check', '--fix', '--json')).toBe(1)
+    expect(json()).toMatchObject({ fixed, pass: false })
+  })
+
   it('fails on an unknown check id', async () => {
     vi.mocked(checkLocal).mockRejectedValue(new Error('Unknown check: zz'))
     expect(await run('check', '--only', 'zz')).toBe(1)
