@@ -56,7 +56,7 @@ An empty reason or an unknown id fails `forge-config`. One run: `forge check --o
 
 | Check              | Fix                                                                                        |
 |--------------------|--------------------------------------------------------------------------------------------|
-| `git-hooks`        | writes `lefthook.yml`; adds `"prepare": "lefthook install"`, or Bun's `trustedDependencies` |
+| `git-hooks`        | writes `lefthook.yml`; chains `lefthook install` onto `prepare` (replacing husky), or Bun's `trustedDependencies` |
 | `renovate`         | creates `renovate.json`, or adds `github>lzear/forge` to `extends`                          |
 | `deps-release-age` | sets the age gate (`bunfig.toml`, `.npmrc`, `pnpm-workspace.yaml`, `yarn config set`)      |
 | `template-sync`    | `forge sync`                                                                               |

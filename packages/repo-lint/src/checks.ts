@@ -429,9 +429,14 @@ const fixHookInstall = (dir: string): string | null => {
     return 'trustedDependencies: + lefthook'
   }
   const scripts = (json.data.scripts ?? {}) as Record<string, string>
-  scripts.prepare = scripts.prepare
-    ? `${scripts.prepare} && lefthook install`
-    : 'lefthook install'
+  // keeps the rest of `prepare`, but not husky: two hook managers clash
+  scripts.prepare = [
+    ...(scripts.prepare ?? '')
+      .split('&&')
+      .map((step) => step.trim())
+      .filter((step) => step && !/^husky\b/.test(step)),
+    'lefthook install',
+  ].join(' && ')
   json.data.scripts = scripts
   writeJsonFile(file, json)
   return `prepare: ${scripts.prepare}`

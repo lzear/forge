@@ -836,10 +836,22 @@ describe('LOCAL_CHECKS', () => {
         write(
           dir,
           'package.json',
-          JSON.stringify({ scripts: { prepare: 'husky' } }),
+          JSON.stringify({ scripts: { prepare: 'yarn build' } }),
         )
         expect(await fix('git-hooks', dir)).toBe(
-          'prepare: husky && lefthook install',
+          'prepare: yarn build && lefthook install',
+        )
+        expect(await check('git-hooks', dir)).toBe(true)
+      })
+      it('replaces husky in the prepare script', async () => {
+        write(dir, 'lefthook.yml')
+        write(
+          dir,
+          'package.json',
+          JSON.stringify({ scripts: { prepare: 'husky install && tsc' } }),
+        )
+        expect(await fix('git-hooks', dir)).toBe(
+          'prepare: tsc && lefthook install',
         )
         expect(await check('git-hooks', dir)).toBe(true)
       })
