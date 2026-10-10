@@ -6,6 +6,7 @@ import { run as ncuRun } from 'npm-check-updates'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   detectPackageManager,
+  getWorkspaceDirectories,
   installCommands,
   runUpdate,
   type UpdateResult,
@@ -88,6 +89,16 @@ const resultById = (
   results: UpdateResult[],
   id: string,
 ): UpdateResult | undefined => results.find((r) => r.id === id)
+
+// a temp root whose package.json is `root`, with a package at each path
+const layout = (root: object, packages: string[]): string => {
+  const dir = tmpDir()
+  write(dir, 'package.json', JSON.stringify(root))
+  for (const p of packages) write(dir, `${p}/package.json`, '{}')
+  return dir
+}
+const relative = (dir: string): string[] =>
+  getWorkspaceDirectories(dir).map((d) => path.relative(dir, d))
 
 // ── detectPackageManager ─────────────────────────────────────────────────────
 
@@ -199,6 +210,68 @@ describe('installCommands', () => {
 
 // ── runUpdate ────────────────────────────────────────────────────────────────
 
+// ── getWorkspaceDirectories ──────────────────────────────────────────────────
+
+describe('getWorkspaceDirectories', () => {
+  it('resolves dir/* and literal paths, sorted, skipping dirs without a package.json', () => {
+    const dir = layout({ workspaces: ['tools/cli', 'packages/*'] }, [
+      'packages/b',
+      'packages/a',
+      'tools/cli',
+    ])
+    mkdirSync(path.join(dir, 'packages/empty'))
+    expect(relative(dir)).toEqual(['packages/a', 'packages/b', 'tools/cli'])
+  })
+
+  it('reads { packages } and resolves ** without node_modules', () => {
+    const dir = layout({ workspaces: { packages: ['apps/**'] } }, [
+      'apps/web',
+      'apps/group/api',
+      'apps/web/node_modules/dep',
+    ])
+    expect(relative(dir)).toEqual(['apps/group/api', 'apps/web'])
+  })
+
+  it('excludes ! negations', () => {
+    const dir = layout(
+      { workspaces: ['packages/*', './packages/*/', '!packages/legacy'] },
+      ['packages/a', 'packages/legacy'],
+    )
+    expect(relative(dir)).toEqual(['packages/a'])
+  })
+
+  it("reads pnpm-workspace.yaml's packages list", () => {
+    const dir = layout({}, ['packages/a', 'apps/web', 'apps/test/e2e'])
+    write(
+      dir,
+      'pnpm-workspace.yaml',
+      [
+        '# workspace',
+        'packages:',
+        "  - 'packages/*'",
+        '  - "apps/**" # all apps',
+        '',
+        '  - !apps/test/**',
+        'catalog:',
+        '  - not/a/package',
+        '',
+      ].join('\n'),
+    )
+    expect(relative(dir)).toEqual(['apps/web', 'packages/a'])
+  })
+
+  it('prefers package.json workspaces over pnpm-workspace.yaml', () => {
+    const dir = layout({ workspaces: ['packages/*'] }, ['packages/a', 'apps/b'])
+    write(dir, 'pnpm-workspace.yaml', 'packages:\n  - apps/*\n')
+    expect(relative(dir)).toEqual(['packages/a'])
+  })
+
+  it('returns nothing without workspaces', () => {
+    expect(relative(layout({}, ['packages/a']))).toEqual([])
+    expect(getWorkspaceDirectories(tmpDir())).toEqual([])
+  })
+})
+
 describe('runUpdate', () => {
   let dir: string
   beforeEach(() => {
@@ -280,6 +353,16 @@ describe('runUpdate', () => {
     )
     mockRegistry({ npm: '11.0.0' })
     vi.mocked(ncuRun).mockResolvedValue({})
+    await runUpdate({ dir, dry: true })
+    expect(vi.mocked(ncuRun)).toHaveBeenCalledWith(
+      expect.objectContaining({ workspaces: true, root: true }),
+    )
+  })
+
+  it('uses workspaces mode for a pnpm-workspace.yaml', async () => {
+    write(dir, 'package.json', JSON.stringify({}))
+    write(dir, 'pnpm-workspace.yaml', 'packages:\n  - packages/*\n')
+    mockRegistry({})
     await runUpdate({ dir, dry: true })
     expect(vi.mocked(ncuRun)).toHaveBeenCalledWith(
       expect.objectContaining({ workspaces: true, root: true }),

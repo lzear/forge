@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, globSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { run as ncuRun } from 'npm-check-updates'
@@ -102,50 +102,80 @@ export const readPackage = (dir: string): Record<string, unknown> | null => {
   }
 }
 
+// pnpm-workspace.yaml's `packages:`, a flat list of (quoted) globs
+const readPnpmPatterns = (dir: string): string[] => {
+  const file = path.join(dir, 'pnpm-workspace.yaml')
+  if (!existsSync(file)) return []
+  const patterns: string[] = []
+  let isPackages = false
+  for (const line of readFileSync(file, 'utf8').split('\n')) {
+    if (/^\s*(?:#.*)?$/.test(line)) continue
+    if (/^\S/.test(line)) isPackages = /^packages:\s*(?:#.*)?$/.test(line)
+    else if (isPackages && line.trimStart().startsWith('-')) {
+      const item = line.trim().slice(1).split('#', 1)[0]?.trim() ?? ''
+      const pattern = /^(["'])(.*)\1$/.exec(item)?.[2] ?? item
+      if (pattern) patterns.push(pattern)
+    }
+  }
+  return patterns
+}
+
+/**
+Workspace globs from `package.json` `workspaces` (array or `{ packages }`),
+else, given the root `dir`, `pnpm-workspace.yaml`'s `packages:`.
+*/
 export const getWorkspacePatterns = (
   package_: Record<string, unknown>,
+  dir?: string,
 ): string[] => {
   const ws = package_.workspaces
   if (Array.isArray(ws)) return ws as string[]
   const wsPackage = ws as Record<string, unknown> | undefined
-  return Array.isArray(wsPackage?.packages)
-    ? (wsPackage.packages as string[])
-    : []
+  if (Array.isArray(wsPackage?.packages)) return wsPackage.packages as string[]
+  return dir ? readPnpmPatterns(dir) : []
 }
 
-const patternToBase = (rootDir: string, pattern: string): string | null => {
-  const parts = pattern.split('/')
-  if (parts.length === 2 && parts[1] === '*')
-    return path.join(rootDir, parts[0] ?? '')
-  return parts.length === 1 && parts[0] === '*' ? rootDir : null
-}
+const globDirectories = (rootDir: string, patterns: string[]): string[] =>
+  globSync(
+    patterns.map((p) =>
+      path.posix.normalize(p.endsWith('/') ? p.slice(0, -1) : p),
+    ),
+    {
+      cwd: rootDir,
+      exclude: (p) => path.basename(p) === 'node_modules',
+    },
+  )
 
+/**
+The workspace package directories, sorted: those the globs match (`!`
+negations excluding) that hold a `package.json`.
+*/
 export const getWorkspaceDirectories = (rootDir: string): string[] => {
   const package_ = readPackage(rootDir)
   if (!package_) return []
-  const directories: string[] = []
-  for (const pattern of getWorkspacePatterns(package_)) {
-    // a glob-free pattern names the package directory itself
-    if (!pattern.includes('*')) {
-      const packageDir = path.join(rootDir, pattern)
-      if (existsSync(packageDir)) directories.push(packageDir)
-      continue
-    }
-    const base = patternToBase(rootDir, pattern)
-    if (!base || !existsSync(base)) continue
-    const entries = readdirSync(base, { withFileTypes: true })
-    for (const entry of entries)
-      if (entry.isDirectory()) directories.push(path.join(base, entry.name))
-  }
-  return directories
+  const patterns = getWorkspacePatterns(package_, rootDir)
+  const excluded = new Set(
+    globDirectories(
+      rootDir,
+      patterns.filter((p) => p.startsWith('!')).map((p) => p.slice(1)),
+    ),
+  )
+  const included = globDirectories(
+    rootDir,
+    patterns.filter((p) => !p.startsWith('!')),
+  ).filter(
+    (d) =>
+      !excluded.has(d) && existsSync(path.join(rootDir, d, 'package.json')),
+  )
+  return [...new Set(included)]
+    .toSorted((a, b) => a.localeCompare(b))
+    .map((d) => path.join(rootDir, d))
 }
 
 // ncu's names for the workspaces, or null when it may take them all: a git
 // submodule's manifest is its own repo's to update
 const ownWorkspaces = (dir: string): string[] | null => {
-  const directories = getWorkspaceDirectories(dir).filter((d) =>
-    existsSync(path.join(d, 'package.json')),
-  )
+  const directories = getWorkspaceDirectories(dir)
   const own = directories.filter((d) => !existsSync(path.join(d, '.git')))
   if (own.length === directories.length) return null
   return own.map((d) => {
@@ -262,7 +292,8 @@ export const stepDeps = async (
 ): Promise<UpdateResult> => {
   const base = { id: 'deps', desc: 'dependency ranges (ncu)' }
   try {
-    const isWorkspaces = getWorkspacePatterns(readPackage(dir) ?? {}).length > 0
+    const isWorkspaces =
+      getWorkspacePatterns(readPackage(dir) ?? {}, dir).length > 0
     const own = isWorkspaces ? ownWorkspaces(dir) : null
     const rc = await loadNcuRc(dir)
     const result = (await ncuRun({
@@ -584,11 +615,15 @@ export const runUpdate = async (
   } = options
   const packageManager = detectPackageManager(dir)
 
+  // stepDeps and stepPackageManager both write package.json: deps first, the
+  // rest (network-bound, other files) at once
   const results = [
     await stepDeps(dir, isDry),
-    await stepPackageManager(dir, isDry),
-    await stepNodeVersion(dir, isDry),
-    await stepBunVersion(dir, isDry),
+    ...(await Promise.all([
+      stepPackageManager(dir, isDry),
+      stepNodeVersion(dir, isDry),
+      stepBunVersion(dir, isDry),
+    ])),
     stepLicenseYear(dir, isDry),
   ]
   if (isInstall && !isDry) results.push(stepInstall(dir, packageManager))
