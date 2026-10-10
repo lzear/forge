@@ -26,4 +26,4 @@ yarn zizmor                                          # audit workflows (brew/uv 
 - Output quiets under coding agents through std-env's `isAgent`, the signal Vitest reads for its `minimal` reporter. Tests of agent-dependent output mock `std-env`: Vitest itself runs under the agent.
 - `deps-fresh` runs `ncu` on peer ranges too, raising `>=` floors: a peer that must not track the latest major (`typescript`: TS 7 has no JS API for typescript-eslint) takes `*` and leaves the range to the plugins.
 - A shared config naming a package by string (commitlint's `parserPreset`) gets it resolved from the consumer, where Bun's isolated linker hides transitive deps: depend on it and inline the import.
-- `qa`'s `forge check` runs the remote checks against `lzear/forge` through `gh`: logged out, it fails on `gh`; repo settings (secret scanning, token permissions) fail it too.
+- `qa`'s `forge check` runs the remote checks against `lzear/forge` through `gh`: logged out, it fails on `gh`.

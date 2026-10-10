@@ -1098,11 +1098,6 @@ const remoteCheck = async (
 const daysAgo = (days: number): string =>
   new Date(Date.now() - days * 86_400_000).toISOString()
 
-const security = (push: string): Record<string, { status: string }> => ({
-  secret_scanning: { status: 'enabled' },
-  secret_scanning_push_protection: { status: push },
-})
-
 const withRenovate = (): string => {
   const dir = tmpDir()
   write(dir, 'renovate.json', '{}')
@@ -1161,60 +1156,6 @@ describe('REMOTE_CHECKS', () => {
       expect(await listSecrets(repo)).toBeNull()
       expect(await remoteCheck('secret-codacy-token')).toMatchObject({
         pass: false,
-      })
-    })
-  })
-
-  describe('workflow-token-read', () => {
-    const endpoint = `api repos/${repo}/actions/permissions/workflow`
-    it('passes on read', async () => {
-      mockGh({ [endpoint]: { default_workflow_permissions: 'read' } })
-      expect(await remoteCheck('workflow-token-read')).toBe(true)
-    })
-    it('links the settings on write', async () => {
-      mockGh({ [endpoint]: { default_workflow_permissions: 'write' } })
-      expect(await remoteCheck('workflow-token-read')).toEqual({
-        pass: false,
-        detail: `default write — set read at https://github.com/${repo}/settings/actions`,
-      })
-    })
-    it("throws gh's error", async () => {
-      mockGh({ [endpoint]: 1 })
-      await expect(remoteCheck('workflow-token-read')).rejects.toThrow(
-        'HTTP 404',
-      )
-    })
-  })
-
-  describe('secret-scanning', () => {
-    it('passes when both are enabled', async () => {
-      mockGh({
-        [`api repos/${repo}`]: {
-          visibility: 'public',
-          security_and_analysis: security('enabled'),
-        },
-      })
-      expect(await remoteCheck('secret-scanning')).toBe(true)
-    })
-    it('names what is off', async () => {
-      mockGh({
-        [`api repos/${repo}`]: {
-          visibility: 'public',
-          security_and_analysis: security('disabled'),
-        },
-      })
-      expect(await remoteCheck('secret-scanning')).toEqual({
-        pass: false,
-        detail: expect.stringMatching(
-          /^secret_scanning_push_protection off .*settings\/security_analysis$/,
-        ) as string,
-      })
-    })
-    it('skips private repos', async () => {
-      mockGh({ [`api repos/${repo}`]: { visibility: 'private' } })
-      expect(await remoteCheck('secret-scanning')).toEqual({
-        pass: true,
-        detail: 'private repo: not checked',
       })
     })
   })

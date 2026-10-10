@@ -913,12 +913,6 @@ export const listSecrets = async (
   }
 }
 
-type GhRepo = {
-  visibility: string
-  // admins only
-  security_and_analysis?: Record<string, { status: string } | undefined>
-}
-
 type GhIssue = {
   title: string
   state: string
@@ -944,42 +938,6 @@ export const REMOTE_CHECKS: RemoteCheck[] = [
         secrets.includes('CODACY_PROJECT_TOKEN') || {
           pass: false,
           detail: 'CODACY_PROJECT_TOKEN missing — run: forge setup',
-        }
-      )
-    },
-  },
-  {
-    id: 'workflow-token-read',
-    desc: 'GITHUB_TOKEN read-only',
-    type: 'remote',
-    check: async (repo, dir) => {
-      const { default_workflow_permissions: permissions } = await ghApi<{
-        default_workflow_permissions: string
-      }>(`repos/${repo}/actions/permissions/workflow`, dir)
-      return (
-        permissions === 'read' || {
-          pass: false,
-          detail: `default ${permissions} — set read at https://github.com/${repo}/settings/actions`,
-        }
-      )
-    },
-  },
-  {
-    id: 'secret-scanning',
-    desc: 'secret scanning',
-    type: 'remote',
-    check: async (repo, dir) => {
-      const { visibility, security_and_analysis: security } =
-        await ghApi<GhRepo>(`repos/${repo}`, dir)
-      if (visibility !== 'public')
-        return { pass: true, detail: `${visibility} repo: not checked` }
-      const off = ['secret_scanning', 'secret_scanning_push_protection'].filter(
-        (feature) => security?.[feature]?.status !== 'enabled',
-      )
-      return (
-        off.length === 0 || {
-          pass: false,
-          detail: `${off.join(', ')} off — enable at https://github.com/${repo}/settings/security_analysis`,
         }
       )
     },

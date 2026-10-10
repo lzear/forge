@@ -51,12 +51,10 @@ const init = await initRepo({ dir, kind, react, packageManager, dry, version }) 
 | `deps-fresh`          | dependencies up to date (`ncu`, honors `.ncurc`)                                    |
 | `deps-release-age`    | package manager installs only versions ≥ 3 days old                                 |
 | `secret-codacy-token` | GitHub secret `CODACY_PROJECT_TOKEN` is set                                         |
-| `workflow-token-read` | default `GITHUB_TOKEN` permissions are read-only                                    |
-| `secret-scanning`     | secret scanning & push protection on (public repos)                                 |
 | `renovate-active`     | with `renovate.json`: open Dependency Dashboard, or a `renovate[bot]` PR in 60 days |
 | `forge-config`        | the `forge` field below is valid (only when present)                                |
 
-The `secret-*`, `workflow-*` and `renovate-active` checks query GitHub through `gh` (`skipRemote`, `--skip-remote` skips them); with `gh` missing or logged out, a single `gh` result fails instead.
+The `secret-codacy-token` and `renovate-active` checks query GitHub through `gh` (`skipRemote`, `--skip-remote` skips them); with `gh` missing or logged out, a single `gh` result fails instead.
 
 ## Skipping checks
 
