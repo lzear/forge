@@ -30,7 +30,7 @@ yarn add -D @lzear/forge   # or bun add -D
 yarn forge init            # --app, --react, --bun|--yarn, --dry
 ```
 
-`forge init` writes what is missing, never overwriting: `package.json` scripts and `packageManager` (the newest past the age gate), `tsconfig.json`, ESLint, Vitest and commitlint configs extending forge's ([configs](packages/configs), [ESLint config](packages/eslint-config)), `renovate.json`, `.github/workflows/main.yml` calling [CI](#ci) (and release, for a Yarn library) pinned to the release, `.gitignore`, LICENSE and a badged README (libraries), the release-age gate and `forge sync`'s files. It prints the steps left (dev deps, `forge setup`, the Codacy project, npm's trusted publisher), then runs `forge check --skip-remote` ([checks](packages/repo-lint#checks); `--fix` repairs some).
+`forge init` writes what is missing, never overwriting: `package.json` scripts and `packageManager` (the newest past the age gate), `tsconfig.json`, ESLint, Vitest and commitlint configs extending forge's ([configs](packages/configs), [ESLint config](packages/eslint-config)), `renovate.json`, `.github/workflows/main.yml` calling [CI](#ci) (and release, for a Yarn library) pinned to the release, `.gitignore`, LICENSE and a badged README (libraries), the release-age gate and `forge sync`'s files. It prints the steps left (dev deps, npm's trusted publisher, optional Codacy), then runs `forge check --skip-remote` ([checks](packages/repo-lint#checks); `--fix` repairs some).
 
 `lefthook.yml` runs `eslint --fix` on staged files, gitleaks on staged changes (skipped when not installed) and commitlint, under any package manager.
 
@@ -38,7 +38,7 @@ Complements [e18e](https://e18e.dev): the ESLint config runs `e18e/ban-dependenc
 
 ## CI
 
-Call the reusable workflow, SHA-pinned (renovate bumps it). It runs the `build`, `typecheck`, `lint` and `test` scripts (tests with coverage), uploads coverage to Codacy when `CODACY_PROJECT_TOKEN` is set, audits workflows with zizmor and gates on a gitleaks secret scan of the pushed or PR commit range. A `bun.lock` switches it to Bun.
+Call the reusable workflow, SHA-pinned (renovate bumps it). It runs the `build`, `typecheck`, `lint` and `test` scripts (tests with coverage), uploads coverage to Codacy when `CODACY_PROJECT_TOKEN` is set (optional: add the repo on app.codacy.com, then `forge setup`) and audits workflows with zizmor. gitleaks gates in CI, on the pushed or PR commit range, and at pre-commit. A `bun.lock` switches it to Bun.
 
 ```yaml
 on:

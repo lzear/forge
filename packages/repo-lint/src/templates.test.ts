@@ -1,4 +1,10 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -52,12 +58,17 @@ describe('syncTemplates', () => {
     expect(again.results).toEqual(results)
   })
 
-  it('leaves .codacy.yml to repos that publish', async () => {
-    write(dir, 'package.json', JSON.stringify({ private: true }))
-    const app = await syncTemplates({ dir, dry: true })
-    expect(app.results.map((r) => r.file)).not.toContain('.codacy.yml')
-    const lib = await syncTemplates({ dir, dry: true, published: true })
-    expect(lib.results.map((r) => r.file)).toContain('.codacy.yml')
+  it('updates .codacy.yml only where it exists', async () => {
+    write(dir, 'package.json', JSON.stringify({ name: 'lib' }))
+    const { results } = await syncTemplates({ dir })
+    expect(results.map((r) => r.file)).not.toContain('.codacy.yml')
+    expect(existsSync(path.join(dir, '.codacy.yml'))).toBe(false)
+    write(dir, '.codacy.yml', 'old')
+    const again = await syncTemplates({ dir })
+    expect(again.results).toContainEqual({
+      file: '.codacy.yml',
+      status: 'updated',
+    })
   })
 
   it("keeps forge's template/ copies for older CLIs", async () => {
@@ -73,8 +84,8 @@ describe('syncTemplates', () => {
     )
     const { results } = await syncTemplates({ dir })
     expect(results.map((r) => r.file)).toContain('template/lefthook.yml')
-    expect(readFileSync(path.join(dir, 'template/.codacy.yml'), 'utf8')).toBe(
-      template('codacy.yml'),
+    expect(readFileSync(path.join(dir, 'template/lefthook.yml'), 'utf8')).toBe(
+      template('lefthook.yml'),
     )
   })
 })

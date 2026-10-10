@@ -76,7 +76,7 @@ describe('initRepo', () => {
       ],
     })
     expect(results.map((r) => r.id)).toEqual(
-      expect.arrayContaining(['codacy', 'git-hooks', 'pkg-publint']),
+      expect.arrayContaining(['git-hooks', 'pkg-publint']),
     )
     expect(results.filter((r) => !r.pass)).toEqual([])
   })
@@ -103,7 +103,6 @@ describe('initRepo', () => {
       '.editorconfig',
       'lefthook.yml',
       '.github/zizmor.yml',
-      '.codacy.yml',
     ])
     const name = path.basename(dir)
     expect(readJson(dir, 'package.json')).toMatchObject({
@@ -141,8 +140,7 @@ describe('initRepo', () => {
     expect(next).toEqual([
       expect.stringMatching(/^yarn add -D @lzear\/forge .* @changesets\/cli$/),
       'yarn changeset init',
-      expect.stringContaining('CODACY_PROJECT_ID'),
-      'forge setup (CODACY_PROJECT_TOKEN secret)',
+      'optional: add the repo on app.codacy.com, then `forge setup`',
       `npm trusted publisher: lzear/${name} / main.yml, once the package exists`,
     ])
   })

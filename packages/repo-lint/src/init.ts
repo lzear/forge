@@ -255,8 +255,7 @@ const nextSteps = (
     ...(release
       ? []
       : ['forge tags unreachable, workflows on @main: forge check --fix']),
-    `Codacy: add ${repo} at https://app.codacy.com${isLib ? ', put its project id in the README badges (CODACY_PROJECT_ID)' : ''}`,
-    'forge setup (CODACY_PROJECT_TOKEN secret)',
+    'optional: add the repo on app.codacy.com, then `forge setup`',
     ...(isRelease
       ? [`npm trusted publisher: ${repo} / main.yml, once the package exists`]
       : []),
@@ -333,11 +332,7 @@ export const initRepo = async (
   const copy = async (file: string, template: string): Promise<InitResult> =>
     writeNew(context, file, await render(template, variables))
   const readme = await render('init/README.md', variables)
-  const sync = await syncTemplates({
-    dir,
-    dry: context.isDry,
-    published: context.isLib,
-  })
+  const sync = await syncTemplates({ dir, dry: context.isDry })
 
   const results = [
     await writePackage(context),

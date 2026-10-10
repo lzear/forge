@@ -490,26 +490,6 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     check: (dir) => readmeIncludes(dir, 'shields.io/npm/v/'),
   },
   {
-    id: 'codacy',
-    desc: 'Codacy',
-    type: 'local',
-    publishedOnly: true,
-    check: (dir) => {
-      const missing = [
-        readmeIncludes(dir, 'project/badge/Grade/')
-          ? null
-          : 'grade badge missing in README',
-        readmeIncludes(dir, 'project/badge/Coverage/')
-          ? null
-          : 'coverage badge missing in README',
-        existsSync(path.join(dir, '.codacy.yml'))
-          ? null
-          : '.codacy.yml missing',
-      ].filter((m): m is string => m !== null)
-      return missing.length === 0 || { pass: false, detail: missing.join('\n') }
-    },
-  },
-  {
     id: 'license',
     desc: 'LICENSE',
     type: 'local',
@@ -926,22 +906,6 @@ const RENOVATE_WINDOW_DAYS = 60
 Checks run against the GitHub repo.
 */
 export const REMOTE_CHECKS: RemoteCheck[] = [
-  {
-    id: 'secret-codacy-token',
-    desc: 'Codacy secret',
-    type: 'remote',
-    publishedOnly: true,
-    check: async (repo, dir) => {
-      const secrets = await listSecrets(repo, dir)
-      if (!secrets) return { pass: false, detail: 'gh secret list failed' }
-      return (
-        secrets.includes('CODACY_PROJECT_TOKEN') || {
-          pass: false,
-          detail: 'CODACY_PROJECT_TOKEN missing — run: forge setup',
-        }
-      )
-    },
-  },
   {
     id: 'renovate-active',
     desc: 'Renovate active',

@@ -1,5 +1,11 @@
 import * as childProcess from 'node:child_process'
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { run as ncuRun } from 'npm-check-updates'
@@ -146,32 +152,6 @@ describe('LOCAL_CHECKS', () => {
     it('passes when present', async () => {
       write(dir, 'README.md', '[![npm](https://img.shields.io/npm/v/my-pkg)]')
       expect(await check('readme-npm-badge', dir)).toBe(true)
-    })
-  })
-
-  describe('codacy', () => {
-    it('passes when both badges and config are present', async () => {
-      write(
-        dir,
-        'README.md',
-        '![Grade](https://app.codacy.com/project/badge/Grade/abc)\n' +
-          '![Coverage](https://app.codacy.com/project/badge/Coverage/abc)',
-      )
-      write(dir, '.codacy.yml', 'engines:')
-      expect(await check('codacy', dir)).toBe(true)
-    })
-    it('fails listing every missing piece', async () => {
-      write(
-        dir,
-        'README.md',
-        '![Grade](https://app.codacy.com/project/badge/Grade/abc)',
-      )
-      const result = await check('codacy', dir)
-      expect(result).toMatchObject({ pass: false })
-      const { detail } = result as { detail: string }
-      expect(detail).toContain('coverage badge missing')
-      expect(detail).toContain('.codacy.yml missing')
-      expect(detail).not.toContain('grade badge')
     })
   })
 
@@ -445,15 +425,15 @@ describe('LOCAL_CHECKS', () => {
         ].join('\n'),
       })
     })
-    it('wants .codacy.yml only where a package is published', async () => {
-      await syncTemplates({ dir })
+    it('updates .codacy.yml only where it exists', async () => {
       write(dir, 'package.json', JSON.stringify({ name: 'lib' }))
+      await syncTemplates({ dir })
+      expect(existsSync(path.join(dir, '.codacy.yml'))).toBe(false)
+      write(dir, '.codacy.yml', 'old')
       expect(await check('template-sync', dir)).toEqual({
         pass: false,
-        detail: '.codacy.yml missing\nRun: forge sync',
+        detail: '.codacy.yml differs\nRun: forge sync',
       })
-      write(dir, 'package.json', JSON.stringify({ private: true }))
-      expect(await check('template-sync', dir)).toBe(true)
     })
     it('passes once synced', async () => {
       await syncTemplates({ dir })
@@ -1086,12 +1066,11 @@ const mockGh = (answers: Record<string, unknown>): void => {
   }) as never)
 }
 
-const remoteCheck = async (
-  id: string,
+const renovateActive = async (
   dir = tmpDir(),
 ): Promise<boolean | CheckDetail> => {
-  const c = REMOTE_CHECKS.find((c) => c.id === id)
-  if (!c) throw new Error(`unknown check: ${id}`)
+  const c = REMOTE_CHECKS.find((c) => c.id === 'renovate-active')
+  if (!c) throw new Error('unknown check: renovate-active')
   return c.check(repo, dir)
 }
 
@@ -1139,30 +1118,20 @@ describe('REMOTE_CHECKS', () => {
     })
   })
 
-  describe('secret-codacy-token', () => {
-    it('passes when secret present', async () => {
+  describe('listSecrets', () => {
+    it('lists secret names', async () => {
       mockGh({ 'secret list': [{ name: 'CODACY_PROJECT_TOKEN' }] })
-      expect(await remoteCheck('secret-codacy-token')).toBe(true)
+      expect(await listSecrets(repo)).toEqual(['CODACY_PROJECT_TOKEN'])
     })
-    it('fails when secret absent', async () => {
-      mockGh({ 'secret list': [{ name: 'OTHER_TOKEN' }] })
-      expect(await remoteCheck('secret-codacy-token')).toEqual({
-        pass: false,
-        detail: expect.stringContaining('forge setup') as string,
-      })
-    })
-    it('fails when gh fails', async () => {
+    it('returns null when gh fails', async () => {
       mockGh({ 'secret list': 1 })
       expect(await listSecrets(repo)).toBeNull()
-      expect(await remoteCheck('secret-codacy-token')).toMatchObject({
-        pass: false,
-      })
     })
   })
 
   describe('renovate-active', () => {
     it('skips repos without renovate.json', async () => {
-      expect(await remoteCheck('renovate-active')).toEqual({
+      expect(await renovateActive()).toEqual({
         pass: true,
         detail: 'no renovate.json',
       })
@@ -1170,7 +1139,7 @@ describe('REMOTE_CHECKS', () => {
     })
     it('passes on an open Dependency Dashboard', async () => {
       answerIssues([issue('Dependency Dashboard', 'open', 400)])
-      expect(await remoteCheck('renovate-active', withRenovate())).toBe(true)
+      expect(await renovateActive(withRenovate())).toBe(true)
       expect(vi.mocked(childProcess.execFile)).toHaveBeenCalledWith(
         'gh',
         [
@@ -1183,11 +1152,11 @@ describe('REMOTE_CHECKS', () => {
     })
     it('passes on a recent PR', async () => {
       answerIssues([pr(10)])
-      expect(await remoteCheck('renovate-active', withRenovate())).toBe(true)
+      expect(await renovateActive(withRenovate())).toBe(true)
     })
     it('fails on a closed dashboard and old PRs', async () => {
       answerIssues([issue('Dependency Dashboard', 'closed', 1), pr(61)])
-      expect(await remoteCheck('renovate-active', withRenovate())).toEqual({
+      expect(await renovateActive(withRenovate())).toEqual({
         pass: false,
         detail: expect.stringContaining('60 days') as string,
       })
