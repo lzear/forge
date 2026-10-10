@@ -4,6 +4,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { run as ncuRun } from 'npm-check-updates'
+import { coerce, gt, maxSatisfying } from 'semver'
 
 /**
 Package managers `forge update` can install with.
@@ -56,7 +57,7 @@ const LOCKFILES: [string, PackageManagerName][] = [
   ['package-lock.json', 'npm'],
 ]
 
-const PM_FIELD_RE = /^(npm|yarn|pnpm|bun)@([^+\s]+)/
+const PM_FIELD_RE = /^(npm|yarn|pnpm|bun)@([^+\s]+)(\+\S+)?/
 
 // matches the package manager's age gate, so ncu never picks a version the
 // install then rejects; own packages skip both
@@ -64,6 +65,8 @@ export const MIN_RELEASE_AGE_DAYS = 3
 const OWN_PACKAGE_RE = /^(?:@lzear\/|(?:votes|eslint-plugin-ninja)$)/
 const cooldown = (name: string): number =>
   OWN_PACKAGE_RE.test(name) ? 0 : MIN_RELEASE_AGE_DAYS
+const isOldEnough = (date: string): boolean =>
+  Date.now() - Date.parse(date) >= MIN_RELEASE_AGE_DAYS * 86_400_000
 
 type JsonFile = {
   data: Record<string, unknown>
@@ -184,11 +187,41 @@ const pmRegistryName = (
 ): string =>
   name === 'yarn' && currentMajor >= 2 ? '@yarnpkg%2Fcli-dist' : name
 
-const latestPackageVersion = async (name: string): Promise<string> => {
-  const data = await fetchJson(`https://registry.npmjs.org/${name}/latest`)
-  if (typeof data.version !== 'string')
-    throw new TypeError(`no version in registry response for ${name}`)
-  return data.version
+type Release = { version: string; integrity: string | undefined }
+
+type Packument = {
+  'dist-tags'?: { latest?: string }
+  time?: Record<string, string>
+  versions?: Record<string, { dist?: { integrity?: string } }>
+}
+
+// the newest version up to `latest` past the age gate, from the full packument
+// (the abbreviated one has no publish times)
+const gatedRelease = async (name: string): Promise<Release> => {
+  const data = (await fetchJson(
+    `https://registry.npmjs.org/${name}`,
+  )) as Packument
+  const latest = data['dist-tags']?.latest
+  if (!latest) throw new TypeError(`no latest version for ${name}`)
+  const time = data.time ?? {}
+  const old = Object.keys(data.versions ?? {}).filter((v) => {
+    const date = time[v]
+    return date !== undefined && isOldEnough(date)
+  })
+  const version = maxSatisfying(old, `<=${latest}`)
+  if (!version)
+    throw new Error(
+      `no ${name} release is ${MIN_RELEASE_AGE_DAYS} days old yet`,
+    )
+  return { version, integrity: data.versions?.[version]?.dist?.integrity }
+}
+
+// corepack's `+sha512.<hex>` from the packument's `sha512-<base64>`
+const corepackHash = ({ version, integrity }: Release): string => {
+  const [algorithm, digest] = integrity?.split('-', 2) ?? []
+  if (algorithm !== 'sha512' || !digest)
+    throw new Error(`no sha512 integrity for ${version}`)
+  return `+sha512.${Buffer.from(digest, 'base64').toString('hex')}`
 }
 
 const NCURC_FILES = [
@@ -293,21 +326,23 @@ const stepPackageManager = async (
         changed: false,
         detail: `unrecognized: ${json.data.packageManager}`,
       }
-    const [, name, current] = match as unknown as [
+    const [, name, current, hash] = match as unknown as [
       string,
       PackageManagerName,
       string,
+      string | undefined,
     ]
     const major = Number(current.split('.', 1)[0])
-    const latest = await latestPackageVersion(pmRegistryName(name, major))
-    if (latest === current)
+    const release = await gatedRelease(pmRegistryName(name, major))
+    const latest = release.version
+    if (!gt(latest, current))
       return {
         ...base,
         pass: true,
         changed: false,
         detail: `${name}@${current} is latest`,
       }
-    json.data.packageManager = `${name}@${latest}`
+    json.data.packageManager = `${name}@${latest}${hash ? corepackHash(release) : ''}`
     if (!isDry) writeJsonFile(file, json)
     return {
       ...base,
@@ -336,7 +371,9 @@ const updateVersionFile = (
   // keep the file's precision: v22 → v26, not v26.3.0
   const parts = version.split('.').length
   const next = prefix + latest.split('.').slice(0, parts).join('.')
-  if (current === next)
+  // the gated release can trail a hand-picked one: never downgrade
+  const [from, to] = [coerce(version), coerce(next)]
+  if (!from || !to || !gt(to, from))
     return { changed: false, detail: `${path.basename(file)} is latest` }
   if (!isDry)
     writeFileSync(file, next + (raw.endsWith('\n') ? '\n' : ''), 'utf8')
@@ -364,10 +401,13 @@ const stepNodeVersion = async (
       )
     const index = (await response.json()) as {
       version: string
+      date: string
       lts: string | false
     }[]
-    const lts = index.find((v) => v.lts)
-    if (!lts) throw new Error('no LTS release found')
+    // newest first
+    const lts = index.find((v) => v.lts && isOldEnough(v.date))
+    if (!lts)
+      throw new Error(`no LTS release is ${MIN_RELEASE_AGE_DAYS} days old yet`)
     const latest = lts.version.replace(/^v/, '')
     const results = files.map((f) => updateVersionFile(f, latest, isDry))
     return {
@@ -390,7 +430,7 @@ const stepBunVersion = async (
   if (!existsSync(file))
     return { ...base, pass: true, changed: false, detail: 'no version file' }
   try {
-    const latest = await latestPackageVersion('bun')
+    const { version: latest } = await gatedRelease('bun')
     const result = updateVersionFile(file, latest, isDry)
     return { ...base, pass: true, ...result }
   } catch (error) {

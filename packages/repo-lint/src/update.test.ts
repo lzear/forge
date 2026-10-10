@@ -32,23 +32,53 @@ const write = (dir: string, file: string, content = ''): void => {
 const read = (dir: string, file: string): string =>
   readFileSync(path.join(dir, file), 'utf8')
 
-const mockRegistry = (versions: Record<string, string>): void => {
+const daysAgo = (days: number): string =>
+  new Date(Date.now() - days * 86_400_000).toISOString()
+
+// sha512-<base64> of a fake tarball, `seed` repeated
+const integrity = (seed: number): string =>
+  `sha512-${Buffer.alloc(64, seed).toString('base64')}`
+
+// a packument whose releases are { version: age in days }, latest last
+const packument = (releases: Record<string, number>): object => ({
+  'dist-tags': { latest: Object.keys(releases).at(-1) },
+  time: Object.fromEntries(
+    Object.entries(releases).map(([v, age]) => [v, daysAgo(age)]),
+  ),
+  versions: Object.fromEntries(
+    Object.keys(releases).map((v, index) => [
+      v,
+      { dist: { integrity: integrity(index + 1) } },
+    ]),
+  ),
+})
+
+const NODE_INDEX = [
+  { version: 'v27.1.0', date: daysAgo(10).slice(0, 10), lts: false },
+  { version: 'v26.4.0', date: daysAgo(1).slice(0, 10), lts: 'Krypton' },
+  { version: 'v26.3.0', date: daysAgo(20).slice(0, 10), lts: 'Krypton' },
+  { version: 'v24.9.0', date: daysAgo(40).slice(0, 10), lts: 'Jod' },
+]
+
+const mockRegistry = (
+  versions: Record<string, string | Record<string, number>>,
+): void => {
   fetchMock.mockImplementation((url: string) => {
     for (const [name, version] of Object.entries(versions))
       if (url.includes(name))
         return Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({ version }),
+          json: () =>
+            Promise.resolve(
+              packument(
+                typeof version === 'string' ? { [version]: 10 } : version,
+              ),
+            ),
         })
     if (url.includes('nodejs.org'))
       return Promise.resolve({
         ok: true,
-        json: () =>
-          Promise.resolve([
-            { version: 'v27.1.0', lts: false },
-            { version: 'v26.3.0', lts: 'Krypton' },
-            { version: 'v24.9.0', lts: 'Jod' },
-          ]),
+        json: () => Promise.resolve(NODE_INDEX),
       })
     return Promise.resolve({ ok: false, status: 404 })
   })
@@ -308,6 +338,70 @@ describe('runUpdate', () => {
     expect(package_.packageManager).toBe('yarn@4.9.0')
   })
 
+  it('skips a release younger than the age gate', async () => {
+    write(
+      dir,
+      'package.json',
+      JSON.stringify({ packageManager: 'pnpm@10.0.0' }),
+    )
+    write(dir, '.bun-version', '1.3.0\n')
+    mockRegistry({
+      pnpm: { '10.0.0': 30, '10.5.0': 5, '11.0.0-rc.1': 4, '10.6.0': 1 },
+      bun: { '1.3.0': 30, '1.3.5': 4, '1.3.6': 2 },
+    })
+    await runUpdate({ dir, install: false })
+    expect(read(dir, 'package.json')).toContain('"pnpm@10.5.0"')
+    expect(read(dir, '.bun-version')).toBe('1.3.5\n')
+  })
+
+  it('fails when no release passed the age gate', async () => {
+    write(
+      dir,
+      'package.json',
+      JSON.stringify({ packageManager: 'pnpm@10.0.0' }),
+    )
+    mockRegistry({ pnpm: { '10.0.0': 1 } })
+    const report = await runUpdate({ dir, dry: true })
+    expect(resultById(report.results, 'package-manager')).toMatchObject({
+      pass: false,
+    })
+  })
+
+  it('never downgrades past a hand-picked release', async () => {
+    write(
+      dir,
+      'package.json',
+      JSON.stringify({ packageManager: 'pnpm@10.6.0' }),
+    )
+    write(dir, '.bun-version', '1.3.6\n')
+    mockRegistry({
+      pnpm: { '10.5.0': 5, '10.6.0': 1 },
+      bun: { '1.3.5': 5, '1.3.6': 1 },
+    })
+    const report = await runUpdate({ dir, install: false })
+    expect(resultById(report.results, 'package-manager')).toMatchObject({
+      changed: false,
+    })
+    expect(resultById(report.results, 'bun-version')).toMatchObject({
+      changed: false,
+    })
+    expect(read(dir, '.bun-version')).toBe('1.3.6\n')
+  })
+
+  it('refreshes the corepack hash of the new release', async () => {
+    write(
+      dir,
+      'package.json',
+      JSON.stringify({ packageManager: 'yarn@4.0.0+sha512.deadbeef' }),
+    )
+    mockRegistry({ 'yarnpkg%2Fcli-dist': { '4.0.0': 30, '4.9.0': 10 } })
+    await runUpdate({ dir, install: false })
+    const package_ = JSON.parse(read(dir, 'package.json')) as {
+      packageManager: string
+    }
+    expect(package_.packageManager).toBe(`yarn@4.9.0+sha512.${'02'.repeat(64)}`)
+  })
+
   it('does not write in dry mode', async () => {
     const original =
       JSON.stringify({ packageManager: 'pnpm@10.0.0' }, null, 2) + '\n'
@@ -331,7 +425,7 @@ describe('runUpdate', () => {
     })
   })
 
-  it('updates .nvmrc to the latest LTS, preserving the v prefix', async () => {
+  it('updates .nvmrc to the newest LTS past the age gate, preserving the v prefix', async () => {
     write(dir, 'package.json', JSON.stringify({}))
     write(dir, '.nvmrc', 'v24.0.0\n')
     mockRegistry({})
