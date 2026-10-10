@@ -7,6 +7,7 @@ Yarn workspaces monorepo of shared dev tooling, published to npm and JSR. Packag
 ```bash
 CI=true yarn qa                                      # build, then typecheck, lint, test, forge check at once
 cd packages/<name> && yarn vitest run src/x.test.ts  # one test file
+yarn zizmor                                          # audit workflows (brew/uv zizmor; CI runs the action)
 ```
 
 `CI=true` keeps colors on when output is piped: color-dependent tests otherwise pass locally and fail in CI. Run Vitest through `yarn`: the config snapshot holds a rule message naming the package manager that runs it (`npm i` from a bare `vitest -u`).
@@ -16,6 +17,7 @@ cd packages/<name> && yarn vitest run src/x.test.ts  # one test file
 - Parse spawned CLIs' machine output (`--json`): `concurrently` sets `FORCE_COLOR`, so plain output carries ANSI codes.
 - `deno.json` files are generated from `package.json` + tsdown entries by `yarn lzear-sync-jsr`; never edit by hand. `@lzear/eslint-config` is npm-only (its untyped plugins' ambient shims don't resolve on JSR), so `@lzear/forge` drops `./eslint` there. The root keeps `@types/node` for `deno publish`. Check JSR changes with `deno publish --dry-run --allow-dirty`. A plain file reaches JSR's include only as an export (repo-lint's `templates/*`), which attw can't resolve: list it in the package's `.attw.json`. Deno types `URL` apart from `node:url`'s: hand node APIs `.href`.
 - `release.yml` inlines its setup steps: a reusable workflow can't `uses: ./actions/setup` from the caller's checkout.
+- Bare `zizmor .github` misses `.github/zizmor.yml` in an agent worktree (18 findings, not 0): `yarn zizmor` passes `--config`.
 - Consumers pin forge workflows by SHA: rewriting history orphans them (zizmor `impostor-commit`; lzear.org's deploy needs its CI).
 - `@lzear/eslint-config` loads Prettier last so it overrides the rest.
 - Builds emit dts with oxc: an exported value needs a type `isolatedDeclarations` can read (TS9017 on an untyped array). JSR checks the same, but not on npm-only `eslint-config`.
