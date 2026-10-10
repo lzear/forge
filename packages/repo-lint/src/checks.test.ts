@@ -619,6 +619,12 @@ describe('LOCAL_CHECKS', () => {
       mockSpawn(0)
       expect(await check('monorepo-lint', dir)).toBe(true)
     })
+    it('runs sherif on a pnpm-only workspace', async () => {
+      write(dir, 'package.json', JSON.stringify({}))
+      write(dir, 'pnpm-workspace.yaml', 'packages:\n  - packages/*\n')
+      mockSpawn(1, 'multiple versions of eslint')
+      expect(await check('monorepo-lint', dir)).toMatchObject({ pass: false })
+    })
     it('fails with output when sherif finds issues', async () => {
       write(dir, 'package.json', JSON.stringify({ workspaces: ['packages/*'] }))
       mockSpawn(1, 'multiple versions of eslint')

@@ -778,7 +778,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     type: 'local',
     check: async (dir) => {
       const package_ = readPackage(dir)
-      if (!package_ || getWorkspacePatterns(package_).length === 0)
+      if (!package_ || getWorkspacePatterns(package_, dir).length === 0)
         return { pass: true, detail: 'not a monorepo' }
       const bin = findBin('sherif', _dirname)
       if (!bin) return { pass: false, detail: 'sherif not available' }
