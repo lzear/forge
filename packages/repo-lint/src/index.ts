@@ -21,7 +21,7 @@ import {
   LOCAL_CHECKS,
   REMOTE_CHECKS,
 } from './checks.ts'
-import { detectRepo } from './git.ts'
+import { detectRepo, isRepo } from './git.ts'
 import { hasPublishedPkg as hasPublishedPackage } from './templates.ts'
 import { readPackage } from './update.ts'
 
@@ -77,6 +77,10 @@ export type ForgeConfig = {
   check id → why this repo skips it
   */
   skip?: Record<string, string>
+  /**
+  `owner/name` of the GitHub repo, when `origin` points elsewhere
+  */
+  repo?: string
 }
 
 const CONFIG_CHECK = {
@@ -108,14 +112,20 @@ const readConfig = (
         detail: 'expected { "skip": { "<check id>": "<reason>" } }',
       },
     }
-  const errors = Object.entries(skip).flatMap(([id, reason]) => [
-    ...(unknownIds([id]).length > 0
-      ? [`skip.${id}: unknown check (${validIds()})`]
-      : []),
-    ...(typeof reason === 'string' && reason.trim()
+  const repo = isRecord(config) ? config.repo : undefined
+  const errors = [
+    ...(repo === undefined || isRepo(repo)
       ? []
-      : [`skip.${id}: reason required`]),
-  ])
+      : ['repo: expected "<owner>/<name>"']),
+    ...Object.entries(skip).flatMap(([id, reason]) => [
+      ...(unknownIds([id]).length > 0
+        ? [`skip.${id}: unknown check (${validIds()})`]
+        : []),
+      ...(typeof reason === 'string' && reason.trim()
+        ? []
+        : [`skip.${id}: reason required`]),
+    ]),
+  ]
   const result: CheckResult =
     errors.length > 0
       ? { ...CONFIG_CHECK, pass: false, detail: errors.join('\n') }

@@ -44,6 +44,37 @@ it('reads the repo from the origin of dir, not of the cwd', async () => {
   })
 })
 
+it("prefers the forge config's repo to origin", async () => {
+  const dir = repoWithOrigin('git@github.com:a/legacy.git')
+  writeFileSync(
+    path.join(dir, 'package.json'),
+    JSON.stringify({ forge: { repo: 'a/current' } }),
+  )
+  expect(detectRepo(dir)).toBe('a/current')
+  const report = await checkLocal({ dir })
+  expect(report.repo).toBe('a/current')
+  expect(report.results).toEqual([
+    expect.objectContaining({ id: 'forge-config', pass: true }),
+  ])
+})
+
+it('fails the config check on a malformed repo, falling back to origin', async () => {
+  const dir = repoWithOrigin('git@github.com:a/b.git')
+  writeFileSync(
+    path.join(dir, 'package.json'),
+    JSON.stringify({ forge: { repo: 'nope' } }),
+  )
+  const report = await checkLocal({ dir })
+  expect(report.repo).toBe('a/b')
+  expect(report.results).toEqual([
+    expect.objectContaining({
+      id: 'forge-config',
+      pass: false,
+      detail: 'repo: expected "<owner>/<name>"',
+    }),
+  ])
+})
+
 it.each([
   'git@github.com:lzear/lzear.org.git',
   'https://github.com/lzear/lzear.org',

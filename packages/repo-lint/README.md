@@ -66,7 +66,7 @@ A repo opts out of a check in its root `package.json`, with a reason (`ForgeConf
 { "forge": { "skip": { "pkg-attw": "Bun app, nothing published for Node" } } }
 ```
 
-An empty reason or an unknown id fails `forge-config`. One run: `forge check --only <ids>` / `--skip <ids>` (comma-separated). Skips show in `--json` as `{ id, desc, skipped: reason }`.
+`"repo": "<owner>/<name>"` names the GitHub repo when `origin` points elsewhere (remote checks, `forge setup`, `forge init`). An empty reason, an unknown id or a malformed `repo` fails `forge-config`. One run: `forge check --only <ids>` / `--skip <ids>` (comma-separated). Skips show in `--json` as `{ id, desc, skipped: reason }`.
 
 ## Fixes
 
