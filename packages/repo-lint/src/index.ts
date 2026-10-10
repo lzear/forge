@@ -1,6 +1,6 @@
 /**
-Repo compliance checks (local files, CI, badges, package quality) and
-dependency updates.
+Repo compliance checks (local files, CI, badges, package quality),
+dependency updates and template sync.
 
 ```ts
 import { checkLocal } from '@lzear/repo-lint'
@@ -114,6 +114,13 @@ export const checkLocal = async (
 }
 
 export { CHECKS, listSecrets, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.ts'
+export type {
+  SyncOptions,
+  SyncReport,
+  SyncResult,
+  SyncStatus,
+} from './templates.ts'
+export { syncTemplates } from './templates.ts'
 export type {
   PackageManager,
   PackageManagerName,

@@ -14,7 +14,11 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./templates/codacy.yml": "./templates/codacy.yml",
+    "./templates/editorconfig": "./templates/editorconfig",
+    "./templates/lefthook.yml": "./templates/lefthook.yml",
+    "./templates/zizmor.yml": "./templates/zizmor.yml"
   },
   "sideEffects": false,
   "engines": {
@@ -32,7 +36,8 @@
     "typecheck": "tsc --noEmit"
   },
   "files": [
-    "dist"
+    "dist",
+    "templates"
   ],
   "keywords": [
     "checks",

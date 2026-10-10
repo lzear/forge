@@ -9,7 +9,8 @@
     "include": [
       "package.json",
       "README.md",
-      "src"
+      "src",
+      "templates"
     ],
     "exclude": [
       "src/**/*.test.ts"

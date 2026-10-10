@@ -27,7 +27,7 @@
 
 ```sh
 yarn add -D @lzear/forge lefthook @commitlint/cli
-yarn forge sync    # .editorconfig, .codacy.yml, lefthook.yml, .github/zizmor.yml
+yarn forge sync    # .editorconfig, .codacy.yml, lefthook.yml, .github/zizmor.yml, from this version
 yarn forge setup   # CODACY_PROJECT_TOKEN secret
 ```
 

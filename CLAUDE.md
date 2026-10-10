@@ -14,14 +14,14 @@ cd packages/<name> && yarn vitest run src/x.test.ts  # one test file
 ## Gotchas
 
 - Parse spawned CLIs' machine output (`--json`): `concurrently` sets `FORCE_COLOR`, so plain output carries ANSI codes.
-- `deno.json` files are generated from `package.json` + tsdown entries by `yarn lzear-sync-jsr`; never edit by hand. `@lzear/eslint-config` is npm-only (its untyped plugins' ambient shims don't resolve on JSR), so `@lzear/forge` drops `./eslint` there. The root keeps `@types/node` for `deno publish`. Check JSR changes with `deno publish --dry-run --allow-dirty`.
+- `deno.json` files are generated from `package.json` + tsdown entries by `yarn lzear-sync-jsr`; never edit by hand. `@lzear/eslint-config` is npm-only (its untyped plugins' ambient shims don't resolve on JSR), so `@lzear/forge` drops `./eslint` there. The root keeps `@types/node` for `deno publish`. Check JSR changes with `deno publish --dry-run --allow-dirty`. A plain file reaches JSR's include only as an export (repo-lint's `templates/*`), which attw can't resolve: list it in the package's `.attw.json`. Deno types `URL` apart from `node:url`'s: hand node APIs `.href`.
 - `release.yml` inlines its setup steps: a reusable workflow can't `uses: ./actions/setup` from the caller's checkout.
 - Consumers pin forge workflows by SHA: rewriting history orphans them (zizmor `impostor-commit`; lzear.org's deploy needs its CI).
 - `@lzear/eslint-config` loads Prettier last so it overrides the rest.
 - Builds emit dts with oxc: an exported value needs a type `isolatedDeclarations` can read (TS9017 on an untyped array). JSR checks the same, but not on npm-only `eslint-config`.
 - `fallow health` CRAP findings mean missing coverage, not complexity: add tests.
 - Release-age gate: Bun's `minimumReleaseAgeExcludes` takes exact names, no globs. Never adopt a dep younger than the gate, even by hand. `bun audit` can't ignore advisories from bunfig (`--ignore` is CLI-only).
-- `forge sync` fetches `template/` and `.github/zizmor.yml` from GitHub `main`, so consumers see template changes only once pushed. The root `.editorconfig`, `.codacy.yml` and `lefthook.yml` are copies of `template/`'s: change both.
+- Shared files' source: `packages/repo-lint/templates/`, shipped with the package (`forge sync`, `template-sync` check). Edit there, then `yarn build && yarn forge sync`: it rewrites the root copies and `template/`, which forge ≤ 4.10 fetches from `main`; the check fails on drift.
 - Output quiets under coding agents through std-env's `isAgent`, the signal Vitest reads for its `minimal` reporter. Tests of agent-dependent output mock `std-env`: Vitest itself runs under the agent.
 - `deps-fresh` runs `ncu` on peer ranges too, raising `>=` floors: a peer that must not track the latest major (`typescript`: TS 7 has no JS API for typescript-eslint) takes `*` and leaves the range to the plugins.
 - A shared config naming a package by string (commitlint's `parserPreset`) gets it resolved from the consumer, where Bun's isolated linker hides transitive deps: depend on it and inline the import.

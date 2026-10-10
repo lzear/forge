@@ -1,0 +1,8 @@
+{
+  "excludeEntrypoints": [
+    "./templates/codacy.yml",
+    "./templates/editorconfig",
+    "./templates/lefthook.yml",
+    "./templates/zizmor.yml"
+  ]
+}

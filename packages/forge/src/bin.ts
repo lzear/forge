@@ -11,9 +11,7 @@ npx @lzear/forge check
 */
 
 import { spawnSync } from 'node:child_process'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
-import path from 'node:path'
 import * as clack from '@clack/prompts'
 import { Command } from 'commander'
 import pc from 'picocolors'
@@ -25,6 +23,9 @@ import {
   type PackageManager,
   type RepoReport,
   runUpdate,
+  type SyncReport,
+  type SyncStatus,
+  syncTemplates,
   type UpdateReport,
   type UpdateResult,
 } from '@lzear/repo-lint'
@@ -252,53 +253,37 @@ program
     },
   )
 
-const SYNC_FILES: { src: string; dest: string }[] = [
-  { src: 'template/.editorconfig', dest: '.editorconfig' },
-  { src: 'template/.codacy.yml', dest: '.codacy.yml' },
-  { src: 'template/lefthook.yml', dest: 'lefthook.yml' },
-  // shared as-is: allows @main refs to forge, hash-pins everything else
-  { src: '.github/zizmor.yml', dest: '.github/zizmor.yml' },
-]
-
-const RAW_BASE = 'https://raw.githubusercontent.com/lzear/forge/main'
-
-// fetches one template file and writes it when it differs
-const syncFile = async (src: string, dest: string, isDry: boolean) => {
-  const res = await fetch(`${RAW_BASE}/${src}`)
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  const content = await res.text()
-  const destinationPath = path.join(process.cwd(), dest)
-  const current = await readFile(destinationPath, 'utf8').catch(() => null)
-  if (current === content) {
-    log.success(`${dest} ${pc.dim('(unchanged)')}`)
-    return
-  }
-  const isNew = current === null
-  if (isDry) {
-    log.warn(`${dest} ${pc.dim(isNew ? '(would create)' : '(would update)')}`)
-    return
-  }
-  await mkdir(path.dirname(destinationPath), { recursive: true })
-  await writeFile(destinationPath, content, 'utf8')
-  log.success(`${dest} ${pc.dim(isNew ? '(created)' : '(updated)')}`)
+const SYNC_LABELS: Record<SyncStatus, [string, string]> = {
+  unchanged: ['(unchanged)', '(unchanged)'],
+  created: ['(created)', '(would create)'],
+  updated: ['(updated)', '(would update)'],
 }
 
 program
   .command('sync')
-  .description('sync template files from forge into this repo')
+  .description('write the template files bundled with this forge version')
   .option('--dry', 'print what would change, do not write', false)
-  .action(async (options: { dry: boolean }) => {
+  .option('--check', 'exit 1 when a file drifted, do not write', false)
+  .action(async (options: { dry: boolean; check: boolean }) => {
+    const isDry = options.dry || options.check
     log.intro(pc.bold('forge sync'))
-    let isAnyFail = false
-    for (const { src, dest } of SYNC_FILES)
-      try {
-        await syncFile(src, dest, options.dry)
-      } catch (error) {
-        log.error(`${dest} — ${String(error)}`)
-        isAnyFail = true
-      }
-    log.outro(isAnyFail ? pc.red('Done with errors.') : pc.green('Done.'))
-    if (isAnyFail) process.exit(1)
+    let report: SyncReport
+    try {
+      report = await syncTemplates({ dry: isDry })
+    } catch (error) {
+      log.error(String(error))
+      log.outro(pc.red('Done with errors.'))
+      process.exit(1)
+    }
+    for (const { file, status } of report.results) {
+      const line = `${file} ${pc.dim(SYNC_LABELS[status][isDry ? 1 : 0])}`
+      if (isDry && status !== 'unchanged') log.warn(line)
+      else log.success(line)
+    }
+    const isDrift =
+      options.check && report.results.some((r) => r.status !== 'unchanged')
+    log.outro(isDrift ? pc.red('Drifted. Run: forge sync') : pc.green('Done.'))
+    if (isDrift) process.exit(1)
   })
 
 const handleSignal = () => {

@@ -6,6 +6,7 @@ import { run as ncuRun } from 'npm-check-updates'
 import { publint } from 'publint'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { type CheckDetail, LOCAL_CHECKS, REMOTE_CHECKS } from './checks.ts'
+import { syncTemplates } from './templates.ts'
 
 vi.mock('publint', () => ({ publint: vi.fn() }))
 vi.mock('npm-check-updates', () => ({ run: vi.fn() }))
@@ -278,6 +279,26 @@ describe('LOCAL_CHECKS', () => {
         pass: false,
         detail: 'add lefthook to trustedDependencies',
       })
+    })
+  })
+
+  describe('template-sync', () => {
+    it('lists the drifted files', async () => {
+      write(dir, 'lefthook.yml', 'pre-commit: {}')
+      expect(await check('template-sync', dir)).toEqual({
+        pass: false,
+        detail: [
+          '.editorconfig missing',
+          '.codacy.yml missing',
+          'lefthook.yml differs',
+          '.github/zizmor.yml missing',
+          'Run: forge sync',
+        ].join('\n'),
+      })
+    })
+    it('passes once synced', async () => {
+      await syncTemplates({ dir })
+      expect(await check('template-sync', dir)).toBe(true)
     })
   })
 

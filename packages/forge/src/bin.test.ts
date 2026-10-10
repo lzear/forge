@@ -1,7 +1,4 @@
 import { spawnSync, type SpawnSyncReturns } from 'node:child_process'
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import path from 'node:path'
 import { stripVTControlCharacters } from 'node:util'
 import * as clack from '@clack/prompts'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -11,6 +8,8 @@ import {
   listSecrets,
   type RepoReport,
   runUpdate,
+  type SyncStatus,
+  syncTemplates,
 } from '@lzear/repo-lint'
 
 vi.mock('@lzear/repo-lint', () => ({
@@ -18,6 +17,7 @@ vi.mock('@lzear/repo-lint', () => ({
   detectRepo: vi.fn(),
   listSecrets: vi.fn(),
   runUpdate: vi.fn(),
+  syncTemplates: vi.fn(),
 }))
 vi.mock('node:child_process', () => ({ spawnSync: vi.fn() }))
 // vitest itself may run under an agent: pin it per test
@@ -101,17 +101,11 @@ const updateReport = (pass: boolean) => ({
   ],
 })
 
-const mockFetch = (ok = true): void => {
-  vi.stubGlobal(
-    'fetch',
-    vi.fn((url: string) =>
-      Promise.resolve({
-        ok,
-        status: ok ? 200 : 404,
-        text: () => Promise.resolve(`from ${url}`),
-      }),
-    ),
-  )
+const mockSync = (...statuses: SyncStatus[]): void => {
+  vi.mocked(syncTemplates).mockResolvedValue({
+    dir: '/r',
+    results: statuses.map((status, index) => ({ file: `f${index}`, status })),
+  })
 }
 
 const setTTY = (value: boolean | undefined): void => {
@@ -120,7 +114,6 @@ const setTTY = (value: boolean | undefined): void => {
 
 const { argv } = process
 const { isTTY } = process.stdout
-const cwd = process.cwd()
 const signalListeners = new Set([
   ...process.listeners('SIGINT'),
   ...process.listeners('SIGTERM'),
@@ -141,7 +134,6 @@ beforeEach(() => {
 
 afterEach(() => {
   process.argv = argv
-  process.chdir(cwd)
   setTTY(isTTY)
   environment.isAgent = false
   vi.restoreAllMocks()
@@ -302,44 +294,39 @@ describe('forge update', () => {
 // ── sync ─────────────────────────────────────────────────────────────────────
 
 describe('forge sync', () => {
-  let dir: string
-  beforeEach(() => {
-    dir = mkdtempSync(path.join(tmpdir(), 'forge-sync-test-'))
-    process.chdir(dir)
-  })
-
-  afterEach(() => {
-    vi.unstubAllGlobals()
-  })
-
-  it('writes the shared files', async () => {
-    mockFetch()
+  it('writes the bundled templates', async () => {
+    mockSync('created', 'updated', 'unchanged')
     expect(await run('sync')).toBeUndefined()
-    expect(readFileSync(path.join(dir, '.github/zizmor.yml'), 'utf8')).toBe(
-      'from https://raw.githubusercontent.com/lzear/forge/main/.github/zizmor.yml',
-    )
-    expect(existsSync(path.join(dir, 'lefthook.yml'))).toBe(true)
+    expect(syncTemplates).toHaveBeenCalledWith({ dry: false })
+    expect(printed()).toContain('f0 (created)')
+    expect(printed()).toContain('f1 (updated)')
+    expect(printed()).toContain('f2 (unchanged)')
   })
 
-  it('previews changes on --dry without writing', async () => {
-    mockFetch()
-    writeFileSync(path.join(dir, '.editorconfig'), 'old')
-    writeFileSync(
-      path.join(dir, '.codacy.yml'),
-      'from https://raw.githubusercontent.com/lzear/forge/main/template/.codacy.yml',
-    )
+  it('previews changes on --dry', async () => {
+    mockSync('created', 'updated')
     expect(await run('sync', '--dry')).toBeUndefined()
-    expect(existsSync(path.join(dir, 'lefthook.yml'))).toBe(false)
-    expect(readFileSync(path.join(dir, '.editorconfig'), 'utf8')).toBe('old')
-    expect(printed()).toContain('lefthook.yml (would create)')
-    expect(printed()).toContain('.editorconfig (would update)')
-    expect(printed()).toContain('.codacy.yml (unchanged)')
+    expect(syncTemplates).toHaveBeenCalledWith({ dry: true })
+    expect(printed()).toContain('f0 (would create)')
+    expect(printed()).toContain('f1 (would update)')
   })
 
-  it('exits 1 when a fetch fails', async () => {
-    mockFetch(false)
+  it('exits 1 on --check when a file drifted, writing nothing', async () => {
+    mockSync('unchanged', 'updated')
+    expect(await run('sync', '--check')).toBe(1)
+    expect(syncTemplates).toHaveBeenCalledWith({ dry: true })
+    expect(printed()).toContain('Run: forge sync')
+  })
+
+  it('exits 0 on --check when in sync', async () => {
+    mockSync('unchanged')
+    expect(await run('sync', '--check')).toBeUndefined()
+  })
+
+  it('exits 1 when a write fails', async () => {
+    vi.mocked(syncTemplates).mockRejectedValue(new Error('EACCES'))
     expect(await run('sync')).toBe(1)
-    expect(printed()).toContain('HTTP 404')
+    expect(printed()).toContain('EACCES')
   })
 })
 

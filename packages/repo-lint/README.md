@@ -4,13 +4,14 @@
 [![jsr](https://jsr.io/badges/@lzear/repo-lint)](https://jsr.io/@lzear/repo-lint)
 [![license](https://img.shields.io/npm/l/@lzear/repo-lint)](../../LICENSE)
 
-Engine behind `forge check` and `forge update` ([forge](https://github.com/lzear/forge)). Node ≥ 24.
+Engine behind `forge check`, `forge update` and `forge sync` ([forge](https://github.com/lzear/forge)). Node ≥ 24.
 
 ```ts
-import { checkLocal, runUpdate } from '@lzear/repo-lint'
+import { checkLocal, runUpdate, syncTemplates } from '@lzear/repo-lint'
 
 const { results } = await checkLocal({ dir, skipRemote }) // [{ pass, desc, detail? }]
 const update = await runUpdate({ dir, dry, install })
+const sync = await syncTemplates({ dir, dry }) // [{ file, status }], from templates/
 ```
 
 ## Checks
@@ -25,6 +26,7 @@ const update = await runUpdate({ dir, dry, install })
 | `ci-workflow`         | a workflow calls the forge reusable CI workflow           |
 | `renovate`            | `renovate.json` extends `github>lzear/forge`              |
 | `git-hooks`           | `lefthook.yml`, installed by `prepare` (Yarn) or Bun      |
+| `template-sync`       | shared files match [`templates/`](templates)              |
 | `pkg-publint`         | published packages pass `publint`                         |
 | `pkg-attw`            | published packages pass `attw` (ESM-only profile)         |
 | `pkg-size-limit`      | within `size-limit` budgets (where configured)            |

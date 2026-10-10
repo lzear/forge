@@ -4,6 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { publint } from 'publint'
 import { maxSatisfying, satisfies } from 'semver'
+import { isForgeRepo, syncTemplates } from './templates.ts'
 import {
   detectPackageManager,
   getWorkspaceDirectories,
@@ -130,12 +131,6 @@ const readmeIncludes = (dir: string, needle: string): boolean => {
 
 const FORGE_WORKFLOW_RE = /uses:\s*lzear\/forge\/\.github\/workflows\/ci\.yml@/
 const FORGE_PRESET_RE = /^github>lzear\/forge(?:$|[#:])/
-
-// The forge repo hosts the reusable workflow and calls it locally.
-const isForgeRepo = (dir: string): boolean =>
-  getWorkspaceDirectories(dir).some(
-    (d) => readPackage(d)?.name === '@lzear/forge',
-  )
 
 const callsForgeWorkflow = (dir: string): boolean => {
   const wfDir = path.join(dir, '.github', 'workflows')
@@ -421,6 +416,20 @@ export const LOCAL_CHECKS: LocalCheck[] = [
         hookInstallGap(dir),
       ].filter((m): m is string => m !== null)
       return missing.length === 0 || { pass: false, detail: missing.join('\n') }
+    },
+  },
+  {
+    id: 'template-sync',
+    desc: 'templates in sync',
+    type: 'local',
+    check: async (dir) => {
+      const { results } = await syncTemplates({ dir, dry: true })
+      const drifted = results.filter((r) => r.status !== 'unchanged')
+      if (drifted.length === 0) return true
+      const files = drifted.map(
+        (r) => `${r.file} ${r.status === 'created' ? 'missing' : 'differs'}`,
+      )
+      return { pass: false, detail: [...files, 'Run: forge sync'].join('\n') }
     },
   },
   {
