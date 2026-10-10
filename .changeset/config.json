@@ -3,7 +3,14 @@
   "changelog": "./changelog.mjs",
   "format": false,
   "commit": false,
-  "fixed": [["@lzear/configs", "@lzear/eslint-config", "@lzear/forge", "@lzear/repo-lint"]],
+  "fixed": [
+    [
+      "@lzear/configs",
+      "@lzear/eslint-config",
+      "@lzear/forge",
+      "@lzear/repo-lint"
+    ]
+  ],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
