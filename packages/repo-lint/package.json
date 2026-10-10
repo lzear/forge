@@ -22,9 +22,12 @@
     "./templates/init/commitlint.config": "./templates/init/commitlint.config",
     "./templates/init/eslint.config": "./templates/init/eslint.config",
     "./templates/init/gitignore": "./templates/init/gitignore",
+    "./templates/init/index": "./templates/init/index",
+    "./templates/init/index.test": "./templates/init/index.test",
     "./templates/init/main.yml": "./templates/init/main.yml",
     "./templates/init/renovate.json": "./templates/init/renovate.json",
     "./templates/init/tsconfig": "./templates/init/tsconfig",
+    "./templates/init/vite-index": "./templates/init/vite-index",
     "./templates/init/vitest.config": "./templates/init/vitest.config",
     "./templates/lefthook.yml": "./templates/lefthook.yml",
     "./templates/zizmor.yml": "./templates/zizmor.yml"

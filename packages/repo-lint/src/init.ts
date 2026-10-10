@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import { coerce } from 'semver'
 import {
   type ForgeRelease,
   forgeRelease,
@@ -30,6 +31,11 @@ export type InitReport = {
   dir: string
   results: InitResult[]
   next: string[]
+  /**
+  whether the dev dependencies are listed and installed, so `forge check` can
+  run
+  */
+  isInstalled: boolean
 }
 
 /**
@@ -69,6 +75,10 @@ type Context = {
   pm: 'bun' | 'yarn'
   pmField: string | null
   isDry: boolean
+  /**
+  the range of `@lzear/*` packages, from the forge version
+  */
+  forgeRange: string
 }
 
 // ${{ … }} (GitHub expressions) has spaces, so it never matches
@@ -97,12 +107,15 @@ const writeNew = async (
   return { file, status: 'created' }
 }
 
+const runner = (pm: 'bun' | 'yarn'): string =>
+  pm === 'bun' ? 'bun run' : 'yarn'
+
 const scriptsFor = ({
   isLib,
   isReact,
   pm,
 }: Context): Record<string, string> => {
-  const run = pm === 'bun' ? 'bun run' : 'yarn'
+  const run = runner(pm)
   const steps = ['build', 'typecheck', 'lint', 'test', 'forge check']
   return {
     build: isLib ? 'tsdown' : isReact ? 'vite build' : 'tsc',
@@ -113,6 +126,81 @@ const scriptsFor = ({
     // Bun runs lefthook's postinstall; Yarn repos turn dependency scripts off
     ...(pm === 'yarn' && { prepare: 'lefthook install' }),
   }
+}
+
+// a placeholder package-json/no-empty-fields accepts; a next step flags it
+const LOREM = 'Lorem ipsum dolor sit amet.'
+
+// eslint-package-json's `fieldOrder`, which package-json/sort-properties follows
+const FIELD_ORDER = [
+  'name',
+  'version',
+  'private',
+  'description',
+  'license',
+  'repository',
+  'homepage',
+  'bugs',
+  'funding',
+  'author',
+  'authors',
+  'contributors',
+  'maintainers',
+  'type',
+  'exports',
+  'imports',
+  'main',
+  'module',
+  'browser',
+  'types',
+  'typings',
+  'bin',
+  'man',
+  'directories',
+  'sideEffects',
+  'engines',
+  'devEngines',
+  'os',
+  'cpu',
+  'publishConfig',
+  'packageManager',
+  'scripts',
+  'config',
+  'files',
+  'workspaces',
+  'keywords',
+  'dependencies',
+  'devDependencies',
+  'optionalDependencies',
+  'peerDependencies',
+  'peerDependenciesMeta',
+  'bundledDependencies',
+  'bundleDependencies',
+  'overrides',
+]
+
+const rank = (key: string): number => {
+  const index = FIELD_ORDER.indexOf(key)
+  return index === -1 ? FIELD_ORDER.length : index
+}
+
+// known fields in that order, then the others as they were
+const sortFields = (data: Record<string, unknown>): Record<string, unknown> =>
+  Object.fromEntries(
+    Object.entries(data).toSorted(([a], [b]) => rank(a) - rank(b)),
+  )
+
+// what package-json/* wants of a published package; `exports` is tsdown's output
+const LIB_FIELDS = {
+  version: '0.0.0',
+  description: LOREM,
+  keywords: ['lorem', 'ipsum'],
+  license: 'MIT',
+  sideEffects: false,
+  exports: {
+    '.': { types: './dist/index.d.mts', default: './dist/index.mjs' },
+  },
+  files: ['dist'],
 }
 
 // the fields missing from `current`, picked from `wanted`
@@ -129,21 +217,18 @@ const writePackage = async (context: Context): Promise<InitResult> => {
   const file = 'package.json'
   const f = path.join(context.dir, file)
   const fields: Record<string, unknown> = {
-    ...(context.isLib
-      ? { version: '0.0.0', license: 'MIT' }
-      : { private: true }),
+    ...(context.isLib ? LIB_FIELDS : { private: true }),
+    type: 'module',
+    // forge's floor
+    engines: { node: '>=24' },
     // before install, no lockfile tells forge check the manager
     ...(context.pmField && { packageManager: context.pmField }),
   }
   const scripts = scriptsFor(context)
   if (!existsSync(f)) {
-    const package_ = {
-      name: path.basename(context.dir),
-      ...fields,
-      type: 'module',
-      scripts,
-    }
-    return writeNew(context, file, `${JSON.stringify(package_, null, 2)}\n`)
+    const package_ = { name: path.basename(context.dir), ...fields, scripts }
+    const content = JSON.stringify(sortFields(package_), null, 2)
+    return writeNew(context, file, `${content}\n`)
   }
   const json = readJsonFile(f)
   const current = (json.data.scripts ?? {}) as Record<string, string>
@@ -158,8 +243,11 @@ const writePackage = async (context: Context): Promise<InitResult> => {
     .filter(Boolean)
     .join('\n')
   if (!detail) return { file, status: 'unchanged' }
-  Object.assign(json.data, addedFields)
-  json.data.scripts = { ...current, ...addedScripts }
+  json.data = sortFields({
+    ...json.data,
+    ...addedFields,
+    scripts: { ...current, ...addedScripts },
+  })
   if (!context.isDry) writeJsonFile(f, json)
   return { file, status: 'updated', detail }
 }
@@ -191,7 +279,7 @@ const writeWorkflow = async (
   context: Context,
   release: ForgeRelease | null,
 ): Promise<InitResult> => {
-  const run = context.pm === 'bun' ? 'bun run' : 'yarn'
+  const run = runner(context.pm)
   const content = await render('init/main.yml', {
     sha: release?.sha ?? 'main',
     tag: release?.tag ?? 'unpinned',
@@ -213,20 +301,47 @@ const authorOf = (dir: string, owner: string): string => {
     : (gitUsername(dir) ?? owner)
 }
 
+// forge's own ranges (init.test.ts keeps them in sync), majors only as
+// lzear/major-version-only wants
+const DEV_RANGES: Record<string, string> = {
+  lefthook: '^2',
+  '@commitlint/cli': '^21',
+  eslint: '^10',
+  // typescript-eslint needs TS 6's JS API; `tsc` runs TS 7
+  typescript: 'npm:@typescript/typescript6@^6',
+  '@typescript/native': 'npm:typescript@^7',
+  vitest: '^5',
+  '@vitest/coverage-v8': '^5',
+  // Vitest's peer, which Yarn doesn't install
+  vite: '^8',
+  tsdown: '^0.23',
+  '@changesets/cli': '^3',
+  jsdom: '~30',
+}
+
+// `^5`, or `^0.23` for 0.x; any version when unknown
+const caretRange = (version: string | undefined): string => {
+  const parsed = coerce(version)
+  if (!parsed) return '*'
+  return parsed.major === 0 ? `^0.${parsed.minor}` : `^${parsed.major}`
+}
+
 const devDependencies = ({ isLib, isReact, pm }: Context): string[] => [
   '@lzear/forge',
   'lefthook',
   '@commitlint/cli',
   'eslint',
   'typescript',
+  '@typescript/native',
   'vitest',
   '@vitest/coverage-v8',
+  'vite',
   ...(isLib ? ['tsdown'] : []),
   ...(isLib && pm === 'yarn' ? ['@lzear/configs', '@changesets/cli'] : []),
   ...(isReact ? ['jsdom'] : []),
-  ...(isReact && !isLib ? ['vite'] : []),
 ]
 
+// `name@range`, quoted for shells that glob `^` and `~`
 const missingDependencies = (context: Context): string[] => {
   const package_ = readPackage(context.dir)
   const listed = new Set(
@@ -234,8 +349,14 @@ const missingDependencies = (context: Context): string[] => {
       Object.keys((package_?.[field] ?? {}) as Record<string, string>),
     ),
   )
-  return devDependencies(context).filter((name) => !listed.has(name))
+  return devDependencies(context)
+    .filter((name) => !listed.has(name))
+    .map((name) => `'${name}@${DEV_RANGES[name] ?? context.forgeRange}'`)
 }
+
+// checks need the dev deps' bins and a lockfile
+const hasInstalled = ({ dir }: Context, missing: string[]): boolean =>
+  missing.length === 0 && existsSync(path.join(dir, 'node_modules'))
 
 const nextSteps = (
   context: Context,
@@ -245,12 +366,18 @@ const nextSteps = (
 ): string[] => {
   const { isLib, pm } = context
   const isRelease = isLib && pm === 'yarn'
+  const isInstalled = hasInstalled(context, missing)
+  const description = readPackage(context.dir)?.description
   return [
     ...(missing.length > 0 ? [`${pm} add -D ${missing.join(' ')}`] : []),
+    ...(!isInstalled && missing.length === 0 ? [`${pm} install`] : []),
     ...(isRelease ? ['yarn changeset init'] : []),
     ...(context.pmField === null &&
     readPackage(context.dir)?.packageManager === undefined
       ? [`registry unreachable: set packageManager to ${pm}@<version>`]
+      : []),
+    ...(isLib && (description === undefined || description === LOREM)
+      ? ['package.json: replace the lorem ipsum description and keywords']
       : []),
     ...(release
       ? []
@@ -262,6 +389,10 @@ const nextSteps = (
     ...(isLib && pm === 'bun'
       ? ['publish by hand: release.yml runs Yarn']
       : []),
+    // attw packs the build
+    ...(isInstalled
+      ? []
+      : [`${runner(pm)} build && ${runner(pm)} forge check --skip-remote`]),
   ]
 }
 
@@ -288,12 +419,12 @@ const resolveRelease = (
 }
 
 /**
-Scaffolds a forge repo, writing only what is missing: package.json scripts and
-`packageManager` (the newest past the age gate),
+Scaffolds a forge repo, writing only what is missing: package.json scripts,
+`packageManager` (the newest past the age gate) and the fields lint wants,
 tsconfig, ESLint, Vitest and commitlint configs, `renovate.json`, the CI (and,
 for a Yarn library, release) workflow pinned to a forge release, `.gitignore`,
-LICENSE and badged README (libraries), the release-age gate, then
-{@linkcode syncTemplates}.
+LICENSE and badged README (libraries), the release-age gate, a `src/index.ts`
+and its test when `src/` is missing, then {@linkcode syncTemplates}.
 
 @param options `dir` defaults to the cwd, `dry` writes nothing
 */
@@ -315,6 +446,7 @@ export const initRepo = async (
     pm,
     pmField,
     isDry: options.dry ?? false,
+    forgeRange: caretRange(options.version ?? release?.tag),
   }
   const missing = missingDependencies(context)
   const packageName = readPackage(dir)?.name
@@ -350,7 +482,23 @@ export const initRepo = async (
       context.isLib ? readme : `${readme.split('\n', 1)[0] ?? ''}\n`,
     ),
     await writeReleaseAge(context),
+    // a build entry and a test, which tsdown and Vitest fail without
+    ...(existsSync(path.join(dir, 'src'))
+      ? []
+      : [
+          await copy('src/index.ts', 'init/index'),
+          await copy('src/index.test.ts', 'init/index.test'),
+          // Vite's entry
+          ...(context.isReact
+            ? [await copy('index.html', 'init/vite-index')]
+            : []),
+        ]),
     ...sync.results,
   ]
-  return { dir, results, next: nextSteps(context, missing, repo, release) }
+  return {
+    dir,
+    results,
+    next: nextSteps(context, missing, repo, release),
+    isInstalled: hasInstalled(context, missing),
+  }
 }

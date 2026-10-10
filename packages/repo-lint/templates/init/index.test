@@ -1,0 +1,6 @@
+import { expect, it } from 'vitest'
+import { greet } from './index.ts'
+
+it('greets', () => {
+  expect(greet('world')).toBe('Hello, world!')
+})

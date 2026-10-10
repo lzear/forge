@@ -111,7 +111,7 @@ const mockSync = (...statuses: SyncStatus[]): void => {
   })
 }
 
-const mockInit = (): void => {
+const mockInit = (isInstalled = true): void => {
   vi.mocked(initRepo).mockResolvedValue({
     dir: '/r',
     results: [
@@ -120,6 +120,7 @@ const mockInit = (): void => {
       { file: 'LICENSE', status: 'unchanged' },
     ],
     next: ['forge setup'],
+    isInstalled,
   })
 }
 
@@ -426,6 +427,13 @@ describe('forge init', () => {
     expect(printed()).toContain('LICENSE (exists)')
     expect(printed()).toContain('→  forge setup')
     expect(printed()).toContain('1/2')
+  })
+
+  it('leaves the check to the user before install', async () => {
+    mockInit(false)
+    expect(await run('init')).toBeUndefined()
+    expect(printed()).toContain('→  forge setup')
+    expect(checkLocal).not.toHaveBeenCalled()
   })
 
   it('previews on --dry, without checking', async () => {

@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process'
 import {
   existsSync,
+  mkdirSync,
   mkdtempSync,
   readdirSync,
   readFileSync,
@@ -43,6 +44,33 @@ const FORGE_YARN = (
 
 const BUN_LOCK = JSON.stringify({ lockfileVersion: 1, workspaces: { '': {} } })
 
+// `yarn add -D 'a@^1' 'b@npm:c@^2'` → { a: '^1', b: 'npm:c@^2' }
+const addedRanges = (add: string): Record<string, string> =>
+  Object.fromEntries(
+    add
+      .matchAll(/'(@?[^@']+)@([^']+)'/g)
+      .map(([, name = '', range = '']) => [name, range]),
+  )
+
+// the first next step of a fresh repo
+const addCommand = async (options: InitOptions): Promise<string> => {
+  const { next } = await init(repo(), options)
+  return next[0] ?? ''
+}
+
+// forge's own dev dependencies, root and packages
+const FORGE_RANGES = Object.assign(
+  {},
+  ...['../../..', '../../configs', '../../forge', '../../repo-lint'].map(
+    (dir) =>
+      (
+        JSON.parse(
+          readFileSync(new URL(`${dir}/package.json`, import.meta.url), 'utf8'),
+        ) as { devDependencies: Record<string, string> }
+      ).devDependencies,
+  ),
+) as Record<string, string>
+
 describe('initRepo', () => {
   it('scaffolds a library that passes forge check, bar the network', async () => {
     // forge's own Yarn: corepack has it, offline
@@ -55,13 +83,12 @@ describe('initRepo', () => {
     expect(add).toMatch(/^yarn add -D /)
     // what that leaves
     const package_ = readJson(dir, 'package.json')
-    package_.devDependencies = Object.fromEntries(
-      add
-        .split(' ')
-        .slice(3)
-        .map((name) => [name, '*']),
-    )
+    package_.devDependencies = addedRanges(add)
     writeFileSync(path.join(dir, 'package.json'), JSON.stringify(package_))
+    // tsdown's output, which publint looks for
+    mkdirSync(path.join(dir, 'dist'))
+    for (const file of ['index.mjs', 'index.d.mts'])
+      writeFileSync(path.join(dir, 'dist', file), 'export {}\n')
 
     const { results } = await checkLocal({
       dir,
@@ -100,15 +127,25 @@ describe('initRepo', () => {
       'LICENSE',
       'README.md',
       '.yarnrc.yml',
+      'src/index.ts',
+      'src/index.test.ts',
       '.editorconfig',
       'lefthook.yml',
       '.github/zizmor.yml',
     ])
     const name = path.basename(dir)
-    expect(readJson(dir, 'package.json')).toMatchObject({
+    const package_ = readJson(dir, 'package.json')
+    expect(package_).toMatchObject({
       name,
       version: '0.0.0',
       license: 'MIT',
+      type: 'module',
+      exports: {
+        '.': { types: './dist/index.d.mts', default: './dist/index.mjs' },
+      },
+      files: ['dist'],
+      engines: { node: '>=24' },
+      sideEffects: false,
       packageManager: 'yarn@4.10.3',
       scripts: {
         build: 'tsdown',
@@ -116,8 +153,26 @@ describe('initRepo', () => {
         prepare: 'lefthook install',
       },
     })
+    // package-json/sort-properties' order
+    expect(Object.keys(package_)).toEqual([
+      'name',
+      'version',
+      'description',
+      'license',
+      'type',
+      'exports',
+      'sideEffects',
+      'engines',
+      'packageManager',
+      'scripts',
+      'files',
+      'keywords',
+    ])
     expect(readJson(dir, 'tsconfig.json').extends).toBe(
       '@lzear/forge/tsconfig/lib',
+    )
+    expect(read(dir, 'src/index.test.ts')).toContain(
+      "import { greet } from './index.ts'",
     )
     const workflow = read(dir, '.github/workflows/main.yml')
     expect(workflow).toContain(
@@ -138,10 +193,14 @@ describe('initRepo', () => {
       'nodeLinker: node-modules\nnpmMinimalAgeGate: 3d\n',
     )
     expect(next).toEqual([
-      expect.stringMatching(/^yarn add -D @lzear\/forge .* @changesets\/cli$/),
+      expect.stringMatching(
+        /^yarn add -D '@lzear\/forge@\^4' .* '@changesets\/cli@\^3'$/,
+      ),
       'yarn changeset init',
+      'package.json: replace the lorem ipsum description and keywords',
       'optional: add the repo on app.codacy.com, then `forge setup`',
       `npm trusted publisher: lzear/${name} / main.yml, once the package exists`,
+      'yarn build && yarn forge check --skip-remote',
     ])
   })
 
@@ -171,7 +230,11 @@ describe('initRepo', () => {
     expect(read(dir, 'bunfig.toml')).toBe(
       '[install]\nminimumReleaseAge = 259200\n',
     )
-    expect(next[0]).toMatch(/ jsdom vite$/)
+    expect(next[0]).toMatch(/ 'vite@\^8' 'jsdom@~30'$/)
+    expect(read(dir, 'index.html')).toContain('src="/src/index.ts"')
+    expect(next.at(-1)).toBe(
+      'bun run build && bun run forge check --skip-remote',
+    )
   })
 
   it('never overwrites, adding only missing scripts and settings', async () => {
@@ -198,7 +261,7 @@ describe('initRepo', () => {
       file: 'package.json',
       status: 'updated',
       detail:
-        '+ version, license\nscripts: + build, typecheck, lint, qa, prepare',
+        '+ version, description, keywords, license, sideEffects, exports, files, type, engines\nscripts: + build, typecheck, lint, qa, prepare',
     })
     expect(readJson(dir, 'package.json')).toMatchObject({
       name: '@a/b',
@@ -206,10 +269,63 @@ describe('initRepo', () => {
     })
     expect(read(dir, 'LICENSE')).toContain(' Ada\n')
     expect(read(dir, 'README.md')).toContain('# @a/b\n')
-    expect(next[0]).not.toContain('eslint')
+    expect(next[0]).not.toContain('eslint@')
 
     const again = await init(dir, { packageManager: 'yarn' })
     expect(again.results.every((r) => r.status === 'unchanged')).toBe(true)
+  })
+
+  it('adds the ranges forge itself uses', async () => {
+    const add = await addCommand({ packageManager: 'yarn' })
+    const {
+      '@lzear/forge': forge,
+      '@lzear/configs': configs,
+      ...ranges
+    } = addedRanges(add)
+    // TS 6 for typescript-eslint, TS 7's tsc; Vitest's peer, which Yarn skips
+    expect(Object.keys(ranges)).toEqual(
+      expect.arrayContaining(['typescript', '@typescript/native', 'vite']),
+    )
+    expect(ranges).toEqual(
+      Object.fromEntries(
+        Object.keys(ranges).map((name) => [name, FORGE_RANGES[name]]),
+      ),
+    )
+    expect([forge, configs]).toEqual(['^4', '^4'])
+  })
+
+  it('ranges the forge packages to the running major, or minor below 1', async () => {
+    expect(await addCommand({ version: '5.0.0', kind: 'app' })).toMatch(
+      /^yarn add -D '@lzear\/forge@\^5' /,
+    )
+    expect(await addCommand({ version: '0.23.1', kind: 'app' })).toMatch(
+      /^yarn add -D '@lzear\/forge@\^0\.23' /,
+    )
+  })
+
+  it('checks only once the dev deps are installed', async () => {
+    const dir = repo()
+    const { next, isInstalled } = await init(dir, { kind: 'app' })
+    expect(isInstalled).toBe(false)
+    const package_ = readJson(dir, 'package.json')
+    package_.devDependencies = addedRanges(next[0] ?? '')
+    writeFileSync(path.join(dir, 'package.json'), JSON.stringify(package_))
+
+    const listed = await init(dir, { kind: 'app' })
+    expect(listed.isInstalled).toBe(false)
+    expect(listed.next[0]).toBe('yarn install')
+    mkdirSync(path.join(dir, 'node_modules'))
+    const installed = await init(dir, { kind: 'app' })
+    expect(installed.isInstalled).toBe(true)
+    expect(installed.next.join('\n')).not.toContain('forge check')
+  })
+
+  it('leaves an existing src/ alone', async () => {
+    const dir = repo()
+    mkdirSync(path.join(dir, 'src'))
+    const { results } = await init(dir, { kind: 'app', react: true })
+    expect(results.map((r) => r.file)).not.toContain('src/index.ts')
+    expect(existsSync(path.join(dir, 'index.html'))).toBe(false)
   })
 
   it('records the manager, which forge check reads before install', async () => {

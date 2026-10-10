@@ -357,7 +357,7 @@ const printInitReport = (report: InitReport, isDry: boolean): void => {
 
 program
   .command('init')
-  .description('scaffold the missing forge files, then check')
+  .description('scaffold the missing forge files, then check once installed')
   .addOption(new Option('--lib', 'a published library (default)'))
   .addOption(new Option('--app', 'a private app').conflicts('lib'))
   .option('--react', 'React tsconfig and Vitest config', false)
@@ -385,7 +385,8 @@ program
         version,
       })
       printInitReport(report, isDry)
-      if (isDry) return
+      // without the dev deps, the check would fail; the report's last step runs it
+      if (isDry || !report.isInstalled) return
       process.stdout.write(`\n  ${pc.bold('forge check --skip-remote')}\n\n`)
       const result = await checkLocal({ skipRemote: true })
       process.exit(printResults(result, false) ? 1 : 0)
