@@ -1,0 +1,60 @@
+[
+  {
+    "ignores": [
+      "**/dist/**",
+    ],
+    "name": "lzear/ignores",
+  },
+  {
+    "name": "lzear/core",
+    "plugins": {
+      "unicorn": {
+        "rules": {
+          "no-null": {
+            "meta": {},
+          },
+        },
+      },
+    },
+    "rules": {
+      "curly": [
+        "error",
+        "all",
+      ],
+      "eqeqeq": 2,
+      "no-console": 2,
+      "no-shadow": [
+        "warn",
+        {
+          "hoist": "functions",
+        },
+      ],
+      "no-var": "error",
+      "prefer-const": [
+        2,
+        {
+          "destructuring": "all",
+        },
+      ],
+      "unicorn/no-null": 0,
+    },
+  },
+  {
+    "name": "lzear/typescript > typescript-eslint/base",
+    "rules": {
+      "no-undef": 0,
+    },
+  },
+  {
+    "name": "lzear/typescript > typescript-eslint/base",
+    "rules": {
+      "no-redeclare": 2,
+    },
+  },
+  {
+    "name": "lzear/json",
+    "rules": {
+      "json/no-duplicate-keys": 2,
+    },
+  },
+]

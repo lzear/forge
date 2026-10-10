@@ -1,0 +1,54 @@
+[
+  {
+    "ignores": [
+      "**/dist/**",
+    ],
+    "name": "lzear/ignores",
+  },
+  {
+    "name": "lzear/core",
+    "plugins": {
+      "unicorn": {
+        "rules": {
+          "no-null": {
+            "meta": {},
+          },
+        },
+      },
+    },
+    "rules": {
+      "curly": [
+        2,
+        "multi",
+      ],
+      "eqeqeq": "error",
+      "no-console": 1,
+      "no-shadow": [
+        "error",
+        {
+          "hoist": "all",
+        },
+      ],
+      "no-var": 2,
+      "unicorn/no-null": 2,
+    },
+  },
+  {
+    "name": "lzear/typescript > typescript-eslint/base",
+    "rules": {
+      "no-undef": 0,
+    },
+  },
+  {
+    "name": "lzear/typescript > typescript-eslint/base",
+    "rules": {
+      "no-redeclare": 0,
+    },
+  },
+  {
+    "name": "lzear/legacy",
+    "rules": {
+      "no-with": 2,
+    },
+  },
+]
