@@ -8,7 +8,7 @@ pre-commit:
   jobs:
     # lefthook hides unstaged hunks while it fixes and restages
     - name: eslint
-      glob: '*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,json}'
+      glob: '*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,json,jsonc,md,yml,yaml}'
       run: node_modules/.bin/eslint --fix --no-warn-ignored {staged_files}
       stage_fixed: true
 
