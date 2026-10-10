@@ -66,18 +66,7 @@ program
   .version(version, '-v, --version')
   .helpOption('-h, --help', 'show help')
 
-const printResults = (report: RepoReport, json: boolean): boolean => {
-  const isAnyFail = report.results.some((r) => !r.pass)
-  if (json) {
-    console.log(
-      JSON.stringify(
-        { repo: report.repo, results: report.results, pass: !isAnyFail },
-        null,
-        2,
-      ),
-    )
-    return isAnyFail
-  }
+const printSummary = (report: RepoReport): void => {
   const pass = report.results.filter((r) => r.pass).length
   const total = report.results.length
   for (const r of report.results) {
@@ -95,20 +84,65 @@ const printResults = (report: RepoReport, json: boolean): boolean => {
       ? pc.green(`${pass}/${total}`)
       : pc.yellow(`${pass}/${total}`)
   process.stdout.write(`\n  ${score} checks passed\n`)
+  const skipped = `${report.skipped.length} skipped`
+  if (!isAgent && report.skipped.length > 0)
+    process.stdout.write(`  ${pc.dim(skipped)}\n`)
+}
+
+const printResults = (report: RepoReport, json: boolean): boolean => {
+  const isAnyFail = report.results.some((r) => !r.pass)
+  if (json) {
+    console.log(
+      JSON.stringify(
+        {
+          repo: report.repo,
+          results: report.results,
+          skipped: report.skipped,
+          pass: !isAnyFail,
+        },
+        null,
+        2,
+      ),
+    )
+    return isAnyFail
+  }
+  printSummary(report)
   return isAnyFail
 }
+
+const splitIds = (value: string): string[] =>
+  value
+    .split(',')
+    .map((id) => id.trim())
+    .filter(Boolean)
 
 program
   .command('check')
   .description('audit the current repo against forge standards')
   .option('--skip-remote', 'skip secret checks', false)
+  .option('--only <ids>', 'run only these checks (comma-separated)', splitIds)
+  .option('--skip <ids>', 'skip these checks (comma-separated)', splitIds)
   .option('--json', 'output results as JSON', false)
-  .action(async (options: { skipRemote: boolean; json: boolean }) => {
-    if (!options.json) process.stdout.write(`\n  ${pc.bold('forge check')}\n\n`)
-    debug('checkLocal', process.cwd())
-    const result = await checkLocal({ skipRemote: options.skipRemote })
-    process.exit(printResults(result, options.json) ? 1 : 0)
-  })
+  .action(
+    async (options: {
+      skipRemote: boolean
+      only?: string[]
+      skip?: string[]
+      json: boolean
+    }) => {
+      const { json, ...checkOptions } = options
+      if (!json) process.stdout.write(`\n  ${pc.bold('forge check')}\n\n`)
+      debug('checkLocal', process.cwd())
+      let result: RepoReport
+      try {
+        result = await checkLocal(checkOptions)
+      } catch (error) {
+        log.error(error instanceof Error ? error.message : String(error))
+        process.exit(1)
+      }
+      process.exit(printResults(result, json) ? 1 : 0)
+    },
+  )
 
 const promptAndSet = async (
   s: { name: string; desc: string },

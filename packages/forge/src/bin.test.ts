@@ -67,6 +67,7 @@ const json = (): unknown => JSON.parse(printed())
 
 const report = (...passes: boolean[]): RepoReport => ({
   repo: 'lzear/x',
+  skipped: [],
   results: passes.map((pass, index) => ({
     id: `c${index}`,
     desc: `check ${index}`,
@@ -175,6 +176,48 @@ describe('forge check', () => {
     vi.mocked(checkLocal).mockResolvedValue(report(true))
     expect(await run('check', '--json')).toBe(0)
     expect(json()).toMatchObject({ repo: 'lzear/x', pass: true })
+  })
+
+  const skipped = { id: 's', desc: 'skipped check', skipped: 'why' }
+
+  it('passes --only and --skip, counting skips in one line', async () => {
+    vi.mocked(checkLocal).mockResolvedValue({
+      ...report(true),
+      skipped: [skipped, skipped],
+    })
+    expect(await run('check', '--only', 'a, b', '--skip', 'c')).toBe(0)
+    expect(checkLocal).toHaveBeenCalledWith({
+      skipRemote: false,
+      only: ['a', 'b'],
+      skip: ['c'],
+    })
+    expect(printed()).toContain('2 skipped')
+    expect(printed()).not.toContain('skipped check')
+  })
+
+  it('hides the skip count from a coding agent', async () => {
+    environment.isAgent = true
+    vi.mocked(checkLocal).mockResolvedValue({
+      ...report(true),
+      skipped: [skipped],
+    })
+    expect(await run('check')).toBe(0)
+    expect(printed()).not.toContain('skipped')
+  })
+
+  it('lists skipped checks in JSON', async () => {
+    vi.mocked(checkLocal).mockResolvedValue({
+      ...report(true),
+      skipped: [skipped],
+    })
+    expect(await run('check', '--json')).toBe(0)
+    expect(json()).toMatchObject({ skipped: [skipped], pass: true })
+  })
+
+  it('fails on an unknown check id', async () => {
+    vi.mocked(checkLocal).mockRejectedValue(new Error('Unknown check: zz'))
+    expect(await run('check', '--only', 'zz')).toBe(1)
+    expect(printed()).toContain('Unknown check: zz')
   })
 })
 

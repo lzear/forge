@@ -1,14 +1,20 @@
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync } from 'node:fs'
+import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { expect, it, vi } from 'vitest'
+import type { Check, LocalCheck } from './checks.ts'
 import { checkLocal, detectRepo } from './index.ts'
 
+const checks = vi.hoisted(() => ({ local: [] as LocalCheck[] }))
 vi.mock('./checks.ts', () => ({
-  CHECKS: [],
+  get CHECKS(): Check[] {
+    return checks.local
+  },
   hasPublishedPkg: () => false,
-  LOCAL_CHECKS: [],
+  get LOCAL_CHECKS(): LocalCheck[] {
+    return checks.local
+  },
   REMOTE_CHECKS: [],
 }))
 
@@ -25,7 +31,11 @@ const repoWithOrigin = (url: string): string => {
 
 it('reads the repo from the origin of dir, not of the cwd', async () => {
   const dir = repoWithOrigin('git@github.com:a/b.git')
-  expect(await checkLocal({ dir })).toEqual({ repo: 'a/b', results: [] })
+  expect(await checkLocal({ dir })).toEqual({
+    repo: 'a/b',
+    results: [],
+    skipped: [],
+  })
 })
 
 it.each([
@@ -33,4 +43,85 @@ it.each([
   'https://github.com/lzear/lzear.org',
 ])('keeps dots in the repo name of %s', (url) => {
   expect(detectRepo(repoWithOrigin(url))).toBe('lzear/lzear.org')
+})
+
+// ── forge config & --only/--skip ─────────────────────────────────────────────
+
+const passing = (id: string): LocalCheck => ({
+  id,
+  desc: `${id} desc`,
+  type: 'local',
+  check: () => true,
+})
+
+const withForge = (forge?: unknown): string => {
+  checks.local = ['a', 'b', 'c'].map((id) => passing(id))
+  const dir = mkdtempSync(path.join(tmpdir(), 'repo-lint-config-test-'))
+  writeFileSync(
+    path.join(dir, 'package.json'),
+    JSON.stringify(forge === undefined ? {} : { forge }),
+  )
+  return dir
+}
+
+const ids = (results: { id: string }[]): string[] => results.map((r) => r.id)
+
+it('skips the checks the config names, with their reasons', async () => {
+  const dir = withForge({ skip: { b: 'not needed' } })
+  const report = await checkLocal({ dir, repo: 'x' })
+  expect(ids(report.results)).toEqual(['forge-config', 'a', 'c'])
+  expect(report.results[0]?.pass).toBe(true)
+  expect(report.skipped).toEqual([
+    { id: 'b', desc: 'b desc', skipped: 'not needed' },
+  ])
+})
+
+it('adds no config result without a forge field', async () => {
+  const report = await checkLocal({ dir: withForge(), repo: 'x' })
+  expect(ids(report.results)).toEqual(['a', 'b', 'c'])
+})
+
+it.each([
+  [{ skip: { b: ' ' } }, 'skip.b: reason required'],
+  [{ skip: { b: 1 } }, 'skip.b: reason required'],
+  [{ skip: { z: 'why' } }, 'skip.z: unknown check (valid: a, b, c)'],
+  [{ skip: [] }, 'expected { "skip"'],
+  ['nope', 'expected { "skip"'],
+])(
+  'fails the config check on %j, running every check',
+  async (forge, detail) => {
+    const report = await checkLocal({ dir: withForge(forge), repo: 'x' })
+    expect(report.results[0]).toMatchObject({ id: 'forge-config', pass: false })
+    expect(report.results[0]?.detail).toContain(detail)
+    expect(ids(report.results)).toEqual(['forge-config', 'a', 'b', 'c'])
+    expect(report.skipped).toEqual([])
+  },
+)
+
+it('runs only the given checks, skipping others on --skip', async () => {
+  const dir = withForge({ skip: { c: 'config' } })
+  const report = await checkLocal({
+    dir,
+    repo: 'x',
+    only: ['a', 'b', 'c'],
+    skip: ['a'],
+  })
+  expect(ids(report.results)).toEqual(['forge-config', 'b'])
+  expect(report.skipped).toEqual([
+    { id: 'a', desc: 'a desc', skipped: '--skip' },
+    { id: 'c', desc: 'c desc', skipped: 'config' },
+  ])
+  const onlyB = await checkLocal({ dir, repo: 'x', only: ['b'] })
+  expect(ids(onlyB.results)).toEqual(['forge-config', 'b'])
+  expect(onlyB.skipped).toEqual([])
+})
+
+it('throws on unknown ids in only or skip', async () => {
+  const dir = withForge()
+  await expect(checkLocal({ dir, only: ['a', 'zz'] })).rejects.toThrow(
+    'Unknown check: zz (valid: a, b, c)',
+  )
+  await expect(checkLocal({ dir, skip: ['yy'] })).rejects.toThrow(
+    'Unknown check: yy',
+  )
 })

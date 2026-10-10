@@ -9,7 +9,7 @@ Engine behind `forge check`, `forge update` and `forge sync` ([forge](https://gi
 ```ts
 import { checkLocal, runUpdate, syncTemplates } from '@lzear/repo-lint'
 
-const { results } = await checkLocal({ dir, skipRemote }) // [{ pass, desc, detail? }]
+const { results, skipped } = await checkLocal({ dir, skipRemote, only, skip }) // [{ pass, desc, detail? }], [{ id, desc, skipped }]
 const update = await runUpdate({ dir, dry, install })
 const sync = await syncTemplates({ dir, dry }) // [{ file, status }], from templates/
 ```
@@ -37,3 +37,14 @@ const sync = await syncTemplates({ dir, dry }) // [{ file, status }], from templ
 | `deps-fresh`          | dependencies up to date (`ncu`, honors `.ncurc`)          |
 | `deps-release-age`    | package manager installs only versions ≥ 3 days old       |
 | `secret-codacy-token` | GitHub secret `CODACY_PROJECT_TOKEN` is set               |
+| `forge-config`        | the `forge` field below is valid (only when present)      |
+
+## Skipping checks
+
+A repo opts out of a check in its root `package.json`, with a reason (`ForgeConfig`):
+
+```json
+{ "forge": { "skip": { "pkg-attw": "Bun app, nothing published for Node" } } }
+```
+
+An empty reason or an unknown id fails `forge-config`. One run: `forge check --only <ids>` / `--skip <ids>` (comma-separated). Skips show in `--json` as `{ id, desc, skipped: reason }`.
