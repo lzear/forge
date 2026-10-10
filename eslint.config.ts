@@ -10,12 +10,6 @@ const config: Linter.Config[] = [
       'package-json/no-workspace-protocol-in-published-package': 0,
     },
   },
-  {
-    // its tables await Prettier's realignment until the forge-review cli tasks,
-    // which edit them, have landed
-    files: ['packages/repo-lint/README.md'],
-    rules: { 'prettier/prettier': 0 },
-  },
 ]
 
 export default config

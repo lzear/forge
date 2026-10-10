@@ -7,9 +7,20 @@
 Engine behind `forge init`, `forge check`, `forge update` and `forge sync` ([forge](https://github.com/lzear/forge)). Node ≥ 24.
 
 ```ts
-import { checkLocal, initRepo, runUpdate, syncTemplates } from '@lzear/repo-lint'
+import {
+  checkLocal,
+  initRepo,
+  runUpdate,
+  syncTemplates,
+} from '@lzear/repo-lint'
 
-const { results, skipped, fixed } = await checkLocal({ dir, skipRemote, only, skip, fix }) // [{ pass, desc, detail? }], [{ id, desc, skipped }], fix runs: [{ pass, desc, detail? }]
+const { results, skipped, fixed } = await checkLocal({
+  dir,
+  skipRemote,
+  only,
+  skip,
+  fix,
+}) // [{ pass, desc, detail? }], [{ id, desc, skipped }], fix runs: [{ pass, desc, detail? }]
 const update = await runUpdate({ dir, dry, install })
 const sync = await syncTemplates({ dir, dry }) // [{ file, status }], from templates/
 const init = await initRepo({ dir, kind, react, packageManager, dry, version }) // results: [{ file, status, detail? }], next: [steps left], from templates/init/
@@ -18,7 +29,7 @@ const init = await initRepo({ dir, kind, react, packageManager, dry, version }) 
 ## Checks
 
 | Check                 | Passes when                                                                         |
-|-----------------------|-------------------------------------------------------------------------------------|
+| --------------------- | ----------------------------------------------------------------------------------- |
 | `gitignore-env`       | `git check-ignore .env` succeeds                                                    |
 | `readme-exists`       | `README.md` exists                                                                  |
 | `readme-npm-badge`    | README has an npm badge                                                             |
@@ -61,12 +72,12 @@ An empty reason or an unknown id fails `forge-config`. One run: `forge check --o
 
 `forge check --fix` (`checkLocal({ fix: true })`) runs the failing checks' fixes, then every check again; `fixed` (also in `--json`) lists what each changed, or why it couldn't.
 
-| Check              | Fix                                                                                        |
-|--------------------|--------------------------------------------------------------------------------------------|
+| Check              | Fix                                                                                                               |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------- |
 | `git-hooks`        | writes `lefthook.yml`; chains `lefthook install` onto `prepare` (replacing husky), or Bun's `trustedDependencies` |
-| `renovate`         | creates `renovate.json`, or adds `github>lzear/forge` to `extends`                          |
-| `deps-release-age` | sets the age gate (`bunfig.toml`, `.npmrc`, `pnpm-workspace.yaml`, `yarn config set`)      |
-| `template-sync`    | `forge sync`                                                                               |
-| `forge-pins`       | repins forge refs to the latest release: `@<sha> # vX.Y.Z`                                 |
+| `renovate`         | creates `renovate.json`, or adds `github>lzear/forge` to `extends`                                                |
+| `deps-release-age` | sets the age gate (`bunfig.toml`, `.npmrc`, `pnpm-workspace.yaml`, `yarn config set`)                             |
+| `template-sync`    | `forge sync`                                                                                                      |
+| `forge-pins`       | repins forge refs to the latest release: `@<sha> # vX.Y.Z`                                                        |
 
 `deps-fresh` is `forge update`'s job.
