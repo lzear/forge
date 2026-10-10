@@ -12,6 +12,7 @@ import { detectRepo, gitUsername } from './git.ts'
 import { readTemplate, type SyncResult, syncTemplates } from './templates.ts'
 import {
   detectPackageManager,
+  latestPackageManager,
   readJsonFile,
   readPackage,
   writeJsonFile,
@@ -54,6 +55,11 @@ export type InitOptions = {
   the release to pin, skipping the tag lookup; `null` pins `main`
   */
   release?: ForgeRelease | null
+  /**
+  the `packageManager` field to add, skipping the registry lookup; `null`
+  adds none
+  */
+  packageManagerField?: string | null
 }
 
 type Context = {
@@ -61,6 +67,7 @@ type Context = {
   isLib: boolean
   isReact: boolean
   pm: 'bun' | 'yarn'
+  pmField: string | null
   isDry: boolean
 }
 
@@ -121,9 +128,13 @@ const pickMissing = <T>(
 const writePackage = async (context: Context): Promise<InitResult> => {
   const file = 'package.json'
   const f = path.join(context.dir, file)
-  const fields: Record<string, unknown> = context.isLib
-    ? { version: '0.0.0', license: 'MIT' }
-    : { private: true }
+  const fields: Record<string, unknown> = {
+    ...(context.isLib
+      ? { version: '0.0.0', license: 'MIT' }
+      : { private: true }),
+    // before install, no lockfile tells forge check the manager
+    ...(context.pmField && { packageManager: context.pmField }),
+  }
   const scripts = scriptsFor(context)
   if (!existsSync(f)) {
     const package_ = {
@@ -237,6 +248,10 @@ const nextSteps = (
   return [
     ...(missing.length > 0 ? [`${pm} add -D ${missing.join(' ')}`] : []),
     ...(isRelease ? ['yarn changeset init'] : []),
+    ...(context.pmField === null &&
+    readPackage(context.dir)?.packageManager === undefined
+      ? [`registry unreachable: set packageManager to ${pm}@<version>`]
+      : []),
     ...(release
       ? []
       : ['forge tags unreachable, workflows on @main: forge check --fix']),
@@ -251,6 +266,18 @@ const nextSteps = (
   ]
 }
 
+// null when package.json has the field already, or the registry is unreachable
+const resolvePackageManagerField = async (
+  options: InitOptions,
+  { dir, pm }: { dir: string; pm: 'bun' | 'yarn' },
+): Promise<string | null> => {
+  if (options.packageManagerField !== undefined)
+    return options.packageManagerField
+  return readPackage(dir)?.packageManager === undefined
+    ? latestPackageManager(pm).catch(() => null)
+    : null
+}
+
 const resolveRelease = (
   options: InitOptions,
   dir: string,
@@ -262,7 +289,8 @@ const resolveRelease = (
 }
 
 /**
-Scaffolds a forge repo, writing only what is missing: package.json scripts,
+Scaffolds a forge repo, writing only what is missing: package.json scripts and
+`packageManager` (the newest past the age gate),
 tsconfig, ESLint, Vitest and commitlint configs, `renovate.json`, the CI (and,
 for a Yarn library, release) workflow pinned to a forge release, `.gitignore`,
 LICENSE and badged README (libraries), the release-age gate, then
@@ -274,16 +302,21 @@ export const initRepo = async (
   options: InitOptions = {},
 ): Promise<InitReport> => {
   const dir = options.dir ?? process.cwd()
+  const pm =
+    options.packageManager ??
+    (detectPackageManager(dir).name === 'bun' ? 'bun' : 'yarn')
+  const [release, pmField] = await Promise.all([
+    resolveRelease(options, dir),
+    resolvePackageManagerField(options, { dir, pm }),
+  ])
   const context: Context = {
     dir,
     isLib: options.kind !== 'app',
     isReact: options.react ?? false,
-    pm:
-      options.packageManager ??
-      (detectPackageManager(dir).name === 'bun' ? 'bun' : 'yarn'),
+    pm,
+    pmField,
     isDry: options.dry ?? false,
   }
-  const release = await resolveRelease(options, dir)
   const missing = missingDependencies(context)
   const packageName = readPackage(dir)?.name
   const name =

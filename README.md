@@ -30,7 +30,7 @@ yarn add -D @lzear/forge   # or bun add -D
 yarn forge init            # --app, --react, --bun|--yarn, --dry
 ```
 
-`forge init` writes what is missing, never overwriting: `package.json` scripts, `tsconfig.json`, ESLint, Vitest and commitlint configs extending forge's ([configs](packages/configs), [ESLint config](packages/eslint-config)), `renovate.json`, `.github/workflows/main.yml` calling [CI](#ci) (and release, for a Yarn library) pinned to the release, `.gitignore`, LICENSE and a badged README (libraries), the release-age gate and `forge sync`'s files. It prints the steps left (dev deps, `forge setup`, the Codacy project, npm's trusted publisher), then runs `forge check --skip-remote` ([checks](packages/repo-lint#checks); `--fix` repairs some).
+`forge init` writes what is missing, never overwriting: `package.json` scripts and `packageManager` (the newest past the age gate), `tsconfig.json`, ESLint, Vitest and commitlint configs extending forge's ([configs](packages/configs), [ESLint config](packages/eslint-config)), `renovate.json`, `.github/workflows/main.yml` calling [CI](#ci) (and release, for a Yarn library) pinned to the release, `.gitignore`, LICENSE and a badged README (libraries), the release-age gate and `forge sync`'s files. It prints the steps left (dev deps, `forge setup`, the Codacy project, npm's trusted publisher), then runs `forge check --skip-remote` ([checks](packages/repo-lint#checks); `--fix` repairs some).
 
 `lefthook.yml` runs `eslint --fix` on staged files and commitlint, under any package manager.
 

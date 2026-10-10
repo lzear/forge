@@ -247,6 +247,17 @@ const gatedRelease = async (name: string): Promise<Release> => {
   return { version, integrity: data.versions?.[version]?.dist?.integrity }
 }
 
+/**
+The `packageManager` field for a new repo: the newest Bun, or Yarn ≥ 2, past
+the release-age gate, e.g. `yarn@4.10.3`.
+*/
+export const latestPackageManager = async (
+  name: 'bun' | 'yarn',
+): Promise<string> => {
+  const { version } = await gatedRelease(pmRegistryName(name, 4))
+  return `${name}@${version}`
+}
+
 // corepack's `+sha512.<hex>` from the packument's `sha512-<base64>`
 const corepackHash = ({ version, integrity }: Release): string => {
   const [algorithm, digest] = integrity?.split('-', 2) ?? []

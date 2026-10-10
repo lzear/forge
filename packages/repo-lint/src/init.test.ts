@@ -11,6 +11,7 @@ import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { checkLocal } from './index.ts'
 import { type InitOptions, initRepo } from './init.ts'
+import { detectPackageManager } from './update.ts'
 
 const sha = 'a'.repeat(40)
 const release = { tag: 'v4.10.0', sha }
@@ -24,8 +25,9 @@ const repo = (files: Record<string, string> = {}): string => {
   return dir
 }
 
+// the registry stays offline: no packageManager field unless given
 const init = (dir: string, options: InitOptions = {}) =>
-  initRepo({ dir, release, ...options })
+  initRepo({ dir, release, packageManagerField: null, ...options })
 
 const read = (dir: string, file: string): string =>
   readFileSync(path.join(dir, file), 'utf8')
@@ -81,7 +83,10 @@ describe('initRepo', () => {
 
   it('writes the files a Yarn library needs', async () => {
     const dir = repo()
-    const { results, next } = await init(dir, { packageManager: 'yarn' })
+    const { results, next } = await init(dir, {
+      packageManager: 'yarn',
+      packageManagerField: 'yarn@4.10.3',
+    })
     expect(results.every((r) => r.status === 'created')).toBe(true)
     expect(results.map((r) => r.file)).toEqual([
       'package.json',
@@ -105,6 +110,7 @@ describe('initRepo', () => {
       name,
       version: '0.0.0',
       license: 'MIT',
+      packageManager: 'yarn@4.10.3',
       scripts: {
         build: 'tsdown',
         qa: 'yarn build && yarn typecheck && yarn lint && yarn test && yarn forge check',
@@ -160,6 +166,9 @@ describe('initRepo', () => {
     expect(workflow).not.toContain('release')
     expect(workflow).toMatch(/coverage-command: 'bun run test --coverage'\n$/)
     expect(read(dir, 'README.md')).toBe(`# ${path.basename(dir)}\n`)
+    expect(next).toContain(
+      'registry unreachable: set packageManager to bun@<version>',
+    )
     expect(read(dir, 'bunfig.toml')).toBe(
       '[install]\nminimumReleaseAge = 259200\n',
     )
@@ -202,6 +211,15 @@ describe('initRepo', () => {
 
     const again = await init(dir, { packageManager: 'yarn' })
     expect(again.results.every((r) => r.status === 'unchanged')).toBe(true)
+  })
+
+  it('records the manager, which forge check reads before install', async () => {
+    const dir = repo()
+    await init(dir, { packageManager: 'bun', packageManagerField: 'bun@1.3.0' })
+    expect(detectPackageManager(dir)).toMatchObject({
+      name: 'bun',
+      source: 'packageManager',
+    })
   })
 
   it('writes nothing on a dry run', async () => {
