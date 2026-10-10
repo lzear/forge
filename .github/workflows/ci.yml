@@ -10,9 +10,6 @@ on:
         description: defaults to `yarn test --coverage`, or `bun test --coverage --coverage-reporter=lcov` in a Bun repo
         type: string
         default: ''
-      run-check:
-        type: boolean
-        default: true
     secrets:
       CODACY_PROJECT_TOKEN:
         required: false
@@ -57,7 +54,7 @@ jobs:
       # packageManager-pinned yarn, not the runner's preinstalled one
       - if: steps.pm.outputs.name == 'yarn'
         run: corepack enable
-      # Bun repos still need node: forge, fallow and e18e run on it
+      # Bun repos still need node: bins with a node shebang run on it
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ inputs.node-version }}
@@ -76,43 +73,6 @@ jobs:
       - run: ${RUN} typecheck
       - run: ${RUN} lint
       - run: ${COVERAGE_COMMAND}
-      - run: ${RUN} forge check --skip-remote
-        if: ${{ inputs.run-check }}
-        continue-on-error: true
-      # advisory: annotates duplication and complexity, `forge check` gates dead code
-      - uses: fallow-rs/fallow@71369f80d099e25726ad04382f15aef14a251abc # v3.31.0
-        continue-on-error: true
-        with:
-          command: dupes
-          fail-on-issues: false
-          branded-token: false
-      # fallow takes one coverage file; without one it scores every function
-      # as untested. Istanbul maps are keyed by file, so merging is a union.
-      - name: merge coverage for fallow
-        id: fallow-coverage
-        run: |
-          files=$(find . -name node_modules -prune -o -name coverage-final.json -print)
-          [ -z "$files" ] && exit 0
-          out="$RUNNER_TEMP/coverage-final.json"
-          jq -s add $files > "$out"
-          echo "path=$out" >> "$GITHUB_OUTPUT"
-      - uses: fallow-rs/fallow@71369f80d099e25726ad04382f15aef14a251abc # v3.31.0
-        continue-on-error: true
-        with:
-          command: health
-          coverage: ${{ steps.fallow-coverage.outputs.path }}
-          fail-on-issues: false
-          branded-token: false
-      # advisory: annotates e18e's lighter/native alternatives and publint hints,
-      # minus duplicate deps (dozens per repo, mostly transitive)
-      - name: e18e analyze
-        continue-on-error: true
-        run: |
-          out="$RUNNER_TEMP/e18e.json"
-          npx --yes @e18e/cli@0.7.0 analyze --json --log-level error --report-level info > "$out"
-          jq -r '.messages[]
-            | select(.message | startswith("[duplicate dependency]") | not)
-            | "::\(if .severity == "error" or .severity == "warning" then .severity else "notice" end) title=e18e::\(.message | gsub("\n"; "%0A"))"' "$out"
       - name: collect coverage paths
         id: coverage
         run: |

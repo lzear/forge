@@ -20,8 +20,8 @@ const config: ViteUserConfig = defineConfig({
     globals: true,
     coverage: {
       provider: 'v8',
-      // agents re-read output: a summary; json and lcov stay for Codacy and fallow
-      reporter: ['json', 'lcov', isAgent ? 'text-summary' : 'text'],
+      // agents re-read output: a summary; lcov stays for Codacy
+      reporter: ['lcov', isAgent ? 'text-summary' : 'text'],
     },
   },
 })

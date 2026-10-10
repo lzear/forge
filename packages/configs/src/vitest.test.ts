@@ -16,22 +16,17 @@ describe('vitest config', () => {
   })
 
   it('prints the full coverage table by default', async () => {
-    expect(await reporters('./vitest.ts')).toEqual(['json', 'lcov', 'text'])
+    expect(await reporters('./vitest.ts')).toEqual(['lcov', 'text'])
   })
 
   it('prints a coverage summary under an agent', async () => {
     environment.isAgent = true
-    expect(await reporters('./vitest.ts')).toEqual([
-      'json',
-      'lcov',
-      'text-summary',
-    ])
+    expect(await reporters('./vitest.ts')).toEqual(['lcov', 'text-summary'])
   })
 
   it('react inherits the reporters', async () => {
     environment.isAgent = true
     expect(await reporters('./vitest.react.ts')).toEqual([
-      'json',
       'lcov',
       'text-summary',
     ])

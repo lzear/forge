@@ -34,11 +34,11 @@ yarn forge init            # --app, --react, --bun|--yarn, --dry
 
 `lefthook.yml` runs `eslint --fix` on staged files and commitlint, under any package manager.
 
-Complements [e18e](https://e18e.dev): the ESLint config runs `e18e/ban-dependencies`, CI runs `e18e analyze`.
+Complements [e18e](https://e18e.dev): the ESLint config runs `e18e/ban-dependencies`.
 
 ## CI
 
-Call the reusable workflow, SHA-pinned (renovate bumps it). It runs the `build`, `typecheck`, `lint` and `test` scripts (tests with coverage), then advisory `forge check`, fallow and `e18e analyze`, uploads coverage to Codacy, audits workflows with zizmor and gates on a gitleaks secret scan of the pushed or PR commit range. A `bun.lock` switches it to Bun.
+Call the reusable workflow, SHA-pinned (renovate bumps it). It runs the `build`, `typecheck`, `lint` and `test` scripts (tests with coverage), uploads coverage to Codacy when `CODACY_PROJECT_TOKEN` is set, audits workflows with zizmor and gates on a gitleaks secret scan of the pushed or PR commit range. A `bun.lock` switches it to Bun.
 
 ```yaml
 on:
@@ -54,7 +54,6 @@ jobs:
     # with:
     #   node-version: '26'
     #   coverage-command: yarn test --coverage
-    #   run-check: true # forge check
   release:
     if: github.event_name == 'push'
     needs: ci

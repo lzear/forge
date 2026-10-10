@@ -21,7 +21,6 @@ yarn zizmor                                          # audit workflows (brew/uv 
 - Consumers pin forge workflows by SHA: rewriting history orphans them (zizmor `impostor-commit`; lzear.org's deploy needs its CI).
 - `@lzear/eslint-config` loads Prettier last so it overrides the rest.
 - Builds emit dts with oxc: an exported value needs a type `isolatedDeclarations` can read (TS9017 on an untyped array; TS9010 on a regex, whose `: RegExp` lint strips: export a function using it). JSR checks the same, but not on npm-only `eslint-config`.
-- `fallow health` CRAP findings mean missing coverage, not complexity: add tests.
 - Release-age gate: Bun's `minimumReleaseAgeExcludes` takes exact names, no globs. Never adopt a dep younger than the gate, even by hand. `bun audit` can't ignore advisories from bunfig (`--ignore` is CLI-only).
 - Shared files' source: `packages/repo-lint/templates/`, shipped with the package (`forge sync`, `template-sync` check). Edit there, then `yarn build && yarn forge sync`: it rewrites the root copies and `template/`, which forge ≤ 4.10 fetches from `main`; the check fails on drift. `forge init`'s live in `templates/init/`, `{{key}}` placeholders, `.ts`/`tsconfig.json` ones extensionless so lint, tsc and fallow skip them; each template is a `package.json` export (and `.attw.json` exclude).
 - Output quiets under coding agents through std-env's `isAgent`, the signal Vitest reads for its `minimal` reporter. Tests of agent-dependent output mock `std-env`: Vitest itself runs under the agent.
