@@ -22,7 +22,7 @@ const { results, skipped, fixed } = await checkLocal({
   fix,
 }) // [{ pass, desc, detail? }], [{ id, desc, skipped }], fix runs: [{ pass, desc, detail? }]
 const update = await runUpdate({ dir, dry, install })
-const sync = await syncTemplates({ dir, dry }) // [{ file, status }], from templates/
+const sync = await syncTemplates({ dir, dry, published }) // [{ file, status }], from templates/; `.codacy.yml` only if published
 const init = await initRepo({ dir, kind, react, packageManager, dry, version }) // results: [{ file, status, detail? }], next: [steps left], from templates/init/
 ```
 

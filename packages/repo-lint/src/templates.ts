@@ -30,15 +30,20 @@ Options for {@linkcode syncTemplates}.
 export type SyncOptions = {
   dir?: string
   dry?: boolean
+  published?: boolean
 }
 
 // bundled template (`templates/`, dotless: package tools skip dotfiles) -> file
 const TEMPLATES: Record<string, string> = {
   '.editorconfig': 'editorconfig',
-  '.codacy.yml': 'codacy.yml',
   'lefthook.yml': 'lefthook.yml',
   // shared as-is: allows @main refs to forge, hash-pins everything else
   '.github/zizmor.yml': 'zizmor.yml',
+}
+
+// published repos only, like the codacy check
+const PUBLISHED_TEMPLATES: Record<string, string> = {
+  '.codacy.yml': 'codacy.yml',
 }
 
 // forge <= 4.10 fetches these from forge's main branch
@@ -46,6 +51,17 @@ const LEGACY_COPIES: Record<string, string> = {
   'template/.editorconfig': 'editorconfig',
   'template/.codacy.yml': 'codacy.yml',
   'template/lefthook.yml': 'lefthook.yml',
+}
+
+/**
+The repo, or one of its workspaces, publishes a package (is not `private`).
+*/
+export const hasPublishedPkg = (dir: string): boolean => {
+  const package_ = readPackage(dir)
+  return package_
+    ? package_.private !== true ||
+        getWorkspaceDirectories(dir).some((d) => hasPublishedPkg(d))
+    : false
 }
 
 /**
@@ -90,23 +106,30 @@ export const syncTemplate = async (
   dir: string,
   file: string,
 ): Promise<SyncResult> => {
-  const template = TEMPLATES[file]
+  const template = TEMPLATES[file] ?? PUBLISHED_TEMPLATES[file]
   if (!template) throw new Error(`no template for ${file}`)
   return syncFile(dir, file, template, false)
 }
 
 /**
-Writes forge's shared files (`.editorconfig`, `.codacy.yml`, `lefthook.yml`,
-`.github/zizmor.yml`) from the templates bundled with this version.
+Writes forge's shared files (`.editorconfig`, `lefthook.yml`,
+`.github/zizmor.yml`, and `.codacy.yml` in a repo that publishes) from the
+templates bundled with this version.
 
-@param options `dir` defaults to the cwd, `dry` writes nothing
+@param options `dir` defaults to the cwd, `dry` writes nothing, `published`
+overrides {@linkcode hasPublishedPkg}
 */
 export const syncTemplates = async (
   options: SyncOptions = {},
 ): Promise<SyncReport> => {
-  const { dir = process.cwd(), dry: isDry = false } = options
+  const {
+    dir = process.cwd(),
+    dry: isDry = false,
+    published: isPublished = hasPublishedPkg(dir),
+  } = options
   const files = {
     ...TEMPLATES,
+    ...(isPublished && PUBLISHED_TEMPLATES),
     ...(isForgeRepo(dir) && LEGACY_COPIES),
   }
   const results = await Promise.all(

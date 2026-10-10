@@ -333,7 +333,11 @@ export const initRepo = async (
   const copy = async (file: string, template: string): Promise<InitResult> =>
     writeNew(context, file, await render(template, variables))
   const readme = await render('init/README.md', variables)
-  const sync = await syncTemplates({ dir, dry: context.isDry })
+  const sync = await syncTemplates({
+    dir,
+    dry: context.isDry,
+    published: context.isLib,
+  })
 
   const results = [
     await writePackage(context),

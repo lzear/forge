@@ -122,14 +122,6 @@ const eachPublishedPackage = async (
   return function_(dir)
 }
 
-export const hasPublishedPkg = (dir: string): boolean => {
-  const package_ = readPackage(dir)
-  return package_
-    ? package_.private !== true ||
-        getWorkspaceDirectories(dir).some((d) => hasPublishedPkg(d))
-    : false
-}
-
 const readmeIncludes = (dir: string, needle: string): boolean => {
   const f = path.join(dir, 'README.md')
   return existsSync(f) && readFileSync(f, 'utf8').includes(needle)

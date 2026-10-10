@@ -18,11 +18,11 @@ import {
   type CheckDetail,
   CHECKS,
   ghProblem,
-  hasPublishedPkg as hasPublishedPackage,
   LOCAL_CHECKS,
   REMOTE_CHECKS,
 } from './checks.ts'
 import { detectRepo } from './git.ts'
+import { hasPublishedPkg as hasPublishedPackage } from './templates.ts'
 import { readPackage } from './update.ts'
 
 export type {

@@ -16,7 +16,6 @@ vi.mock('./checks.ts', () => ({
     return [...checks.local, ...checks.remote]
   },
   ghProblem: () => Promise.resolve(checks.ghProblem),
-  hasPublishedPkg: () => false,
   get LOCAL_CHECKS(): LocalCheck[] {
     return checks.local
   },

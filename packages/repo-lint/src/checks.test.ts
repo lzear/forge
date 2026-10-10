@@ -439,12 +439,21 @@ describe('LOCAL_CHECKS', () => {
         pass: false,
         detail: [
           '.editorconfig missing',
-          '.codacy.yml missing',
           'lefthook.yml differs',
           '.github/zizmor.yml missing',
           'Run: forge sync',
         ].join('\n'),
       })
+    })
+    it('wants .codacy.yml only where a package is published', async () => {
+      await syncTemplates({ dir })
+      write(dir, 'package.json', JSON.stringify({ name: 'lib' }))
+      expect(await check('template-sync', dir)).toEqual({
+        pass: false,
+        detail: '.codacy.yml missing\nRun: forge sync',
+      })
+      write(dir, 'package.json', JSON.stringify({ private: true }))
+      expect(await check('template-sync', dir)).toBe(true)
     })
     it('passes once synced', async () => {
       await syncTemplates({ dir })

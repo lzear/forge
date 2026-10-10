@@ -101,9 +101,9 @@ describe('initRepo', () => {
       'README.md',
       '.yarnrc.yml',
       '.editorconfig',
-      '.codacy.yml',
       'lefthook.yml',
       '.github/zizmor.yml',
+      '.codacy.yml',
     ])
     const name = path.basename(dir)
     expect(readJson(dir, 'package.json')).toMatchObject({
@@ -151,6 +151,7 @@ describe('initRepo', () => {
     const dir = repo({ 'bun.lock': BUN_LOCK })
     const { results, next } = await init(dir, { kind: 'app', react: true })
     expect(results.map((r) => r.file)).not.toContain('LICENSE')
+    expect(results.map((r) => r.file)).not.toContain('.codacy.yml')
     expect(readJson(dir, 'package.json')).toMatchObject({
       private: true,
       scripts: { build: 'vite build', qa: expect.stringMatching(/^bun run /) },
