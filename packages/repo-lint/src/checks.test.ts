@@ -7,6 +7,7 @@ import { publint } from 'publint'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   type CheckDetail,
+  forgeRelease,
   ghProblem,
   latestForgeRelease,
   listSecrets,
@@ -353,6 +354,19 @@ describe('LOCAL_CHECKS', () => {
       })
       mockSpawn(128)
       expect(await latestForgeRelease(dir)).toBeNull()
+    })
+    it('forgeRelease gives the version tag, else the newest', async () => {
+      mockSpawn(0, LS_REMOTE)
+      expect(await forgeRelease('4.9.0', dir)).toEqual({
+        tag: 'v4.9.0',
+        sha: sha('c'),
+      })
+      expect(await forgeRelease('9.9.9', dir)).toEqual({
+        tag: 'v4.10.0',
+        sha: sha('b'),
+      })
+      mockSpawn(128)
+      expect(await forgeRelease('4.9.0', dir)).toBeNull()
     })
   })
 

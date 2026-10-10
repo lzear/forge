@@ -26,12 +26,13 @@
 ## Adopt
 
 ```sh
-yarn add -D @lzear/forge lefthook @commitlint/cli
-yarn forge sync    # .editorconfig, .codacy.yml, lefthook.yml, .github/zizmor.yml, from this version
-yarn forge setup   # CODACY_PROJECT_TOKEN secret
+yarn add -D @lzear/forge   # or bun add -D
+yarn forge init            # --app, --react, --bun|--yarn, --dry
 ```
 
-`lefthook.yml` runs `eslint --fix` on staged files and commitlint, under any package manager. Add a `commitlint.config.ts` (`export { default } from '@lzear/forge/commitlint'`) and, with Yarn, `"prepare": "lefthook install"` (Bun runs lefthook's postinstall). Then extend the [configs](packages/configs) and [ESLint config](packages/eslint-config), wire up [CI](#ci) and Renovate, and run `yarn forge check` until it passes ([checks](packages/repo-lint#checks); `--fix` repairs some).
+`forge init` writes what is missing, never overwriting: `package.json` scripts, `tsconfig.json`, ESLint, Vitest and commitlint configs extending forge's ([configs](packages/configs), [ESLint config](packages/eslint-config)), `renovate.json`, `.github/workflows/main.yml` calling [CI](#ci) (and release, for a Yarn library) pinned to the release, `.gitignore`, LICENSE and a badged README (libraries), the release-age gate and `forge sync`'s files. It prints the steps left (dev deps, `forge setup`, the Codacy project, npm's trusted publisher), then runs `forge check --skip-remote` ([checks](packages/repo-lint#checks); `--fix` repairs some).
+
+`lefthook.yml` runs `eslint --fix` on staged files and commitlint, under any package manager.
 
 Complements [e18e](https://e18e.dev): the ESLint config runs `e18e/ban-dependencies`, CI runs `e18e analyze`.
 

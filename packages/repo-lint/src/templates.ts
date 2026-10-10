@@ -57,7 +57,7 @@ export const isForgeRepo = (dir: string): boolean =>
   )
 
 // from JSR, the module (and its templates) sits behind an https URL
-const readTemplate = async (name: string): Promise<string> => {
+export const readTemplate = async (name: string): Promise<string> => {
   // a string: Deno's global URL type is not node:url's
   const url = new URL(`../templates/${name}`, import.meta.url).href
   if (url.startsWith('file:')) return readFile(fileURLToPath(url), 'utf8')

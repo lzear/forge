@@ -202,6 +202,20 @@ export const latestForgeRelease = async (
   return tags && newestRelease(tags)
 }
 
+/**
+The forge release tagged `v<version>`, else the newest, or `null` offline.
+*/
+export const forgeRelease = async (
+  version: string,
+  cwd: string = process.cwd(),
+): Promise<ForgeRelease | null> => {
+  const tags = await forgeTags(cwd)
+  if (!tags) return null
+  const tag = `v${version}`
+  const sha = tags.get(tag)
+  return sha ? { tag, sha } : newestRelease(tags)
+}
+
 type ForgePin = { file: string; path: string; ref: string; comment?: string }
 
 const forgePinFiles = (dir: string): string[] => {
@@ -357,20 +371,35 @@ const RELEASE_AGE: Record<
   yarn: ['.yarnrc.yml', 'npmMinimalAgeGate', 1440],
 }
 
-// how each file-based config writes its line
-const RELEASE_AGE_SEPARATOR: Record<
-  Exclude<PackageManagerName, 'yarn'>,
-  string
-> = { bun: ' = ', npm: '=', pnpm: ': ' }
+// how each config writes its line; yarn's value is `3d`
+const RELEASE_AGE_SEPARATOR: Record<PackageManagerName, string> = {
+  bun: ' = ',
+  npm: '=',
+  pnpm: ': ',
+  yarn: ': ',
+}
 
-// replaces the key's line, else adds it (to bunfig.toml's `[install]`)
-const withReleaseAge = (
+/**
+Where `pm` sets the minimum release age, and the line setting forge's gate.
+*/
+export const releaseAgeSetting = (
+  pm: PackageManagerName,
+): { file: string; key: string; line: string } => {
+  const [file, key, perDay] = RELEASE_AGE[pm]
+  const value =
+    pm === 'yarn' ? `${MIN_RELEASE_AGE_DAYS}d` : MIN_RELEASE_AGE_DAYS * perDay
+  return { file, key, line: `${key}${RELEASE_AGE_SEPARATOR[pm]}${value}` }
+}
+
+/**
+`config` with `pm`'s gate line replacing the key's, else added (to
+bunfig.toml's `[install]`).
+*/
+export const withReleaseAge = (
   config: string,
-  pm: Exclude<PackageManagerName, 'yarn'>,
-  key: string,
-  value: number,
+  pm: PackageManagerName,
 ): string => {
-  const line = `${key}${RELEASE_AGE_SEPARATOR[pm]}${value}`
+  const { key, line } = releaseAgeSetting(pm)
   const existing = new RegExp(String.raw`^${key}\s*[=:].*$`, 'm')
   if (existing.test(config)) return config.replace(existing, () => line)
   const install = /^\[install\][ \t]*$/m
@@ -833,7 +862,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
       const { name, version } = detectPackageManager(dir)
       if (name === 'yarn' && version?.startsWith('1.'))
         throw new Error('Yarn 1 has none; move to Yarn 4')
-      const [file, key, perDay] = RELEASE_AGE[name]
+      const [file, key] = RELEASE_AGE[name]
       if (name === 'yarn') {
         const gate = `${MIN_RELEASE_AGE_DAYS}d`
         const r = await run('yarn', ['config', 'set', key, gate], { cwd: dir })
@@ -841,11 +870,10 @@ export const LOCAL_CHECKS: LocalCheck[] = [
           throw new Error(head(r.stdout + r.stderr) || String(r.error))
         return `${key}: ${gate} in ${file}`
       }
-      const value = MIN_RELEASE_AGE_DAYS * perDay
       const f = path.join(dir, file)
       const config = existsSync(f) ? readFileSync(f, 'utf8') : ''
-      writeFileSync(f, withReleaseAge(config, name, key, value), 'utf8')
-      return `${key}${RELEASE_AGE_SEPARATOR[name]}${value} in ${file}`
+      writeFileSync(f, withReleaseAge(config, name), 'utf8')
+      return `${releaseAgeSetting(name).line} in ${file}`
     },
   },
 ]

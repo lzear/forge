@@ -12,7 +12,6 @@ for (const r of results) console.log(r.pass ? '✓' : '✗', r.desc)
 @module
 */
 
-import { execFileSync } from 'node:child_process'
 import path from 'node:path'
 import {
   type Check,
@@ -23,6 +22,7 @@ import {
   LOCAL_CHECKS,
   REMOTE_CHECKS,
 } from './checks.ts'
+import { detectRepo } from './git.ts'
 import { readPackage } from './update.ts'
 
 export type {
@@ -136,6 +136,18 @@ const toResult = (c: Check, raw: boolean | CheckDetail): CheckResult =>
 const errorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
 
+// a check that throws fails alone, not the whole run
+const settle = async (
+  c: Check,
+  check: () => ReturnType<Check['check']>,
+): Promise<CheckResult> => {
+  try {
+    return toResult(c, await check())
+  } catch (error) {
+    return { id: c.id, desc: c.desc, pass: false, detail: errorMessage(error) }
+  }
+}
+
 // one failing result when `gh` can't run them, rather than one per check
 const runRemoteChecks = async (
   dir: string,
@@ -145,21 +157,9 @@ const runRemoteChecks = async (
   const checks = REMOTE_CHECKS.filter((c) => isApplicable(c))
   if (checks.length === 0) return []
   const problem = await ghProblem(dir)
-  if (problem) return [{ ...GH_CHECK, pass: false, detail: problem }]
-  return Promise.all(
-    checks.map(async (c) => {
-      try {
-        return toResult(c, await c.check(repo, dir))
-      } catch (error) {
-        return {
-          id: c.id,
-          desc: c.desc,
-          pass: false,
-          detail: errorMessage(error),
-        }
-      }
-    }),
-  )
+  return problem
+    ? [{ ...GH_CHECK, pass: false, detail: problem }]
+    : Promise.all(checks.map((c) => settle(c, () => c.check(repo, dir))))
 }
 
 const runChecks = async (
@@ -169,8 +169,8 @@ const runChecks = async (
 ): Promise<CheckResult[]> => {
   const [localResults, remoteResults] = await Promise.all([
     Promise.all(
-      LOCAL_CHECKS.filter((c) => isApplicable(c)).map(async (c) =>
-        toResult(c, await c.check(dir)),
+      LOCAL_CHECKS.filter((c) => isApplicable(c)).map((c) =>
+        settle(c, () => c.check(dir)),
       ),
     ),
     runRemoteChecks(dir, repo, isApplicable),
@@ -204,22 +204,6 @@ const runFixes = async (
     }
   }
   return fixed
-}
-
-/**
-Reads `owner/repo` from the GitHub `origin` remote of `dir`.
-*/
-export const detectRepo = (dir: string = process.cwd()): string | undefined => {
-  try {
-    const remote = execFileSync('git', ['remote', 'get-url', 'origin'], {
-      cwd: dir,
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-    }).trim()
-    return /github\.com[:/](.+?)(?:\.git)?$/.exec(remote)?.[1]
-  } catch {
-    return undefined
-  }
 }
 
 /**
@@ -303,6 +287,9 @@ export {
   LOCAL_CHECKS,
   REMOTE_CHECKS,
 } from './checks.ts'
+export { detectRepo } from './git.ts'
+export type { InitOptions, InitReport, InitResult } from './init.ts'
+export { initRepo } from './init.ts'
 export type {
   SyncOptions,
   SyncReport,

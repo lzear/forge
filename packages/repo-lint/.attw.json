@@ -2,6 +2,15 @@
   "excludeEntrypoints": [
     "./templates/codacy.yml",
     "./templates/editorconfig",
+    "./templates/init/LICENSE",
+    "./templates/init/README.md",
+    "./templates/init/commitlint.config",
+    "./templates/init/eslint.config",
+    "./templates/init/gitignore",
+    "./templates/init/main.yml",
+    "./templates/init/renovate.json",
+    "./templates/init/tsconfig",
+    "./templates/init/vitest.config",
     "./templates/lefthook.yml",
     "./templates/zizmor.yml"
   ]

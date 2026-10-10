@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
-The `forge` CLI: `check`, `update`, `setup` and `sync`.
+The `forge` CLI: `init`, `check`, `update`, `setup` and `sync`.
 
 ```sh
 npx @lzear/forge check
@@ -13,12 +13,14 @@ npx @lzear/forge check
 import { spawnSync } from 'node:child_process'
 import { createRequire } from 'node:module'
 import * as clack from '@clack/prompts'
-import { Command } from 'commander'
+import { Command, Option } from 'commander'
 import pc from 'picocolors'
 import { isAgent } from 'std-env'
 import {
   checkLocal,
   detectRepo,
+  initRepo,
+  type InitReport,
   listSecrets,
   type PackageManager,
   type RepoReport,
@@ -334,6 +336,61 @@ program
     log.outro(isDrift ? pc.red('Drifted. Run: forge sync') : pc.green('Done.'))
     if (isDrift) process.exit(1)
   })
+
+const INIT_LABELS: Record<SyncStatus, [string, string]> = {
+  unchanged: ['(exists)', '(exists)'],
+  created: ['(created)', '(would create)'],
+  updated: ['(updated)', '(would update)'],
+}
+
+const printInitReport = (report: InitReport, isDry: boolean): void => {
+  for (const { file, status, detail } of report.results) {
+    const label = pc.dim(INIT_LABELS[status][isDry ? 1 : 0])
+    const mark = status === 'unchanged' ? pc.dim('·') : pc.cyan('⚒')
+    process.stdout.write(`  ${mark}  ${file} ${label}\n`)
+    const lines = detail?.split('\n') ?? []
+    for (const line of lines) process.stdout.write(`       ${pc.dim(line)}\n`)
+  }
+  process.stdout.write(`\n  ${pc.bold('Next')}\n`)
+  for (const step of report.next) process.stdout.write(`  →  ${step}\n`)
+}
+
+program
+  .command('init')
+  .description('scaffold the missing forge files, then check')
+  .addOption(new Option('--lib', 'a published library (default)'))
+  .addOption(new Option('--app', 'a private app').conflicts('lib'))
+  .option('--react', 'React tsconfig and Vitest config', false)
+  .addOption(new Option('--bun', 'Bun (default when bun.lock exists)'))
+  .addOption(new Option('--yarn', 'Yarn').conflicts('bun'))
+  .option('--dry', 'print what would be written, do not write', false)
+  .action(
+    async (options: {
+      app?: boolean
+      react: boolean
+      bun?: boolean
+      yarn?: boolean
+      dry: boolean
+    }) => {
+      const { dry: isDry } = options
+      process.stdout.write(
+        `\n  ${pc.bold('forge init')}${isDry ? pc.dim(' (dry run)') : ''}\n\n`,
+      )
+      const packageManager = options.bun ? 'bun' : options.yarn && 'yarn'
+      const report = await initRepo({
+        kind: options.app ? 'app' : 'lib',
+        react: options.react,
+        ...(packageManager && { packageManager }),
+        dry: isDry,
+        version,
+      })
+      printInitReport(report, isDry)
+      if (isDry) return
+      process.stdout.write(`\n  ${pc.bold('forge check --skip-remote')}\n\n`)
+      const result = await checkLocal({ skipRemote: true })
+      process.exit(printResults(result, false) ? 1 : 0)
+    },
+  )
 
 const handleSignal = () => {
   if (isTTY) clack.cancel('Cancelled.')

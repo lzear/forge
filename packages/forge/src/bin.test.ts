@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   checkLocal,
   detectRepo,
+  initRepo,
   listSecrets,
   type RepoReport,
   runUpdate,
@@ -15,6 +16,7 @@ import {
 vi.mock('@lzear/repo-lint', () => ({
   checkLocal: vi.fn(),
   detectRepo: vi.fn(),
+  initRepo: vi.fn(),
   listSecrets: vi.fn(),
   runUpdate: vi.fn(),
   syncTemplates: vi.fn(),
@@ -106,6 +108,18 @@ const mockSync = (...statuses: SyncStatus[]): void => {
   vi.mocked(syncTemplates).mockResolvedValue({
     dir: '/r',
     results: statuses.map((status, index) => ({ file: `f${index}`, status })),
+  })
+}
+
+const mockInit = (): void => {
+  vi.mocked(initRepo).mockResolvedValue({
+    dir: '/r',
+    results: [
+      { file: 'tsconfig.json', status: 'created' },
+      { file: 'package.json', status: 'updated', detail: 'scripts: + qa' },
+      { file: 'LICENSE', status: 'unchanged' },
+    ],
+    next: ['forge setup'],
   })
 }
 
@@ -390,6 +404,47 @@ describe('forge sync', () => {
     vi.mocked(syncTemplates).mockRejectedValue(new Error('EACCES'))
     expect(await run('sync')).toBe(1)
     expect(printed()).toContain('EACCES')
+  })
+})
+
+describe('forge init', () => {
+  it('writes the files and next steps, then checks without remote', async () => {
+    mockInit()
+    vi.mocked(checkLocal).mockResolvedValue(report(true, false))
+    expect(await run('init', '--app', '--react', '--bun')).toBe(1)
+    expect(initRepo).toHaveBeenCalledWith({
+      kind: 'app',
+      react: true,
+      packageManager: 'bun',
+      dry: false,
+      version: expect.any(String),
+    })
+    expect(checkLocal).toHaveBeenCalledWith({ skipRemote: true })
+    expect(printed()).toContain('tsconfig.json (created)')
+    expect(printed()).toContain('package.json (updated)')
+    expect(printed()).toContain('scripts: + qa')
+    expect(printed()).toContain('LICENSE (exists)')
+    expect(printed()).toContain('→  forge setup')
+    expect(printed()).toContain('1/2')
+  })
+
+  it('previews on --dry, without checking', async () => {
+    mockInit()
+    expect(await run('init', '--dry')).toBeUndefined()
+    expect(initRepo).toHaveBeenCalledWith({
+      kind: 'lib',
+      react: false,
+      dry: true,
+      version: expect.any(String),
+    })
+    expect(printed()).toContain('tsconfig.json (would create)')
+    expect(checkLocal).not.toHaveBeenCalled()
+  })
+
+  it('rejects --app with --lib', async () => {
+    expect(await run('init', '--app', '--lib')).toBe(1)
+    expect(printed()).toContain("'--app' cannot be used with option '--lib'")
+    expect(initRepo).not.toHaveBeenCalled()
   })
 })
 

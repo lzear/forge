@@ -4,14 +4,15 @@
 [![jsr](https://jsr.io/badges/@lzear/repo-lint)](https://jsr.io/@lzear/repo-lint)
 [![license](https://img.shields.io/npm/l/@lzear/repo-lint)](../../LICENSE)
 
-Engine behind `forge check`, `forge update` and `forge sync` ([forge](https://github.com/lzear/forge)). Node ≥ 24.
+Engine behind `forge init`, `forge check`, `forge update` and `forge sync` ([forge](https://github.com/lzear/forge)). Node ≥ 24.
 
 ```ts
-import { checkLocal, runUpdate, syncTemplates } from '@lzear/repo-lint'
+import { checkLocal, initRepo, runUpdate, syncTemplates } from '@lzear/repo-lint'
 
 const { results, skipped, fixed } = await checkLocal({ dir, skipRemote, only, skip, fix }) // [{ pass, desc, detail? }], [{ id, desc, skipped }], fix runs: [{ pass, desc, detail? }]
 const update = await runUpdate({ dir, dry, install })
 const sync = await syncTemplates({ dir, dry }) // [{ file, status }], from templates/
+const init = await initRepo({ dir, kind, react, packageManager, dry, version }) // results: [{ file, status, detail? }], next: [steps left], from templates/init/
 ```
 
 ## Checks
