@@ -38,9 +38,14 @@ Complements [e18e](https://e18e.dev): the ESLint config runs `e18e/ban-dependenc
 
 ## CI
 
-Call the reusable workflow, SHA-pinned (renovate bumps it). It runs the `build`, `typecheck`, `lint` and `test` scripts (tests with coverage), then advisory `forge check`, fallow and `e18e analyze`, uploads coverage to Codacy and audits workflows with zizmor. A `bun.lock` switches it to Bun.
+Call the reusable workflow, SHA-pinned (renovate bumps it). It runs the `build`, `typecheck`, `lint` and `test` scripts (tests with coverage), then advisory `forge check`, fallow and `e18e analyze`, uploads coverage to Codacy, audits workflows with zizmor and gates on a gitleaks secret scan of the pushed or PR commit range. A `bun.lock` switches it to Bun.
 
 ```yaml
+on:
+  push:
+    branches: [main]
+  pull_request: # one run per PR push
+
 jobs:
   ci:
     uses: lzear/forge/.github/workflows/ci.yml@<sha> # v4.3.0
