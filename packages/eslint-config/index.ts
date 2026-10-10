@@ -17,7 +17,7 @@ export { ignores } from './configs/ignores'
 export { node } from './configs/node'
 export { packageJson } from './configs/package-json'
 export { prettier } from './configs/prettier'
-export { react } from './configs/react'
+export { react, RESTRICTED_SYNTAX } from './configs/react'
 export { typescript } from './configs/typescript'
 export { vitest } from './configs/vitest'
 
@@ -67,6 +67,14 @@ const configGenerator = async (
     a11y(config),
     reactConfig,
     nodeConfig,
+    config.node && config.react
+      ? {
+          name: 'lzear/node-browser',
+          files: FILES.REACT,
+          // JSX/TSX is browser code: fetch, navigator… aren't Node's to gate
+          rules: { 'n/no-unsupported-features/node-builtins': 0 as const },
+        }
+      : [],
     typescriptConfig,
     vitestConfig,
     packageJson(),

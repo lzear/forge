@@ -85,9 +85,14 @@ export const core = (local?: string): Linter.Config => {
     ...regexpPlugin.configs.recommended.rules,
 
     ...sonarRules,
-    'sonarjs/argument-type': 0, // ?
+    // no CDK in any repo
+    ...Object.fromEntries(
+      Object.keys(sonarRules ?? {})
+        .filter((rule) => rule.startsWith('sonarjs/aws-'))
+        .map((rule) => [rule, 0 as const]),
+    ),
     'sonarjs/fixme-tag': 0,
-    'sonarjs/function-return-type': 0, // ?
+    'sonarjs/function-return-type': 0, // flags any union return (`T | undefined`)
     'sonarjs/jsx-no-leaked-render': 0, // false positives (not checking types)
     'sonarjs/no-invariant-returns': 0, // annoying
     'sonarjs/no-nested-conditional': 0, // unnecessary
@@ -100,6 +105,8 @@ export const core = (local?: string): Linter.Config => {
 
     ...unicornPlugin.configs.recommended.rules,
     'unicorn/consistent-boolean-name': 0, // a bit annoying
+    // `inline` wants a function declaration, which prefer-arrow forbids
+    'unicorn/default-export-style': [2, { functions: 'separate' }],
     'unicorn/name-replacements': 0, // i like my abbreviations
     'unicorn/no-abusive-eslint-disable': 0,
     'unicorn/no-null': 0,

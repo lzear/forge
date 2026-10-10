@@ -3,6 +3,15 @@ import type { ConfigOptions } from '../index'
 import { interopDefault } from '../utils'
 import * as FILES from './files'
 
+// spread into your own `no-restricted-syntax`, which replaces forge's
+export const RESTRICTED_SYNTAX: { selector: string; message: string }[] = [
+  {
+    selector:
+      "JSXOpeningElement[name.name='input'] > JSXAttribute[name.name='type'][value.value='number']",
+    message: 'No number inputs: use a slider.',
+  },
+]
+
 export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
   if (!config.react) return {}
 
@@ -49,14 +58,7 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
       'react-x/no-missing-component-display-name': 2,
       'react-dom/no-unknown-property': [2, { ignore: ['jsx', 'global'] }],
       'react-dom/no-unsafe-target-blank': 2,
-      'no-restricted-syntax': [
-        2,
-        {
-          selector:
-            "JSXOpeningElement[name.name='input'] > JSXAttribute[name.name='type'][value.value='number']",
-          message: 'No number inputs: use a slider.',
-        },
-      ],
+      'no-restricted-syntax': [2, ...RESTRICTED_SYNTAX],
 
       ...reactWebApiPlugin.configs.recommended.rules,
     },
@@ -65,7 +67,6 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
       'react-x': {
         importSource: 'react',
         polymorphicPropName: 'as',
-        version: '19.0',
       },
     },
   }

@@ -45,6 +45,20 @@ Each is exported too, for replacing one wholesale. `prettier` comes last so it o
 | `ignores`     |                  | `dist`, `coverage`, `build`, caches                                                                                                |
 
 Arrow functions only, `curly: multi`, inline type imports, `it` over `test`. Unused disable directives and inline configs are errors.
+On TS files, sonarjs rules that tsc or typescript-eslint already enforce are off; `sonarjs/aws-*` everywhere. `only-throw-error` allows TanStack Router's `redirect()` and `notFound()`. The `n` layer leaves Node builtins alone in JSX/TSX (browser code). react-x reads the installed React version.
+
+Adding your own `no-restricted-syntax` replaces forge's: spread `RESTRICTED_SYNTAX` into it.
+
+```ts
+import { FILES, RESTRICTED_SYNTAX } from '@lzear/eslint-config'
+
+const restricted = {
+  files: FILES.REACT,
+  rules: {
+    'no-restricted-syntax': [2, ...RESTRICTED_SYNTAX, { selector: 'WithStatement', message: 'No with.' }],
+  },
+}
+```
 
 ## Rules
 
