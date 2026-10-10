@@ -1,27 +1,9 @@
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
 import e18e from '@e18e/eslint-plugin'
 import type { Linter } from 'eslint'
 import packageJsonPlugin from 'eslint-package-json'
 import { plugin as lzearPlugin } from '../plugin'
+import { workspaceManifests } from './detect'
 import * as FILES from './files'
-
-type Manifest = { workspaces?: string[] | { packages?: string[] } }
-
-// The cwd's workspace manifests, as globs (npm, Yarn and Bun read `workspaces`)
-const workspaceManifests = (): string[] => {
-  let manifest: Manifest
-  try {
-    manifest = JSON.parse(readFileSync('package.json', 'utf8')) as Manifest
-  } catch {
-    return []
-  }
-  const { workspaces = [] } = manifest
-  const globs = Array.isArray(workspaces)
-    ? workspaces
-    : (workspaces.packages ?? [])
-  return globs.map((glob) => path.posix.join(glob, 'package.json'))
-}
 
 export const packageJson = (): Linter.Config[] => {
   const workspaces = workspaceManifests()

@@ -2,7 +2,12 @@ import config from '../index'
 
 describe('@lzear/eslint-config', () => {
   it('matches the snapshot', async () => {
-    let lzearConfig = await config()
+    let lzearConfig = await config({
+      node: true,
+      react: true,
+      typescript: true,
+      vitest: true,
+    })
     lzearConfig = lzearConfig.map((item) => {
       const parserOptions = item.languageOptions?.parserOptions as
         Record<string, unknown> | undefined

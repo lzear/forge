@@ -1,6 +1,7 @@
 import type { Linter } from 'eslint'
 import { a11y } from './configs/a11y'
 import { core } from './configs/core'
+import { detect } from './configs/detect'
 import * as FILES from './configs/files'
 import { ignores } from './configs/ignores'
 import { node } from './configs/node'
@@ -34,9 +35,7 @@ const configGenerator = async (
 ): Promise<Linter.Config[]> => {
   const config: ConfigOptions = {
     node: true,
-    react: true,
-    typescript: true,
-    vitest: true,
+    ...detect(),
     ...options,
   }
 

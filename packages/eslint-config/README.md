@@ -23,10 +23,15 @@ export default [
 
 ## Options
 
-| Option                                  | Default | Effect                                              |
-|-----------------------------------------|---------|-----------------------------------------------------|
-| `node`, `react`, `typescript`, `vitest` | `true`  | enable the layer                                    |
-| `local`                                 |         | npm scope whose imports sort after third-party ones |
+Defaults come from the dependencies in the cwd's `package.json` and its workspaces'; explicit options win.
+
+| Option       | Default                                    | Effect                                              |
+|--------------|--------------------------------------------|-----------------------------------------------------|
+| `node`       | `true`                                     | enable the layer                                    |
+| `react`      | `react` is a dependency                    | enable the layer                                    |
+| `typescript` | `typescript` is one, or a `tsconfig.json`  | enable the layer                                    |
+| `vitest`     | `vitest` is a dependency                   | enable the layer                                    |
+| `local`      |                                            | npm scope whose imports sort after third-party ones |
 
 ## Layers
 
