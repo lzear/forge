@@ -88,7 +88,7 @@ const spawned = (status: number): SpawnSyncReturns<string> => ({
 // answers `detectRepo`, `listSecrets`, then `gh secret set`
 const mockGh = ({ secrets = [] as string[] | null, set = 0 } = {}): void => {
   vi.mocked(detectRepo).mockReturnValue('lzear/x')
-  vi.mocked(listSecrets).mockReturnValue(secrets)
+  vi.mocked(listSecrets).mockResolvedValue(secrets)
   vi.mocked(spawnSync).mockReturnValue(spawned(set))
 }
 

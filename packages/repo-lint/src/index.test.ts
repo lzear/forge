@@ -3,19 +3,26 @@ import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { expect, it, vi } from 'vitest'
-import type { Check, LocalCheck } from './checks.ts'
+import type { Check, LocalCheck, RemoteCheck } from './checks.ts'
 import { checkLocal, detectRepo } from './index.ts'
 
-const checks = vi.hoisted(() => ({ local: [] as LocalCheck[] }))
+const checks = vi.hoisted(() => ({
+  local: [] as LocalCheck[],
+  remote: [] as RemoteCheck[],
+  ghProblem: null as string | null,
+}))
 vi.mock('./checks.ts', () => ({
   get CHECKS(): Check[] {
-    return checks.local
+    return [...checks.local, ...checks.remote]
   },
+  ghProblem: () => Promise.resolve(checks.ghProblem),
   hasPublishedPkg: () => false,
   get LOCAL_CHECKS(): LocalCheck[] {
     return checks.local
   },
-  REMOTE_CHECKS: [],
+  get REMOTE_CHECKS(): RemoteCheck[] {
+    return checks.remote
+  },
 }))
 
 const git = (cwd: string, ...arguments_: string[]): void => {
@@ -173,4 +180,54 @@ it('lists no fixes when nothing failed, and none without fix', async () => {
   const report = await checkLocal({ dir, repo: 'r', fix: true })
   expect(report.fixed).toEqual([])
   expect(await checkLocal({ dir, repo: 'r' })).not.toHaveProperty('fixed')
+})
+
+// ── remote ───────────────────────────────────────────────────────────────────
+
+const remote = (id: string, check: RemoteCheck['check']): RemoteCheck => ({
+  id,
+  desc: `${id} desc`,
+  type: 'remote',
+  check,
+})
+
+const remoteDir = (): string => {
+  checks.local = []
+  return mkdtempSync(path.join(tmpdir(), 'repo-lint-remote-test-'))
+}
+
+it('runs remote checks with the repo and dir, a throw failing one', async () => {
+  const dir = remoteDir()
+  const check = vi.fn(() => Promise.resolve({ pass: true, detail: 'ok' }))
+  checks.remote = [
+    remote('r1', check),
+    remote('r2', () => Promise.reject(new Error('HTTP 403'))),
+  ]
+  const report = await checkLocal({ dir, repo: 'o/r' })
+  expect(check).toHaveBeenCalledWith('o/r', dir)
+  expect(report.results).toEqual([
+    { id: 'r1', desc: 'r1 desc', pass: true, detail: 'ok' },
+    { id: 'r2', desc: 'r2 desc', pass: false, detail: 'HTTP 403' },
+  ])
+})
+
+it('fails once when gh cannot run, skipping on --skip-remote', async () => {
+  const dir = remoteDir()
+  const check = vi.fn(() => true)
+  checks.remote = [remote('r1', check), remote('r2', check)]
+  checks.ghProblem = 'gh not authenticated: gh auth login'
+  const report = await checkLocal({ dir, repo: 'o/r' })
+  expect(report.results).toEqual([
+    {
+      id: 'gh',
+      desc: 'gh CLI for remote checks',
+      pass: false,
+      detail: 'gh not authenticated: gh auth login',
+    },
+  ])
+  const skipped = await checkLocal({ dir, repo: 'o/r', skipRemote: true })
+  expect(skipped.results).toEqual([])
+  expect(check).not.toHaveBeenCalled()
+  checks.ghProblem = null
+  checks.remote = []
 })

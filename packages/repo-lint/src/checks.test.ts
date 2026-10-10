@@ -7,7 +7,9 @@ import { publint } from 'publint'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   type CheckDetail,
+  ghProblem,
   latestForgeRelease,
+  listSecrets,
   LOCAL_CHECKS,
   REMOTE_CHECKS,
 } from './checks.ts'
@@ -20,9 +22,6 @@ vi.mock('node:child_process', async (importOriginal) => {
   return {
     ...module_,
     execFile: vi.fn(module_.execFile),
-    spawnSync: vi.fn((...arguments_: Parameters<typeof module_.spawnSync>) =>
-      module_.spawnSync(...arguments_),
-    ),
   }
 })
 
@@ -110,6 +109,22 @@ describe('LOCAL_CHECKS', () => {
   })
   afterEach(() => {
     vi.clearAllMocks()
+  })
+
+  describe('gitignore-env', () => {
+    beforeEach(() => {
+      childProcess.execFileSync('git', ['init', '--quiet'], { cwd: dir })
+    })
+    it('passes when .env is ignored', async () => {
+      write(dir, '.gitignore', '.env\n')
+      expect(await check('gitignore-env', dir)).toBe(true)
+    })
+    it('fails otherwise', async () => {
+      expect(await check('gitignore-env', dir)).toEqual({
+        pass: false,
+        detail: 'add .env to .gitignore',
+      })
+    })
   })
 
   describe('readme-exists', () => {
@@ -1019,36 +1034,193 @@ describe('LOCAL_CHECKS', () => {
 
 // ── REMOTE_CHECKS ─────────────────────────────────────────────────────────────
 
-const mockSecrets = (names: string[]): void => {
-  vi.mocked(childProcess.spawnSync).mockReturnValue({
-    status: 0,
-    stdout: JSON.stringify(names.map((name) => ({ name }))),
-    stderr: '',
-    pid: 0,
-    output: [],
-    signal: null,
-  })
+const repo = 'lzear/repo'
+
+// answers each `gh` call from the first entry whose key its arguments start
+// with: JSON to print, or a failing exit status
+const mockGh = (answers: Record<string, unknown>): void => {
+  vi.mocked(childProcess.execFile).mockImplementation(((
+    ...arguments_: unknown[]
+  ) => {
+    const callback = arguments_.at(-1) as ExecFileCallback
+    const call = (arguments_[1] as string[]).join(' ')
+    const answer = Object.entries(answers).find(([key]) =>
+      call.startsWith(key),
+    )?.[1]
+    if (typeof answer === 'number')
+      callback(
+        Object.assign(new Error('gh'), { code: answer }),
+        '',
+        'gh: Not Found (HTTP 404)',
+      )
+    else callback(null, JSON.stringify(answer), '')
+  }) as never)
 }
 
-const id = 'secret-codacy-token'
-const repo = 'lzear/repo'
-const remoteCheck = (): boolean => {
+const remoteCheck = async (
+  id: string,
+  dir = tmpDir(),
+): Promise<boolean | CheckDetail> => {
   const c = REMOTE_CHECKS.find((c) => c.id === id)
   if (!c) throw new Error(`unknown check: ${id}`)
-  return c.check(repo)
+  return c.check(repo, dir)
+}
+
+const daysAgo = (days: number): string =>
+  new Date(Date.now() - days * 86_400_000).toISOString()
+
+const security = (push: string): Record<string, { status: string }> => ({
+  secret_scanning: { status: 'enabled' },
+  secret_scanning_push_protection: { status: push },
+})
+
+const withRenovate = (): string => {
+  const dir = tmpDir()
+  write(dir, 'renovate.json', '{}')
+  return dir
+}
+
+type Issue = { title: string; state: string; created_at: string }
+
+const issue = (title: string, state: string, days: number): Issue => ({
+  title,
+  state,
+  created_at: daysAgo(days),
+})
+
+const pr = (days: number): Issue & { pull_request: object } => ({
+  ...issue('chore(deps): x', 'closed', days),
+  pull_request: {},
+})
+
+const answerIssues = (issues: unknown[]): void => {
+  mockGh({ [`api repos/${repo}/issues?`]: issues })
 }
 
 describe('REMOTE_CHECKS', () => {
   afterEach(() => vi.clearAllMocks())
 
-  describe('secret-codacy-token', () => {
-    it('passes when secret present', () => {
-      mockSecrets(['CODACY_PROJECT_TOKEN'])
-      expect(remoteCheck()).toBe(true)
+  describe('ghProblem', () => {
+    it('passes when authenticated', async () => {
+      mockSpawn(0)
+      expect(await ghProblem()).toBeNull()
     })
-    it('fails when secret absent', () => {
-      mockSecrets(['OTHER_TOKEN'])
-      expect(remoteCheck()).toBe(false)
+    it('says gh is unauthenticated', async () => {
+      mockSpawn(1)
+      expect(await ghProblem()).toMatch('gh auth login')
+    })
+    it('says gh is missing', async () => {
+      mockSpawn('ENOENT')
+      expect(await ghProblem()).toMatch('not installed')
+    })
+  })
+
+  describe('secret-codacy-token', () => {
+    it('passes when secret present', async () => {
+      mockGh({ 'secret list': [{ name: 'CODACY_PROJECT_TOKEN' }] })
+      expect(await remoteCheck('secret-codacy-token')).toBe(true)
+    })
+    it('fails when secret absent', async () => {
+      mockGh({ 'secret list': [{ name: 'OTHER_TOKEN' }] })
+      expect(await remoteCheck('secret-codacy-token')).toEqual({
+        pass: false,
+        detail: expect.stringContaining('forge setup') as string,
+      })
+    })
+    it('fails when gh fails', async () => {
+      mockGh({ 'secret list': 1 })
+      expect(await listSecrets(repo)).toBeNull()
+      expect(await remoteCheck('secret-codacy-token')).toMatchObject({
+        pass: false,
+      })
+    })
+  })
+
+  describe('workflow-token-read', () => {
+    const endpoint = `api repos/${repo}/actions/permissions/workflow`
+    it('passes on read', async () => {
+      mockGh({ [endpoint]: { default_workflow_permissions: 'read' } })
+      expect(await remoteCheck('workflow-token-read')).toBe(true)
+    })
+    it('links the settings on write', async () => {
+      mockGh({ [endpoint]: { default_workflow_permissions: 'write' } })
+      expect(await remoteCheck('workflow-token-read')).toEqual({
+        pass: false,
+        detail: `default write — set read at https://github.com/${repo}/settings/actions`,
+      })
+    })
+    it("throws gh's error", async () => {
+      mockGh({ [endpoint]: 1 })
+      await expect(remoteCheck('workflow-token-read')).rejects.toThrow(
+        'HTTP 404',
+      )
+    })
+  })
+
+  describe('secret-scanning', () => {
+    it('passes when both are enabled', async () => {
+      mockGh({
+        [`api repos/${repo}`]: {
+          visibility: 'public',
+          security_and_analysis: security('enabled'),
+        },
+      })
+      expect(await remoteCheck('secret-scanning')).toBe(true)
+    })
+    it('names what is off', async () => {
+      mockGh({
+        [`api repos/${repo}`]: {
+          visibility: 'public',
+          security_and_analysis: security('disabled'),
+        },
+      })
+      expect(await remoteCheck('secret-scanning')).toEqual({
+        pass: false,
+        detail: expect.stringMatching(
+          /^secret_scanning_push_protection off .*settings\/security_analysis$/,
+        ) as string,
+      })
+    })
+    it('skips private repos', async () => {
+      mockGh({ [`api repos/${repo}`]: { visibility: 'private' } })
+      expect(await remoteCheck('secret-scanning')).toEqual({
+        pass: true,
+        detail: 'private repo: not checked',
+      })
+    })
+  })
+
+  describe('renovate-active', () => {
+    it('skips repos without renovate.json', async () => {
+      expect(await remoteCheck('renovate-active')).toEqual({
+        pass: true,
+        detail: 'no renovate.json',
+      })
+      expect(vi.mocked(childProcess.execFile)).not.toHaveBeenCalled()
+    })
+    it('passes on an open Dependency Dashboard', async () => {
+      answerIssues([issue('Dependency Dashboard', 'open', 400)])
+      expect(await remoteCheck('renovate-active', withRenovate())).toBe(true)
+      expect(vi.mocked(childProcess.execFile)).toHaveBeenCalledWith(
+        'gh',
+        [
+          'api',
+          `repos/${repo}/issues?creator=renovate%5Bbot%5D&state=all&sort=created&direction=desc&per_page=100`,
+        ],
+        expect.anything(),
+        expect.anything(),
+      )
+    })
+    it('passes on a recent PR', async () => {
+      answerIssues([pr(10)])
+      expect(await remoteCheck('renovate-active', withRenovate())).toBe(true)
+    })
+    it('fails on a closed dashboard and old PRs', async () => {
+      answerIssues([issue('Dependency Dashboard', 'closed', 1), pr(61)])
+      expect(await remoteCheck('renovate-active', withRenovate())).toEqual({
+        pass: false,
+        detail: expect.stringContaining('60 days') as string,
+      })
     })
   })
 })

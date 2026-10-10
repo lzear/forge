@@ -1,4 +1,4 @@
-import { execFile, spawnSync } from 'node:child_process'
+import { execFile } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -52,7 +52,7 @@ export type RemoteCheck = {
   desc: string
   type: 'remote'
   publishedOnly?: boolean
-  check: (repo: string) => boolean
+  check: (repo: string, dir: string) => CheckResult
 }
 
 /**
@@ -446,6 +446,15 @@ const fixHookInstall = (dir: string): string | null => {
 Checks run against a checkout directory.
 */
 export const LOCAL_CHECKS: LocalCheck[] = [
+  {
+    id: 'gitignore-env',
+    desc: '.env ignored',
+    type: 'local',
+    check: async (dir) => {
+      const r = await run('git', ['check-ignore', '-q', '.env'], { cwd: dir })
+      return r.status === 0 || { pass: false, detail: 'add .env to .gitignore' }
+    },
+  },
   {
     id: 'readme-exists',
     desc: 'README',
@@ -842,25 +851,62 @@ export const LOCAL_CHECKS: LocalCheck[] = [
 ]
 
 /**
+Why `gh` can't run the remote checks, or `null` when it can.
+*/
+export const ghProblem = async (
+  cwd: string = process.cwd(),
+): Promise<string | null> => {
+  const r = await run('gh', ['auth', 'status', '--hostname', 'github.com'], {
+    cwd,
+  })
+  if (r.error) return 'gh not installed: https://cli.github.com'
+  return r.status === 0 ? null : 'gh not authenticated: gh auth login'
+}
+
+// `gh api`'s JSON, throwing its error
+const ghApi = async <T>(endpoint: string, cwd: string): Promise<T> => {
+  const r = await run('gh', ['api', endpoint], { cwd })
+  if (r.status !== 0)
+    throw new Error(
+      head(r.stderr) || String(r.error ?? `gh exited ${r.status}`),
+    )
+  return JSON.parse(r.stdout) as T
+}
+
+/**
 Lists the repo's GitHub Actions secret names, or `null` when `gh` fails.
 */
-export const listSecrets = (repo: string): string[] | null => {
+export const listSecrets = async (
+  repo: string,
+  cwd: string = process.cwd(),
+): Promise<string[] | null> => {
+  const r = await run(
+    'gh',
+    ['secret', 'list', '--repo', repo, '--json', 'name'],
+    { cwd },
+  )
+  if (r.status !== 0) return null
   try {
-    const result = spawnSync(
-      'gh',
-      ['secret', 'list', '--repo', repo, '--json', 'name'],
-      {
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'ignore'],
-      },
-    )
-    return result.status === 0
-      ? (JSON.parse(result.stdout) as { name: string }[]).map((s) => s.name)
-      : null
+    return (JSON.parse(r.stdout) as { name: string }[]).map((s) => s.name)
   } catch {
     return null
   }
 }
+
+type GhRepo = {
+  visibility: string
+  // admins only
+  security_and_analysis?: Record<string, { status: string } | undefined>
+}
+
+type GhIssue = {
+  title: string
+  state: string
+  created_at: string
+  pull_request?: unknown
+}
+
+const RENOVATE_WINDOW_DAYS = 60
 
 /**
 Checks run against the GitHub repo.
@@ -871,9 +917,84 @@ export const REMOTE_CHECKS: RemoteCheck[] = [
     desc: 'Codacy secret',
     type: 'remote',
     publishedOnly: true,
-    check: (repo) => {
-      const secrets = listSecrets(repo)
-      return secrets?.includes('CODACY_PROJECT_TOKEN') ?? false
+    check: async (repo, dir) => {
+      const secrets = await listSecrets(repo, dir)
+      if (!secrets) return { pass: false, detail: 'gh secret list failed' }
+      return (
+        secrets.includes('CODACY_PROJECT_TOKEN') || {
+          pass: false,
+          detail: 'CODACY_PROJECT_TOKEN missing — run: forge setup',
+        }
+      )
+    },
+  },
+  {
+    id: 'workflow-token-read',
+    desc: 'GITHUB_TOKEN read-only',
+    type: 'remote',
+    check: async (repo, dir) => {
+      const { default_workflow_permissions: permissions } = await ghApi<{
+        default_workflow_permissions: string
+      }>(`repos/${repo}/actions/permissions/workflow`, dir)
+      return (
+        permissions === 'read' || {
+          pass: false,
+          detail: `default ${permissions} — set read at https://github.com/${repo}/settings/actions`,
+        }
+      )
+    },
+  },
+  {
+    id: 'secret-scanning',
+    desc: 'secret scanning',
+    type: 'remote',
+    check: async (repo, dir) => {
+      const { visibility, security_and_analysis: security } =
+        await ghApi<GhRepo>(`repos/${repo}`, dir)
+      if (visibility !== 'public')
+        return { pass: true, detail: `${visibility} repo: not checked` }
+      const off = ['secret_scanning', 'secret_scanning_push_protection'].filter(
+        (feature) => security?.[feature]?.status !== 'enabled',
+      )
+      return (
+        off.length === 0 || {
+          pass: false,
+          detail: `${off.join(', ')} off — enable at https://github.com/${repo}/settings/security_analysis`,
+        }
+      )
+    },
+  },
+  {
+    id: 'renovate-active',
+    desc: 'Renovate active',
+    type: 'remote',
+    // the issues endpoint lists PRs too
+    check: async (repo, dir) => {
+      if (!existsSync(path.join(dir, 'renovate.json')))
+        return { pass: true, detail: 'no renovate.json' }
+      const query = new URLSearchParams({
+        creator: 'renovate[bot]',
+        state: 'all',
+        sort: 'created',
+        direction: 'desc',
+        per_page: '100',
+      })
+      const issues = await ghApi<GhIssue[]>(
+        `repos/${repo}/issues?${query}`,
+        dir,
+      )
+      const since = Date.now() - RENOVATE_WINDOW_DAYS * 86_400_000
+      const isActive = issues.some((i) =>
+        i.pull_request === undefined
+          ? i.state === 'open' && i.title === 'Dependency Dashboard'
+          : Date.parse(i.created_at) > since,
+      )
+      return (
+        isActive || {
+          pass: false,
+          detail: `no open Dependency Dashboard, no renovate[bot] PR in ${RENOVATE_WINDOW_DAYS} days — install https://github.com/apps/renovate`,
+        }
+      )
     },
   },
 ]

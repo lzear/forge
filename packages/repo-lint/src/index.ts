@@ -16,7 +16,9 @@ import { execFileSync } from 'node:child_process'
 import path from 'node:path'
 import {
   type Check,
+  type CheckDetail,
   CHECKS,
+  ghProblem,
   hasPublishedPkg as hasPublishedPackage,
   LOCAL_CHECKS,
   REMOTE_CHECKS,
@@ -124,29 +126,55 @@ const readConfig = (
   }
 }
 
+const GH_CHECK = { id: 'gh', desc: 'gh CLI for remote checks' }
+
+const toResult = (c: Check, raw: boolean | CheckDetail): CheckResult =>
+  typeof raw === 'boolean'
+    ? { id: c.id, desc: c.desc, pass: raw }
+    : { id: c.id, desc: c.desc, ...raw }
+
+const errorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error)
+
+// one failing result when `gh` can't run them, rather than one per check
+const runRemoteChecks = async (
+  dir: string,
+  repo: string,
+  isApplicable: (c: Check) => boolean,
+): Promise<CheckResult[]> => {
+  const checks = REMOTE_CHECKS.filter((c) => isApplicable(c))
+  if (checks.length === 0) return []
+  const problem = await ghProblem(dir)
+  if (problem) return [{ ...GH_CHECK, pass: false, detail: problem }]
+  return Promise.all(
+    checks.map(async (c) => {
+      try {
+        return toResult(c, await c.check(repo, dir))
+      } catch (error) {
+        return {
+          id: c.id,
+          desc: c.desc,
+          pass: false,
+          detail: errorMessage(error),
+        }
+      }
+    }),
+  )
+}
+
 const runChecks = async (
   dir: string,
   repo: string,
-  skipRemote: boolean,
   isApplicable: (c: Check) => boolean,
 ): Promise<CheckResult[]> => {
-  const localResults = await Promise.all(
-    LOCAL_CHECKS.filter((c) => isApplicable(c)).map(async (c) => {
-      const raw = await c.check(dir)
-      return typeof raw === 'boolean'
-        ? { id: c.id, desc: c.desc, pass: raw }
-        : { id: c.id, desc: c.desc, ...raw }
-    }),
-  )
-
-  const remoteResults = skipRemote
-    ? []
-    : REMOTE_CHECKS.filter((c) => isApplicable(c)).map((c) => ({
-        id: c.id,
-        desc: c.desc,
-        pass: c.check(repo),
-      }))
-
+  const [localResults, remoteResults] = await Promise.all([
+    Promise.all(
+      LOCAL_CHECKS.filter((c) => isApplicable(c)).map(async (c) =>
+        toResult(c, await c.check(dir)),
+      ),
+    ),
+    runRemoteChecks(dir, repo, isApplicable),
+  ])
   return [...localResults, ...remoteResults]
 }
 
@@ -167,8 +195,12 @@ const runFixes = async (
         ...(detail && { detail }),
       })
     } catch (error) {
-      const detail = error instanceof Error ? error.message : String(error)
-      fixed.push({ id: c.id, desc: c.desc, pass: false, detail })
+      fixed.push({
+        id: c.id,
+        desc: c.desc,
+        pass: false,
+        detail: errorMessage(error),
+      })
     }
   }
   return fixed
@@ -249,12 +281,7 @@ export const checkLocal = async (
     (!only || only.includes(c.id)) &&
     (!skipRemote || c.type !== 'remote')
   const check = (): Promise<CheckResult[]> =>
-    runChecks(
-      dir,
-      repo,
-      skipRemote,
-      (c) => isApplicable(c) && !reasons.has(c.id),
-    )
+    runChecks(dir, repo, (c) => isApplicable(c) && !reasons.has(c.id))
   let results = await check()
   const fixed = isFix ? await runFixes(dir, results) : []
   if (fixed.length > 0) results = await check()

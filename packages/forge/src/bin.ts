@@ -132,7 +132,7 @@ const splitIds = (value: string): string[] =>
 program
   .command('check')
   .description('audit the current repo against forge standards')
-  .option('--skip-remote', 'skip secret checks', false)
+  .option('--skip-remote', 'skip GitHub checks (gh)', false)
   .option('--only <ids>', 'run only these checks (comma-separated)', splitIds)
   .option('--skip <ids>', 'skip these checks (comma-separated)', splitIds)
   .option('--fix', 'fix failures, then check again')
@@ -213,7 +213,7 @@ program
 
     if (!json) log.intro(pc.bold(`forge setup · ${pc.cyan(repo)}`))
 
-    const existing = listSecrets(repo)
+    const existing = await listSecrets(repo)
     if (!existing) {
       log.error(
         'Failed to list secrets. Install gh (https://cli.github.com), then: gh auth login',
