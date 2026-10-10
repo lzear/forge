@@ -30,3 +30,23 @@ export const TESTS: string[] = [
 ]
 export const PACKAGE_JSON: string[] = ['**/package.json']
 export const CONFIGS: string[] = ['**/*.config.*']
+// eslint-disable-next-line sonarjs/no-globals-shadowing -- read as FILES.JSON, like FILES.JS
+export const JSON: string[] = ['**/*.json']
+// JSON with comments: tsc, VS Code and fallow read these
+export const JSONC: string[] = [
+  '**/*.jsonc',
+  '**/tsconfig*.json',
+  '**/tsconfig/**/*.json',
+  '**/jsconfig*.json',
+  '**/.vscode/**/*.json',
+  '**/.devcontainer/**/*.json',
+  '**/.fallowrc.json',
+]
+export const JSON5: string[] = ['**/*.json5']
+export const MARKDOWN: string[] = ['**/*.md']
+// code blocks the markdown processor extracts, as `README.md/0_0.ts`
+export const MARKDOWN_BLOCKS: string[] = ['**/*.md/**']
+export const MARKDOWN_CODE: string[] = CORE.map((glob) =>
+  glob.replace('**/', '**/*.md/'),
+)
+export const YAML: string[] = ['**/*.yml', '**/*.yaml']

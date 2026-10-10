@@ -77599,6 +77599,3779 @@ If a function does not access `this`, it can be annotated with `this: void`.",
   },
   {
     "files": [
+      "**/*.json",
+    ],
+    "ignores": [
+      "**/*.jsonc",
+      "**/tsconfig*.json",
+      "**/tsconfig/**/*.json",
+      "**/jsconfig*.json",
+      "**/.vscode/**/*.json",
+      "**/.devcontainer/**/*.json",
+      "**/.fallowrc.json",
+      "**/package.json",
+      "**/*.md/**",
+    ],
+    "language": "json/json",
+    "name": "lzear/json",
+    "plugins": {
+      "json": {
+        "configs": {
+          "recommended": {
+            "name": "@eslint/json/recommended",
+            "plugins": {
+              "json": [Circular],
+            },
+            "rules": {
+              "json/no-duplicate-keys": "error",
+              "json/no-empty-keys": "error",
+              "json/no-unnormalized-keys": "error",
+              "json/no-unsafe-values": "error",
+            },
+          },
+        },
+        "languages": {
+          "json": JSONLanguage {
+            "columnStart": 1,
+            "fileType": "text",
+            "lineStart": 1,
+            "nodeTypeKey": "type",
+            "visitorKeys": {
+              "Array": [
+                "elements",
+              ],
+              "Boolean": [],
+              "Document": [
+                "body",
+              ],
+              "Element": [
+                "value",
+              ],
+              "Identifier": [],
+              "Infinity": [],
+              "Member": [
+                "name",
+                "value",
+              ],
+              "NaN": [],
+              "Null": [],
+              "Number": [],
+              "Object": [
+                "members",
+              ],
+              "String": [],
+            },
+          },
+          "json5": JSONLanguage {
+            "columnStart": 1,
+            "fileType": "text",
+            "lineStart": 1,
+            "nodeTypeKey": "type",
+            "visitorKeys": {
+              "Array": [
+                "elements",
+              ],
+              "Boolean": [],
+              "Document": [
+                "body",
+              ],
+              "Element": [
+                "value",
+              ],
+              "Identifier": [],
+              "Infinity": [],
+              "Member": [
+                "name",
+                "value",
+              ],
+              "NaN": [],
+              "Null": [],
+              "Number": [],
+              "Object": [
+                "members",
+              ],
+              "String": [],
+            },
+          },
+          "jsonc": JSONLanguage {
+            "columnStart": 1,
+            "fileType": "text",
+            "lineStart": 1,
+            "nodeTypeKey": "type",
+            "visitorKeys": {
+              "Array": [
+                "elements",
+              ],
+              "Boolean": [],
+              "Document": [
+                "body",
+              ],
+              "Element": [
+                "value",
+              ],
+              "Identifier": [],
+              "Infinity": [],
+              "Member": [
+                "name",
+                "value",
+              ],
+              "NaN": [],
+              "Null": [],
+              "Number": [],
+              "Object": [
+                "members",
+              ],
+              "String": [],
+            },
+          },
+        },
+        "meta": {
+          "name": "@eslint/json",
+          "namespace": "json",
+          "version": "2.1.1",
+        },
+        "rules": {
+          "no-duplicate-keys": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow duplicate keys in JSON objects",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": true,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/no-duplicate-keys.md",
+              },
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "duplicateKey": "Duplicate key "{{key}}" found.",
+              },
+              "type": "problem",
+            },
+          },
+          "no-empty-keys": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow empty keys in JSON objects",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": true,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/no-empty-keys.md",
+              },
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "emptyKey": "Empty key found.",
+              },
+              "type": "problem",
+            },
+          },
+          "no-unnormalized-keys": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "form": "NFC",
+                },
+              ],
+              "docs": {
+                "description": "Disallow JSON keys that are not normalized",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": true,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/no-unnormalized-keys.md",
+              },
+              "fixable": "code",
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "unnormalizedKey": "Unnormalized key '{{key}}' found.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "form": {
+                      "enum": [
+                        "NFC",
+                        "NFD",
+                        "NFKC",
+                        "NFKD",
+                      ],
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-unsafe-values": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow JSON values that are unsafe for interchange",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": true,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/no-unsafe-values.md",
+              },
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "loneSurrogate": "Lone surrogate '{{ surrogate }}' found.",
+                "subnormal": "Unexpected subnormal number '{{ value }}' found, which may cause interoperability issues.",
+                "unsafeInteger": "The integer '{{ value }}' is outside the safe integer range.",
+                "unsafeNumber": "The number '{{ value }}' will evaluate to Infinity.",
+                "unsafeZero": "The number '{{ value }}' will evaluate to zero.",
+              },
+              "type": "problem",
+            },
+          },
+          "sort-keys": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                "asc",
+                {
+                  "allowLineSeparatedGroups": false,
+                  "caseSensitive": true,
+                  "minKeys": 2,
+                  "natural": false,
+                },
+              ],
+              "docs": {
+                "description": "Require JSON object keys to be sorted",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": false,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/sort-keys.md",
+              },
+              "fixable": "code",
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "sortKeys": "Expected object keys to be in {{sortName}} case-{{sensitivity}} {{direction}} order. '{{thisName}}' should be before '{{prevName}}'.",
+              },
+              "schema": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc",
+                  ],
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "allowLineSeparatedGroups": {
+                      "type": "boolean",
+                    },
+                    "caseSensitive": {
+                      "type": "boolean",
+                    },
+                    "minKeys": {
+                      "minimum": 2,
+                      "type": "integer",
+                    },
+                    "natural": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "suggestion",
+            },
+          },
+          "top-level-interop": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Require the JSON top-level value to be an array or object",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": false,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/top-level-interop.md",
+              },
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "topLevel": "Top level item should be array or object, got '{{type}}'.",
+              },
+              "type": "problem",
+            },
+          },
+        },
+      },
+    },
+    "rules": {
+      "json/no-duplicate-keys": "error",
+      "json/no-empty-keys": "error",
+      "json/no-unnormalized-keys": "error",
+      "json/no-unsafe-values": "error",
+    },
+  },
+  {
+    "files": [
+      "**/*.jsonc",
+      "**/tsconfig*.json",
+      "**/tsconfig/**/*.json",
+      "**/jsconfig*.json",
+      "**/.vscode/**/*.json",
+      "**/.devcontainer/**/*.json",
+      "**/.fallowrc.json",
+    ],
+    "ignores": [
+      "**/*.md/**",
+    ],
+    "language": "json/jsonc",
+    "languageOptions": {
+      "allowTrailingCommas": true,
+    },
+    "name": "lzear/jsonc",
+    "plugins": {
+      "json": {
+        "configs": {
+          "recommended": {
+            "name": "@eslint/json/recommended",
+            "plugins": {
+              "json": [Circular],
+            },
+            "rules": {
+              "json/no-duplicate-keys": "error",
+              "json/no-empty-keys": "error",
+              "json/no-unnormalized-keys": "error",
+              "json/no-unsafe-values": "error",
+            },
+          },
+        },
+        "languages": {
+          "json": JSONLanguage {
+            "columnStart": 1,
+            "fileType": "text",
+            "lineStart": 1,
+            "nodeTypeKey": "type",
+            "visitorKeys": {
+              "Array": [
+                "elements",
+              ],
+              "Boolean": [],
+              "Document": [
+                "body",
+              ],
+              "Element": [
+                "value",
+              ],
+              "Identifier": [],
+              "Infinity": [],
+              "Member": [
+                "name",
+                "value",
+              ],
+              "NaN": [],
+              "Null": [],
+              "Number": [],
+              "Object": [
+                "members",
+              ],
+              "String": [],
+            },
+          },
+          "json5": JSONLanguage {
+            "columnStart": 1,
+            "fileType": "text",
+            "lineStart": 1,
+            "nodeTypeKey": "type",
+            "visitorKeys": {
+              "Array": [
+                "elements",
+              ],
+              "Boolean": [],
+              "Document": [
+                "body",
+              ],
+              "Element": [
+                "value",
+              ],
+              "Identifier": [],
+              "Infinity": [],
+              "Member": [
+                "name",
+                "value",
+              ],
+              "NaN": [],
+              "Null": [],
+              "Number": [],
+              "Object": [
+                "members",
+              ],
+              "String": [],
+            },
+          },
+          "jsonc": JSONLanguage {
+            "columnStart": 1,
+            "fileType": "text",
+            "lineStart": 1,
+            "nodeTypeKey": "type",
+            "visitorKeys": {
+              "Array": [
+                "elements",
+              ],
+              "Boolean": [],
+              "Document": [
+                "body",
+              ],
+              "Element": [
+                "value",
+              ],
+              "Identifier": [],
+              "Infinity": [],
+              "Member": [
+                "name",
+                "value",
+              ],
+              "NaN": [],
+              "Null": [],
+              "Number": [],
+              "Object": [
+                "members",
+              ],
+              "String": [],
+            },
+          },
+        },
+        "meta": {
+          "name": "@eslint/json",
+          "namespace": "json",
+          "version": "2.1.1",
+        },
+        "rules": {
+          "no-duplicate-keys": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow duplicate keys in JSON objects",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": true,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/no-duplicate-keys.md",
+              },
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "duplicateKey": "Duplicate key "{{key}}" found.",
+              },
+              "type": "problem",
+            },
+          },
+          "no-empty-keys": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow empty keys in JSON objects",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": true,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/no-empty-keys.md",
+              },
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "emptyKey": "Empty key found.",
+              },
+              "type": "problem",
+            },
+          },
+          "no-unnormalized-keys": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "form": "NFC",
+                },
+              ],
+              "docs": {
+                "description": "Disallow JSON keys that are not normalized",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": true,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/no-unnormalized-keys.md",
+              },
+              "fixable": "code",
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "unnormalizedKey": "Unnormalized key '{{key}}' found.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "form": {
+                      "enum": [
+                        "NFC",
+                        "NFD",
+                        "NFKC",
+                        "NFKD",
+                      ],
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-unsafe-values": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow JSON values that are unsafe for interchange",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": true,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/no-unsafe-values.md",
+              },
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "loneSurrogate": "Lone surrogate '{{ surrogate }}' found.",
+                "subnormal": "Unexpected subnormal number '{{ value }}' found, which may cause interoperability issues.",
+                "unsafeInteger": "The integer '{{ value }}' is outside the safe integer range.",
+                "unsafeNumber": "The number '{{ value }}' will evaluate to Infinity.",
+                "unsafeZero": "The number '{{ value }}' will evaluate to zero.",
+              },
+              "type": "problem",
+            },
+          },
+          "sort-keys": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                "asc",
+                {
+                  "allowLineSeparatedGroups": false,
+                  "caseSensitive": true,
+                  "minKeys": 2,
+                  "natural": false,
+                },
+              ],
+              "docs": {
+                "description": "Require JSON object keys to be sorted",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": false,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/sort-keys.md",
+              },
+              "fixable": "code",
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "sortKeys": "Expected object keys to be in {{sortName}} case-{{sensitivity}} {{direction}} order. '{{thisName}}' should be before '{{prevName}}'.",
+              },
+              "schema": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc",
+                  ],
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "allowLineSeparatedGroups": {
+                      "type": "boolean",
+                    },
+                    "caseSensitive": {
+                      "type": "boolean",
+                    },
+                    "minKeys": {
+                      "minimum": 2,
+                      "type": "integer",
+                    },
+                    "natural": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "suggestion",
+            },
+          },
+          "top-level-interop": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Require the JSON top-level value to be an array or object",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": false,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/top-level-interop.md",
+              },
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "topLevel": "Top level item should be array or object, got '{{type}}'.",
+              },
+              "type": "problem",
+            },
+          },
+        },
+      },
+    },
+    "rules": {
+      "json/no-duplicate-keys": "error",
+      "json/no-empty-keys": "error",
+      "json/no-unnormalized-keys": "error",
+      "json/no-unsafe-values": "error",
+    },
+  },
+  {
+    "files": [
+      "**/*.json5",
+    ],
+    "ignores": [
+      "**/*.md/**",
+    ],
+    "language": "json/json5",
+    "name": "lzear/json5",
+    "plugins": {
+      "json": {
+        "configs": {
+          "recommended": {
+            "name": "@eslint/json/recommended",
+            "plugins": {
+              "json": [Circular],
+            },
+            "rules": {
+              "json/no-duplicate-keys": "error",
+              "json/no-empty-keys": "error",
+              "json/no-unnormalized-keys": "error",
+              "json/no-unsafe-values": "error",
+            },
+          },
+        },
+        "languages": {
+          "json": JSONLanguage {
+            "columnStart": 1,
+            "fileType": "text",
+            "lineStart": 1,
+            "nodeTypeKey": "type",
+            "visitorKeys": {
+              "Array": [
+                "elements",
+              ],
+              "Boolean": [],
+              "Document": [
+                "body",
+              ],
+              "Element": [
+                "value",
+              ],
+              "Identifier": [],
+              "Infinity": [],
+              "Member": [
+                "name",
+                "value",
+              ],
+              "NaN": [],
+              "Null": [],
+              "Number": [],
+              "Object": [
+                "members",
+              ],
+              "String": [],
+            },
+          },
+          "json5": JSONLanguage {
+            "columnStart": 1,
+            "fileType": "text",
+            "lineStart": 1,
+            "nodeTypeKey": "type",
+            "visitorKeys": {
+              "Array": [
+                "elements",
+              ],
+              "Boolean": [],
+              "Document": [
+                "body",
+              ],
+              "Element": [
+                "value",
+              ],
+              "Identifier": [],
+              "Infinity": [],
+              "Member": [
+                "name",
+                "value",
+              ],
+              "NaN": [],
+              "Null": [],
+              "Number": [],
+              "Object": [
+                "members",
+              ],
+              "String": [],
+            },
+          },
+          "jsonc": JSONLanguage {
+            "columnStart": 1,
+            "fileType": "text",
+            "lineStart": 1,
+            "nodeTypeKey": "type",
+            "visitorKeys": {
+              "Array": [
+                "elements",
+              ],
+              "Boolean": [],
+              "Document": [
+                "body",
+              ],
+              "Element": [
+                "value",
+              ],
+              "Identifier": [],
+              "Infinity": [],
+              "Member": [
+                "name",
+                "value",
+              ],
+              "NaN": [],
+              "Null": [],
+              "Number": [],
+              "Object": [
+                "members",
+              ],
+              "String": [],
+            },
+          },
+        },
+        "meta": {
+          "name": "@eslint/json",
+          "namespace": "json",
+          "version": "2.1.1",
+        },
+        "rules": {
+          "no-duplicate-keys": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow duplicate keys in JSON objects",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": true,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/no-duplicate-keys.md",
+              },
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "duplicateKey": "Duplicate key "{{key}}" found.",
+              },
+              "type": "problem",
+            },
+          },
+          "no-empty-keys": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow empty keys in JSON objects",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": true,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/no-empty-keys.md",
+              },
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "emptyKey": "Empty key found.",
+              },
+              "type": "problem",
+            },
+          },
+          "no-unnormalized-keys": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "form": "NFC",
+                },
+              ],
+              "docs": {
+                "description": "Disallow JSON keys that are not normalized",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": true,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/no-unnormalized-keys.md",
+              },
+              "fixable": "code",
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "unnormalizedKey": "Unnormalized key '{{key}}' found.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "form": {
+                      "enum": [
+                        "NFC",
+                        "NFD",
+                        "NFKC",
+                        "NFKD",
+                      ],
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-unsafe-values": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow JSON values that are unsafe for interchange",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": true,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/no-unsafe-values.md",
+              },
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "loneSurrogate": "Lone surrogate '{{ surrogate }}' found.",
+                "subnormal": "Unexpected subnormal number '{{ value }}' found, which may cause interoperability issues.",
+                "unsafeInteger": "The integer '{{ value }}' is outside the safe integer range.",
+                "unsafeNumber": "The number '{{ value }}' will evaluate to Infinity.",
+                "unsafeZero": "The number '{{ value }}' will evaluate to zero.",
+              },
+              "type": "problem",
+            },
+          },
+          "sort-keys": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                "asc",
+                {
+                  "allowLineSeparatedGroups": false,
+                  "caseSensitive": true,
+                  "minKeys": 2,
+                  "natural": false,
+                },
+              ],
+              "docs": {
+                "description": "Require JSON object keys to be sorted",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": false,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/sort-keys.md",
+              },
+              "fixable": "code",
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "sortKeys": "Expected object keys to be in {{sortName}} case-{{sensitivity}} {{direction}} order. '{{thisName}}' should be before '{{prevName}}'.",
+              },
+              "schema": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc",
+                  ],
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "allowLineSeparatedGroups": {
+                      "type": "boolean",
+                    },
+                    "caseSensitive": {
+                      "type": "boolean",
+                    },
+                    "minKeys": {
+                      "minimum": 2,
+                      "type": "integer",
+                    },
+                    "natural": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "suggestion",
+            },
+          },
+          "top-level-interop": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Require the JSON top-level value to be an array or object",
+                "dialects": [
+                  "JSON",
+                  "JSONC",
+                  "JSON5",
+                ],
+                "recommended": false,
+                "url": "https://github.com/eslint/json/blob/main/docs/rules/top-level-interop.md",
+              },
+              "languages": [
+                "json/json",
+                "json/jsonc",
+                "json/json5",
+              ],
+              "messages": {
+                "topLevel": "Top level item should be array or object, got '{{type}}'.",
+              },
+              "type": "problem",
+            },
+          },
+        },
+      },
+    },
+    "rules": {
+      "json/no-duplicate-keys": "error",
+      "json/no-empty-keys": "error",
+      "json/no-unnormalized-keys": "error",
+      "json/no-unsafe-values": "error",
+    },
+  },
+  {
+    "files": [
+      "**/*.md",
+    ],
+    "language": "markdown/gfm",
+    "languageOptions": {
+      "frontmatter": "yaml",
+    },
+    "name": "lzear/markdown",
+    "plugins": {
+      "markdown": {
+        "configs": {
+          "processor": [
+            {
+              "name": "markdown/recommended/plugin",
+              "plugins": {
+                "markdown": [Circular],
+              },
+            },
+            {
+              "files": [
+                "**/*.md",
+              ],
+              "name": "markdown/recommended/processor",
+              "processor": "markdown/markdown",
+            },
+            {
+              "files": [
+                "**/*.md/**",
+              ],
+              "languageOptions": {
+                "parserOptions": {
+                  "ecmaFeatures": {
+                    "impliedStrict": true,
+                  },
+                },
+              },
+              "name": "markdown/recommended/code-blocks",
+              "rules": {
+                "eol-last": "off",
+                "no-undef": "off",
+                "no-unused-expressions": "off",
+                "no-unused-vars": "off",
+                "padded-blocks": "off",
+                "strict": "off",
+                "unicode-bom": "off",
+              },
+            },
+          ],
+          "recommended": [
+            {
+              "files": [
+                "**/*.md",
+              ],
+              "language": "markdown/commonmark",
+              "name": "markdown/recommended",
+              "plugins": {
+                "markdown": [Circular],
+              },
+              "rules": {
+                "markdown/fenced-code-language": "error",
+                "markdown/heading-increment": "error",
+                "markdown/no-duplicate-definitions": "error",
+                "markdown/no-empty-definitions": "error",
+                "markdown/no-empty-images": "error",
+                "markdown/no-empty-links": "error",
+                "markdown/no-invalid-label-refs": "error",
+                "markdown/no-missing-atx-heading-space": "error",
+                "markdown/no-missing-label-refs": "error",
+                "markdown/no-missing-link-fragments": "error",
+                "markdown/no-multiple-h1": "error",
+                "markdown/no-reference-like-urls": "error",
+                "markdown/no-reversed-media-syntax": "error",
+                "markdown/no-space-in-emphasis": "error",
+                "markdown/no-unused-definitions": "error",
+                "markdown/require-alt-text": "error",
+                "markdown/table-column-count": "error",
+              },
+            },
+          ],
+          "recommended-legacy": {
+            "overrides": [
+              {
+                "files": [
+                  "*.md",
+                ],
+                "processor": "markdown/markdown",
+              },
+              {
+                "files": [
+                  "**/*.md/**",
+                ],
+                "parserOptions": {
+                  "ecmaFeatures": {
+                    "impliedStrict": true,
+                  },
+                },
+                "rules": {
+                  "eol-last": "off",
+                  "no-undef": "off",
+                  "no-unused-expressions": "off",
+                  "no-unused-vars": "off",
+                  "padded-blocks": "off",
+                  "strict": "off",
+                  "unicode-bom": "off",
+                },
+              },
+            ],
+            "plugins": [
+              "markdown",
+            ],
+          },
+        },
+        "languages": {
+          "commonmark": MarkdownLanguage {
+            "columnStart": 1,
+            "defaultLanguageOptions": {
+              "frontmatter": false,
+              "math": false,
+            },
+            "fileType": "text",
+            "lineStart": 1,
+            "nodeTypeKey": "type",
+          },
+          "gfm": MarkdownLanguage {
+            "columnStart": 1,
+            "defaultLanguageOptions": {
+              "frontmatter": false,
+              "math": false,
+            },
+            "fileType": "text",
+            "lineStart": 1,
+            "nodeTypeKey": "type",
+          },
+        },
+        "meta": {
+          "name": "@eslint/markdown",
+          "version": "8.0.3",
+        },
+        "processors": {
+          "markdown": {
+            "meta": {
+              "name": "@eslint/markdown/markdown",
+              "version": "8.0.3",
+            },
+            "postprocess": [Function],
+            "preprocess": [Function],
+            "supportsAutofix": true,
+          },
+        },
+        "rules": {
+          "fenced-code-language": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "required": [],
+                },
+              ],
+              "docs": {
+                "description": "Require languages for fenced code blocks",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/fenced-code-language.md",
+              },
+              "messages": {
+                "disallowedLanguage": "Code block language "{{lang}}" is not allowed.",
+                "missingLanguage": "Missing code block language.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "required": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                      "uniqueItems": true,
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "fenced-code-meta": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                "always",
+              ],
+              "docs": {
+                "description": "Require or disallow metadata for fenced code blocks",
+                "recommended": false,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/fenced-code-meta.md",
+              },
+              "messages": {
+                "disallowedMetadata": "Code block metadata is not allowed.",
+                "missingMetadata": "Missing code block metadata.",
+              },
+              "schema": [
+                {
+                  "enum": [
+                    "always",
+                    "never",
+                  ],
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "heading-increment": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "frontmatterTitle": "^(?!\s*['"]title[:=]['"])\s*\{?\s*['"]?title['"]?\s*[:=]",
+                },
+              ],
+              "docs": {
+                "description": "Enforce heading levels increment by one",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/heading-increment.md",
+              },
+              "messages": {
+                "skippedHeading": "Heading level skipped from {{fromLevel}} to {{toLevel}}.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frontmatterTitle": {
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-bare-urls": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow bare URLs",
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-bare-urls.md",
+              },
+              "fixable": "code",
+              "messages": {
+                "bareUrl": "Unexpected bare URL. Use autolink (<URL>) or link ([text](URL)) instead.",
+              },
+              "type": "problem",
+            },
+          },
+          "no-duplicate-definitions": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "allowDefinitions": [
+                    "//",
+                  ],
+                  "allowFootnoteDefinitions": [],
+                  "checkFootnoteDefinitions": true,
+                },
+              ],
+              "docs": {
+                "description": "Disallow duplicate definitions",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-duplicate-definitions.md",
+              },
+              "messages": {
+                "duplicateDefinition": "Unexpected duplicate definition `{{ identifier }}` (label: `{{ label }}`) found. First defined at line {{ firstLine }} (label: `{{ firstLabel }}`).",
+                "duplicateFootnoteDefinition": "Unexpected duplicate footnote definition `{{ identifier }}` (label: `{{ label }}`) found. First defined at line {{ firstLine }} (label: `{{ firstLabel }}`).",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "allowDefinitions": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                      "uniqueItems": true,
+                    },
+                    "allowFootnoteDefinitions": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                      "uniqueItems": true,
+                    },
+                    "checkFootnoteDefinitions": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-duplicate-headings": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "checkSiblingsOnly": false,
+                },
+              ],
+              "docs": {
+                "description": "Disallow duplicate headings in the same document",
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-duplicate-headings.md",
+              },
+              "messages": {
+                "duplicateHeading": "Duplicate heading "{{text}}" found.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "checkSiblingsOnly": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-empty-definitions": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "allowDefinitions": [
+                    "//",
+                  ],
+                  "allowFootnoteDefinitions": [],
+                  "checkFootnoteDefinitions": true,
+                },
+              ],
+              "docs": {
+                "description": "Disallow empty definitions",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-empty-definitions.md",
+              },
+              "messages": {
+                "emptyDefinition": "Unexpected empty definition `{{ identifier }}` (label: `{{ label }}`) found.",
+                "emptyFootnoteDefinition": "Unexpected empty footnote definition `{{ identifier }}` (label: `{{ label }}`) found.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "allowDefinitions": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                      "uniqueItems": true,
+                    },
+                    "allowFootnoteDefinitions": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                      "uniqueItems": true,
+                    },
+                    "checkFootnoteDefinitions": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-empty-images": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow empty images",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-empty-images.md",
+              },
+              "messages": {
+                "emptyImage": "Unexpected empty image found.",
+              },
+              "type": "problem",
+            },
+          },
+          "no-empty-links": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow empty links",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-empty-links.md",
+              },
+              "messages": {
+                "emptyLink": "Unexpected empty link found.",
+              },
+              "type": "problem",
+            },
+          },
+          "no-html": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "allowed": [],
+                  "allowedIgnoreCase": false,
+                },
+              ],
+              "docs": {
+                "description": "Disallow HTML tags",
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-html.md",
+              },
+              "messages": {
+                "disallowedElement": "HTML element "{{name}}" is not allowed.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "allowed": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                      "uniqueItems": true,
+                    },
+                    "allowedIgnoreCase": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-invalid-label-refs": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow invalid label references",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-invalid-label-refs.md",
+              },
+              "messages": {
+                "invalidLabelRef": "Label reference '{{label}}' is invalid due to white space between [ and ].",
+              },
+              "type": "problem",
+            },
+          },
+          "no-missing-atx-heading-space": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "checkClosedHeadings": false,
+                },
+              ],
+              "docs": {
+                "description": "Disallow headings without a space after the hash characters",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-missing-atx-heading-space.md",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "missingSpace": "Missing space {{position}} hash(es) on ATX style heading.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "checkClosedHeadings": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-missing-label-refs": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "allowLabels": [],
+                },
+              ],
+              "docs": {
+                "description": "Disallow missing label references",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-missing-label-refs.md",
+              },
+              "messages": {
+                "notFound": "Label reference '{{label}}' not found.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "allowLabels": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                      "uniqueItems": true,
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-missing-link-fragments": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "allowPattern": "",
+                  "ignoreCase": true,
+                },
+              ],
+              "docs": {
+                "description": "Disallow link fragments that do not reference valid headings",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-missing-link-fragments.md",
+              },
+              "messages": {
+                "invalidFragment": "Link fragment '#{{fragment}}' does not reference a heading or anchor in this document.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "allowPattern": {
+                      "type": "string",
+                    },
+                    "ignoreCase": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-multiple-h1": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "frontmatterTitle": "^(?!\s*['"]title[:=]['"])\s*\{?\s*['"]?title['"]?\s*[:=]",
+                },
+              ],
+              "docs": {
+                "description": "Disallow multiple H1 headings in the same document",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-multiple-h1.md",
+              },
+              "messages": {
+                "multipleH1": "Unexpected additional H1 heading found.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frontmatterTitle": {
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-reference-like-urls": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow URLs that match defined reference identifiers",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-reference-like-urls.md",
+              },
+              "fixable": "code",
+              "messages": {
+                "referenceLikeUrl": "Unexpected resource {{type}} ('{{prefix}}[text](url)') with URL that matches a definition identifier. Use '[text][id]' syntax instead.",
+              },
+              "type": "problem",
+            },
+          },
+          "no-reversed-media-syntax": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Disallow reversed link and image syntax",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-reversed-media-syntax.md",
+              },
+              "fixable": "code",
+              "messages": {
+                "reversedSyntax": "Unexpected reversed syntax found. Use [label](URL) syntax instead.",
+              },
+              "type": "problem",
+            },
+          },
+          "no-space-in-emphasis": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "checkStrikethrough": false,
+                },
+              ],
+              "docs": {
+                "description": "Disallow spaces around emphasis markers",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-space-in-emphasis.md",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "spaceInEmphasis": "Unexpected space around emphasis marker.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "checkStrikethrough": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-unused-definitions": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "allowDefinitions": [
+                    "//",
+                  ],
+                  "allowFootnoteDefinitions": [],
+                  "checkFootnoteDefinitions": true,
+                },
+              ],
+              "docs": {
+                "description": "Disallow unused definitions",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/no-unused-definitions.md",
+              },
+              "messages": {
+                "unusedDefinition": "Unexpected unused definition `{{ identifier }}` (label: `{{ label }}`) found.",
+                "unusedFootnoteDefinition": "Unexpected unused footnote definition `{{ identifier }}` (label: `{{ label }}`) found.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "allowDefinitions": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                      "uniqueItems": true,
+                    },
+                    "allowFootnoteDefinitions": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                      "uniqueItems": true,
+                    },
+                    "checkFootnoteDefinitions": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "require-alt-text": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "description": "Require alternative text for images",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/require-alt-text.md",
+              },
+              "messages": {
+                "altTextRequired": "Alternative text for image is required.",
+              },
+              "type": "problem",
+            },
+          },
+          "table-column-count": {
+            "create": [Function],
+            "meta": {
+              "defaultOptions": [
+                {
+                  "checkMissingCells": false,
+                },
+              ],
+              "docs": {
+                "description": "Disallow data rows in a GitHub Flavored Markdown table from having more cells than the header row",
+                "recommended": true,
+                "url": "https://github.com/eslint/markdown/blob/main/docs/rules/table-column-count.md",
+              },
+              "messages": {
+                "extraCells": "Table column count mismatch (Expected: {{expectedCells}}, Actual: {{actualCells}}), extra data starting here will be ignored.",
+                "missingCells": "Table column count mismatch (Expected: {{expectedCells}}, Actual: {{actualCells}}), row might be missing data.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "checkMissingCells": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+        },
+      },
+    },
+    "processor": {
+      "meta": {
+        "name": "lzear/markdown",
+      },
+      "postprocess": [Function],
+      "preprocess": [Function],
+      "supportsAutofix": true,
+    },
+    "rules": {
+      "markdown/fenced-code-language": "error",
+      "markdown/heading-increment": "error",
+      "markdown/no-duplicate-definitions": "error",
+      "markdown/no-empty-definitions": "error",
+      "markdown/no-empty-images": "error",
+      "markdown/no-empty-links": "error",
+      "markdown/no-invalid-label-refs": "error",
+      "markdown/no-missing-atx-heading-space": "error",
+      "markdown/no-missing-label-refs": "error",
+      "markdown/no-missing-link-fragments": "error",
+      "markdown/no-multiple-h1": "error",
+      "markdown/no-reference-like-urls": "error",
+      "markdown/no-reversed-media-syntax": "error",
+      "markdown/no-space-in-emphasis": "error",
+      "markdown/no-unused-definitions": "error",
+      "markdown/require-alt-text": "error",
+      "markdown/table-column-count": "error",
+    },
+  },
+  {
+    "files": [
+      "**/*.md/*.js",
+      "**/*.md/*.cjs",
+      "**/*.md/*.mjs",
+      "**/*.md/*.ts",
+      "**/*.md/*.cts",
+      "**/*.md/*.mts",
+      "**/*.md/*.jsx",
+      "**/*.md/*.tsx",
+    ],
+    "languageOptions": {
+      "parserOptions": {
+        "ecmaFeatures": {
+          "impliedStrict": true,
+        },
+        "program": null,
+        "projectService": false,
+      },
+    },
+    "name": "lzear/markdown/code-blocks",
+    "rules": {
+      "@typescript-eslint/await-thenable": "off",
+      "@typescript-eslint/consistent-return": "off",
+      "@typescript-eslint/consistent-type-exports": "off",
+      "@typescript-eslint/dot-notation": "off",
+      "@typescript-eslint/naming-convention": "off",
+      "@typescript-eslint/no-array-delete": "off",
+      "@typescript-eslint/no-base-to-string": "off",
+      "@typescript-eslint/no-confusing-void-expression": "off",
+      "@typescript-eslint/no-deprecated": "off",
+      "@typescript-eslint/no-duplicate-type-constituents": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-for-in-array": "off",
+      "@typescript-eslint/no-generated-empty-object-type": "off",
+      "@typescript-eslint/no-implied-eval": "off",
+      "@typescript-eslint/no-meaningless-void-operator": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/no-misused-spread": "off",
+      "@typescript-eslint/no-mixed-enums": "off",
+      "@typescript-eslint/no-redundant-type-constituents": "off",
+      "@typescript-eslint/no-unnecessary-boolean-literal-compare": "off",
+      "@typescript-eslint/no-unnecessary-condition": "off",
+      "@typescript-eslint/no-unnecessary-qualifier": "off",
+      "@typescript-eslint/no-unnecessary-template-expression": "off",
+      "@typescript-eslint/no-unnecessary-type-arguments": "off",
+      "@typescript-eslint/no-unnecessary-type-assertion": "off",
+      "@typescript-eslint/no-unnecessary-type-conversion": "off",
+      "@typescript-eslint/no-unnecessary-type-parameters": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-enum-assignment": "off",
+      "@typescript-eslint/no-unsafe-enum-comparison": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-type-assertion": "off",
+      "@typescript-eslint/no-unsafe-unary-minus": "off",
+      "@typescript-eslint/no-unused-vars": 0,
+      "@typescript-eslint/no-useless-default-assignment": "off",
+      "@typescript-eslint/non-nullable-type-assertion-style": "off",
+      "@typescript-eslint/only-throw-error": "off",
+      "@typescript-eslint/prefer-destructuring": "off",
+      "@typescript-eslint/prefer-find": "off",
+      "@typescript-eslint/prefer-includes": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/prefer-optional-chain": "off",
+      "@typescript-eslint/prefer-promise-reject-errors": "off",
+      "@typescript-eslint/prefer-readonly": "off",
+      "@typescript-eslint/prefer-readonly-parameter-types": "off",
+      "@typescript-eslint/prefer-reduce-type-parameter": "off",
+      "@typescript-eslint/prefer-regexp-exec": "off",
+      "@typescript-eslint/prefer-return-this-type": "off",
+      "@typescript-eslint/prefer-string-starts-ends-with": "off",
+      "@typescript-eslint/promise-function-async": "off",
+      "@typescript-eslint/related-getter-setter-pairs": "off",
+      "@typescript-eslint/require-array-sort-compare": "off",
+      "@typescript-eslint/require-await": "off",
+      "@typescript-eslint/restrict-plus-operands": "off",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "@typescript-eslint/return-await": "off",
+      "@typescript-eslint/strict-boolean-expressions": "off",
+      "@typescript-eslint/strict-void-return": "off",
+      "@typescript-eslint/switch-exhaustiveness-check": "off",
+      "@typescript-eslint/unbound-method": "off",
+      "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
+      "eol-last": "off",
+      "lzear/prefer-relative-imports": 0,
+      "no-undef": "off",
+      "no-unused-expressions": "off",
+      "no-unused-vars": "off",
+      "padded-blocks": "off",
+      "sonarjs/no-unused-vars": 0,
+      "strict": "off",
+      "unicode-bom": "off",
+      "unicorn/no-top-level-side-effects": 0,
+    },
+  },
+  {
+    "files": [
+      "**/*.yml",
+      "**/*.yaml",
+    ],
+    "ignores": [
+      "**/*.md/**",
+    ],
+    "language": "yml/yaml",
+    "name": "lzear/yaml",
+    "plugins": {
+      "yml": {
+        "configs": {
+          "base": [
+            {
+              "plugins": {
+                "yml": [Circular],
+              },
+            },
+            {
+              "files": [
+                "*.yaml",
+                "**/*.yaml",
+                "*.yml",
+                "**/*.yml",
+              ],
+              "language": "yml/yaml",
+              "rules": {
+                "no-irregular-whitespace": "off",
+                "no-unused-vars": "off",
+                "spaced-comment": "off",
+              },
+            },
+          ],
+          "flat/base": [
+            {
+              "plugins": {
+                "yml": [Circular],
+              },
+            },
+            {
+              "files": [
+                "*.yaml",
+                "**/*.yaml",
+                "*.yml",
+                "**/*.yml",
+              ],
+              "language": "yml/yaml",
+              "rules": {
+                "no-irregular-whitespace": "off",
+                "no-unused-vars": "off",
+                "spaced-comment": "off",
+              },
+            },
+          ],
+          "flat/prettier": [
+            {
+              "plugins": {
+                "yml": [Circular],
+              },
+            },
+            {
+              "files": [
+                "*.yaml",
+                "**/*.yaml",
+                "*.yml",
+                "**/*.yml",
+              ],
+              "language": "yml/yaml",
+              "rules": {
+                "no-irregular-whitespace": "off",
+                "no-unused-vars": "off",
+                "spaced-comment": "off",
+              },
+            },
+            {
+              "rules": {
+                "yml/block-mapping-colon-indicator-newline": "off",
+                "yml/block-mapping-question-indicator-newline": "off",
+                "yml/block-sequence-hyphen-indicator-newline": "off",
+                "yml/flow-mapping-curly-newline": "off",
+                "yml/flow-mapping-curly-spacing": "off",
+                "yml/flow-sequence-bracket-newline": "off",
+                "yml/flow-sequence-bracket-spacing": "off",
+                "yml/indent": "off",
+                "yml/key-spacing": "off",
+                "yml/no-multiple-empty-lines": "off",
+                "yml/no-trailing-spaces": "off",
+                "yml/no-trailing-zeros": "off",
+                "yml/quotes": "off",
+              },
+            },
+          ],
+          "flat/recommended": [
+            {
+              "plugins": {
+                "yml": [Circular],
+              },
+            },
+            {
+              "files": [
+                "*.yaml",
+                "**/*.yaml",
+                "*.yml",
+                "**/*.yml",
+              ],
+              "language": "yml/yaml",
+              "rules": {
+                "no-irregular-whitespace": "off",
+                "no-unused-vars": "off",
+                "spaced-comment": "off",
+              },
+            },
+            {
+              "rules": {
+                "yml/no-empty-document": "error",
+                "yml/no-empty-key": "error",
+                "yml/no-empty-mapping-value": "error",
+                "yml/no-empty-sequence-entry": "error",
+                "yml/no-irregular-whitespace": "error",
+                "yml/no-tab-indent": "error",
+                "yml/vue-custom-block/no-parsing-error": "error",
+              },
+            },
+          ],
+          "flat/standard": [
+            {
+              "plugins": {
+                "yml": [Circular],
+              },
+            },
+            {
+              "files": [
+                "*.yaml",
+                "**/*.yaml",
+                "*.yml",
+                "**/*.yml",
+              ],
+              "language": "yml/yaml",
+              "rules": {
+                "no-irregular-whitespace": "off",
+                "no-unused-vars": "off",
+                "spaced-comment": "off",
+              },
+            },
+            {
+              "rules": {
+                "yml/block-mapping": "error",
+                "yml/block-mapping-colon-indicator-newline": "error",
+                "yml/block-mapping-question-indicator-newline": "error",
+                "yml/block-sequence": "error",
+                "yml/block-sequence-hyphen-indicator-newline": "error",
+                "yml/flow-mapping-curly-newline": "error",
+                "yml/flow-mapping-curly-spacing": "error",
+                "yml/flow-sequence-bracket-newline": "error",
+                "yml/flow-sequence-bracket-spacing": "error",
+                "yml/indent": "error",
+                "yml/key-spacing": "error",
+                "yml/no-empty-document": "error",
+                "yml/no-empty-key": "error",
+                "yml/no-empty-mapping-value": "error",
+                "yml/no-empty-sequence-entry": "error",
+                "yml/no-irregular-whitespace": "error",
+                "yml/no-multiple-empty-lines": "error",
+                "yml/no-tab-indent": "error",
+                "yml/no-trailing-spaces": "error",
+                "yml/no-trailing-zeros": "error",
+                "yml/plain-scalar": "error",
+                "yml/quotes": "error",
+                "yml/spaced-comment": "error",
+                "yml/vue-custom-block/no-parsing-error": "error",
+              },
+            },
+          ],
+          "prettier": [
+            {
+              "plugins": {
+                "yml": [Circular],
+              },
+            },
+            {
+              "files": [
+                "*.yaml",
+                "**/*.yaml",
+                "*.yml",
+                "**/*.yml",
+              ],
+              "language": "yml/yaml",
+              "rules": {
+                "no-irregular-whitespace": "off",
+                "no-unused-vars": "off",
+                "spaced-comment": "off",
+              },
+            },
+            {
+              "rules": {
+                "yml/block-mapping-colon-indicator-newline": "off",
+                "yml/block-mapping-question-indicator-newline": "off",
+                "yml/block-sequence-hyphen-indicator-newline": "off",
+                "yml/flow-mapping-curly-newline": "off",
+                "yml/flow-mapping-curly-spacing": "off",
+                "yml/flow-sequence-bracket-newline": "off",
+                "yml/flow-sequence-bracket-spacing": "off",
+                "yml/indent": "off",
+                "yml/key-spacing": "off",
+                "yml/no-multiple-empty-lines": "off",
+                "yml/no-trailing-spaces": "off",
+                "yml/no-trailing-zeros": "off",
+                "yml/quotes": "off",
+              },
+            },
+          ],
+          "recommended": [
+            {
+              "plugins": {
+                "yml": [Circular],
+              },
+            },
+            {
+              "files": [
+                "*.yaml",
+                "**/*.yaml",
+                "*.yml",
+                "**/*.yml",
+              ],
+              "language": "yml/yaml",
+              "rules": {
+                "no-irregular-whitespace": "off",
+                "no-unused-vars": "off",
+                "spaced-comment": "off",
+              },
+            },
+            {
+              "rules": {
+                "yml/no-empty-document": "error",
+                "yml/no-empty-key": "error",
+                "yml/no-empty-mapping-value": "error",
+                "yml/no-empty-sequence-entry": "error",
+                "yml/no-irregular-whitespace": "error",
+                "yml/no-tab-indent": "error",
+                "yml/vue-custom-block/no-parsing-error": "error",
+              },
+            },
+          ],
+          "standard": [
+            {
+              "plugins": {
+                "yml": [Circular],
+              },
+            },
+            {
+              "files": [
+                "*.yaml",
+                "**/*.yaml",
+                "*.yml",
+                "**/*.yml",
+              ],
+              "language": "yml/yaml",
+              "rules": {
+                "no-irregular-whitespace": "off",
+                "no-unused-vars": "off",
+                "spaced-comment": "off",
+              },
+            },
+            {
+              "rules": {
+                "yml/block-mapping": "error",
+                "yml/block-mapping-colon-indicator-newline": "error",
+                "yml/block-mapping-question-indicator-newline": "error",
+                "yml/block-sequence": "error",
+                "yml/block-sequence-hyphen-indicator-newline": "error",
+                "yml/flow-mapping-curly-newline": "error",
+                "yml/flow-mapping-curly-spacing": "error",
+                "yml/flow-sequence-bracket-newline": "error",
+                "yml/flow-sequence-bracket-spacing": "error",
+                "yml/indent": "error",
+                "yml/key-spacing": "error",
+                "yml/no-empty-document": "error",
+                "yml/no-empty-key": "error",
+                "yml/no-empty-mapping-value": "error",
+                "yml/no-empty-sequence-entry": "error",
+                "yml/no-irregular-whitespace": "error",
+                "yml/no-multiple-empty-lines": "error",
+                "yml/no-tab-indent": "error",
+                "yml/no-trailing-spaces": "error",
+                "yml/no-trailing-zeros": "error",
+                "yml/plain-scalar": "error",
+                "yml/quotes": "error",
+                "yml/spaced-comment": "error",
+                "yml/vue-custom-block/no-parsing-error": "error",
+              },
+            },
+          ],
+        },
+        "languages": {
+          "yaml": YAMLLanguage {
+            "columnStart": 0,
+            "fileType": "text",
+            "lineStart": 1,
+            "nodeTypeKey": "type",
+          },
+        },
+        "meta": {
+          "name": "eslint-plugin-yml",
+          "namespace": "yml",
+          "version": "3.8.1",
+        },
+        "rules": {
+          "block-mapping": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "require or disallow block style mappings.",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/block-mapping",
+                "ruleName": "block-mapping",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/block-mapping.html",
+              },
+              "fixable": "code",
+              "messages": {
+                "disallow": "Must use flow style mappings.",
+                "required": "Must use block style mappings.",
+              },
+              "schema": [
+                {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "always",
+                        "never",
+                      ],
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "multiline": {
+                          "enum": [
+                            "always",
+                            "never",
+                            "ignore",
+                          ],
+                        },
+                        "singleline": {
+                          "enum": [
+                            "always",
+                            "never",
+                            "ignore",
+                          ],
+                        },
+                      },
+                      "type": "object",
+                    },
+                  ],
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "block-mapping-colon-indicator-newline": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "enforce consistent line breaks after `:` indicator",
+                "extensionRule": false,
+                "layout": true,
+                "ruleId": "yml/block-mapping-colon-indicator-newline",
+                "ruleName": "block-mapping-colon-indicator-newline",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/block-mapping-colon-indicator-newline.html",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "expectedLinebreakAfterIndicator": "Expected a line break after this `:` indicator.",
+                "unexpectedLinebreakAfterIndicator": "Unexpected line break after this `:` indicator.",
+              },
+              "schema": [
+                {
+                  "enum": [
+                    "always",
+                    "never",
+                  ],
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "block-mapping-question-indicator-newline": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "enforce consistent line breaks after `?` indicator",
+                "extensionRule": false,
+                "layout": true,
+                "ruleId": "yml/block-mapping-question-indicator-newline",
+                "ruleName": "block-mapping-question-indicator-newline",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/block-mapping-question-indicator-newline.html",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "expectedLinebreakAfterIndicator": "Expected a line break after this `?` indicator.",
+                "unexpectedLinebreakAfterIndicator": "Unexpected line break after this `?` indicator.",
+              },
+              "schema": [
+                {
+                  "enum": [
+                    "always",
+                    "never",
+                  ],
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "block-sequence": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "require or disallow block style sequences.",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/block-sequence",
+                "ruleName": "block-sequence",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/block-sequence.html",
+              },
+              "fixable": "code",
+              "messages": {
+                "disallow": "Must use flow style sequences.",
+                "required": "Must use block style sequences.",
+              },
+              "schema": [
+                {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "always",
+                        "never",
+                      ],
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "multiline": {
+                          "enum": [
+                            "always",
+                            "never",
+                            "ignore",
+                          ],
+                        },
+                        "singleline": {
+                          "enum": [
+                            "always",
+                            "never",
+                            "ignore",
+                          ],
+                        },
+                      },
+                      "type": "object",
+                    },
+                  ],
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "block-sequence-hyphen-indicator-newline": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "enforce consistent line breaks after `-` indicator",
+                "extensionRule": false,
+                "layout": true,
+                "ruleId": "yml/block-sequence-hyphen-indicator-newline",
+                "ruleName": "block-sequence-hyphen-indicator-newline",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/block-sequence-hyphen-indicator-newline.html",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "expectedLinebreakAfterIndicator": "Expected a line break after this `-` indicator.",
+                "unexpectedLinebreakAfterIndicator": "Unexpected line break after this `-` indicator.",
+              },
+              "schema": [
+                {
+                  "enum": [
+                    "always",
+                    "never",
+                  ],
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "blockMapping": {
+                      "enum": [
+                        "always",
+                        "never",
+                      ],
+                    },
+                    "nestedHyphen": {
+                      "enum": [
+                        "always",
+                        "never",
+                      ],
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "file-extension": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [],
+                "description": "enforce YAML file extension",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/file-extension",
+                "ruleName": "file-extension",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/file-extension.html",
+              },
+              "messages": {
+                "unexpected": "Expected extension '{{expected}}' but used extension '{{actual}}'.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "caseSensitive": {
+                      "type": "boolean",
+                    },
+                    "extension": {
+                      "enum": [
+                        "yaml",
+                        "yml",
+                      ],
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "suggestion",
+            },
+          },
+          "flow-mapping-curly-newline": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "enforce consistent line breaks inside braces",
+                "extensionRule": "object-curly-newline",
+                "layout": true,
+                "ruleId": "yml/flow-mapping-curly-newline",
+                "ruleName": "flow-mapping-curly-newline",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/flow-mapping-curly-newline.html",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "expectedLinebreakAfterOpeningBrace": "Expected a line break after this opening brace.",
+                "expectedLinebreakBeforeClosingBrace": "Expected a line break before this closing brace.",
+                "unexpectedLinebreakAfterOpeningBrace": "Unexpected line break after this opening brace.",
+                "unexpectedLinebreakBeforeClosingBrace": "Unexpected line break before this closing brace.",
+              },
+              "schema": [
+                {
+                  "oneOf": [
+                    {
+                      "enum": [
+                        "always",
+                        "never",
+                      ],
+                    },
+                    {
+                      "additionalProperties": false,
+                      "minProperties": 1,
+                      "properties": {
+                        "consistent": {
+                          "type": "boolean",
+                        },
+                        "minProperties": {
+                          "minimum": 0,
+                          "type": "integer",
+                        },
+                        "multiline": {
+                          "type": "boolean",
+                        },
+                      },
+                      "type": "object",
+                    },
+                  ],
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "flow-mapping-curly-spacing": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "enforce consistent spacing inside braces",
+                "extensionRule": "object-curly-spacing",
+                "layout": true,
+                "ruleId": "yml/flow-mapping-curly-spacing",
+                "ruleName": "flow-mapping-curly-spacing",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/flow-mapping-curly-spacing.html",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "requireSpaceAfter": "A space is required after '{{token}}'.",
+                "requireSpaceBefore": "A space is required before '{{token}}'.",
+                "requiredSpaceInEmptyObject": "A space is required in empty flow mapping.",
+                "unexpectedSpaceAfter": "There should be no space after '{{token}}'.",
+                "unexpectedSpaceBefore": "There should be no space before '{{token}}'.",
+                "unexpectedSpaceInEmptyObject": "There should be no space in empty flow mapping.",
+              },
+              "schema": [
+                {
+                  "enum": [
+                    "always",
+                    "never",
+                  ],
+                  "type": "string",
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "arraysInObjects": {
+                      "type": "boolean",
+                    },
+                    "emptyObjects": {
+                      "enum": [
+                        "ignore",
+                        "always",
+                        "never",
+                      ],
+                      "type": "string",
+                    },
+                    "objectsInObjects": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "flow-sequence-bracket-newline": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "enforce linebreaks after opening and before closing flow sequence brackets",
+                "extensionRule": "array-bracket-newline",
+                "layout": true,
+                "ruleId": "yml/flow-sequence-bracket-newline",
+                "ruleName": "flow-sequence-bracket-newline",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/flow-sequence-bracket-newline.html",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "missingClosingLinebreak": "A linebreak is required before ']'.",
+                "missingOpeningLinebreak": "A linebreak is required after '['.",
+                "unexpectedClosingLinebreak": "There should be no linebreak before ']'.",
+                "unexpectedOpeningLinebreak": "There should be no linebreak after '['.",
+              },
+              "schema": [
+                {
+                  "oneOf": [
+                    {
+                      "enum": [
+                        "always",
+                        "never",
+                        "consistent",
+                      ],
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "minItems": {
+                          "minimum": 0,
+                          "type": [
+                            "integer",
+                            "null",
+                          ],
+                        },
+                        "multiline": {
+                          "type": "boolean",
+                        },
+                      },
+                      "type": "object",
+                    },
+                  ],
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "flow-sequence-bracket-spacing": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "enforce consistent spacing inside flow sequence brackets",
+                "extensionRule": "array-bracket-spacing",
+                "layout": true,
+                "ruleId": "yml/flow-sequence-bracket-spacing",
+                "ruleName": "flow-sequence-bracket-spacing",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/flow-sequence-bracket-spacing.html",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "missingSpaceAfter": "A space is required after '{{tokenValue}}'.",
+                "missingSpaceBefore": "A space is required before '{{tokenValue}}'.",
+                "unexpectedSpaceAfter": "There should be no space after '{{tokenValue}}'.",
+                "unexpectedSpaceBefore": "There should be no space before '{{tokenValue}}'.",
+              },
+              "schema": [
+                {
+                  "enum": [
+                    "always",
+                    "never",
+                  ],
+                  "type": "string",
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "arraysInArrays": {
+                      "type": "boolean",
+                    },
+                    "objectsInArrays": {
+                      "type": "boolean",
+                    },
+                    "singleValue": {
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "indent": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "enforce consistent indentation",
+                "extensionRule": false,
+                "layout": true,
+                "ruleId": "yml/indent",
+                "ruleName": "indent",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/indent.html",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "wrongIndentation": "Expected indentation of {{expected}} spaces but found {{actual}} spaces.",
+              },
+              "schema": [
+                {
+                  "minimum": 2,
+                  "type": "integer",
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "alignMultilineFlowScalars": {
+                      "type": "boolean",
+                    },
+                    "indentBlockSequences": {
+                      "type": "boolean",
+                    },
+                    "indicatorValueIndent": {
+                      "minimum": 2,
+                      "type": "integer",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "key-name-casing": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": null,
+                "description": "enforce naming convention to key names",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/key-name-casing",
+                "ruleName": "key-name-casing",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/key-name-casing.html",
+              },
+              "messages": {
+                "doesNotMatchFormat": "Key name `{{name}}` must match one of the following formats: {{formats}}",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "PascalCase": {
+                      "default": false,
+                      "type": "boolean",
+                    },
+                    "SCREAMING_SNAKE_CASE": {
+                      "default": false,
+                      "type": "boolean",
+                    },
+                    "camelCase": {
+                      "default": true,
+                      "type": "boolean",
+                    },
+                    "ignores": {
+                      "additionalItems": false,
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                      "uniqueItems": true,
+                    },
+                    "kebab-case": {
+                      "default": false,
+                      "type": "boolean",
+                    },
+                    "snake_case": {
+                      "default": false,
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "suggestion",
+            },
+          },
+          "key-spacing": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "enforce consistent spacing between keys and values in mapping pairs",
+                "extensionRule": "key-spacing",
+                "layout": true,
+                "ruleId": "yml/key-spacing",
+                "ruleName": "key-spacing",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/key-spacing.html",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "extraKey": "Extra space after key '{{key}}'.",
+                "extraValue": "Extra space before value for key '{{key}}'.",
+                "missingKey": "Missing space after key '{{key}}'.",
+                "missingValue": "Missing space before value for key '{{key}}'.",
+              },
+              "schema": [
+                {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "afterColon": {
+                          "type": "boolean",
+                        },
+                        "align": {
+                          "anyOf": [
+                            {
+                              "enum": [
+                                "colon",
+                                "value",
+                              ],
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "afterColon": {
+                                  "type": "boolean",
+                                },
+                                "beforeColon": {
+                                  "type": "boolean",
+                                },
+                                "mode": {
+                                  "enum": [
+                                    "strict",
+                                    "minimum",
+                                  ],
+                                },
+                                "on": {
+                                  "enum": [
+                                    "colon",
+                                    "value",
+                                  ],
+                                },
+                              },
+                              "type": "object",
+                            },
+                          ],
+                        },
+                        "beforeColon": {
+                          "type": "boolean",
+                        },
+                        "mode": {
+                          "enum": [
+                            "strict",
+                            "minimum",
+                          ],
+                        },
+                      },
+                      "type": "object",
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "multiLine": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "afterColon": {
+                              "type": "boolean",
+                            },
+                            "align": {
+                              "anyOf": [
+                                {
+                                  "enum": [
+                                    "colon",
+                                    "value",
+                                  ],
+                                },
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "afterColon": {
+                                      "type": "boolean",
+                                    },
+                                    "beforeColon": {
+                                      "type": "boolean",
+                                    },
+                                    "mode": {
+                                      "enum": [
+                                        "strict",
+                                        "minimum",
+                                      ],
+                                    },
+                                    "on": {
+                                      "enum": [
+                                        "colon",
+                                        "value",
+                                      ],
+                                    },
+                                  },
+                                  "type": "object",
+                                },
+                              ],
+                            },
+                            "beforeColon": {
+                              "type": "boolean",
+                            },
+                            "mode": {
+                              "enum": [
+                                "strict",
+                                "minimum",
+                              ],
+                            },
+                          },
+                          "type": "object",
+                        },
+                        "singleLine": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "afterColon": {
+                              "type": "boolean",
+                            },
+                            "beforeColon": {
+                              "type": "boolean",
+                            },
+                            "mode": {
+                              "enum": [
+                                "strict",
+                                "minimum",
+                              ],
+                            },
+                          },
+                          "type": "object",
+                        },
+                      },
+                      "type": "object",
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "align": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "afterColon": {
+                              "type": "boolean",
+                            },
+                            "beforeColon": {
+                              "type": "boolean",
+                            },
+                            "mode": {
+                              "enum": [
+                                "strict",
+                                "minimum",
+                              ],
+                            },
+                            "on": {
+                              "enum": [
+                                "colon",
+                                "value",
+                              ],
+                            },
+                          },
+                          "type": "object",
+                        },
+                        "multiLine": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "afterColon": {
+                              "type": "boolean",
+                            },
+                            "beforeColon": {
+                              "type": "boolean",
+                            },
+                            "mode": {
+                              "enum": [
+                                "strict",
+                                "minimum",
+                              ],
+                            },
+                          },
+                          "type": "object",
+                        },
+                        "singleLine": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "afterColon": {
+                              "type": "boolean",
+                            },
+                            "beforeColon": {
+                              "type": "boolean",
+                            },
+                            "mode": {
+                              "enum": [
+                                "strict",
+                                "minimum",
+                              ],
+                            },
+                          },
+                          "type": "object",
+                        },
+                      },
+                      "type": "object",
+                    },
+                  ],
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "no-boolean-key": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": null,
+                "description": "disallow boolean mapping keys",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/no-boolean-key",
+                "ruleName": "no-boolean-key",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/no-boolean-key.html",
+              },
+              "messages": {
+                "unexpectedBoolean": "Boolean mapping keys are not allowed.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "no-empty-document": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "recommended",
+                  "standard",
+                ],
+                "description": "disallow empty document",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/no-empty-document",
+                "ruleName": "no-empty-document",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/no-empty-document.html",
+              },
+              "messages": {
+                "unexpectedEmpty": "Empty documents are forbidden.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "no-empty-key": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "recommended",
+                  "standard",
+                ],
+                "description": "disallow empty mapping keys",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/no-empty-key",
+                "ruleName": "no-empty-key",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/no-empty-key.html",
+              },
+              "messages": {
+                "unexpectedEmpty": "Empty mapping keys are forbidden.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "no-empty-mapping-value": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "recommended",
+                  "standard",
+                ],
+                "description": "disallow empty mapping values",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/no-empty-mapping-value",
+                "ruleName": "no-empty-mapping-value",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/no-empty-mapping-value.html",
+              },
+              "messages": {
+                "unexpectedEmpty": "Empty mapping values are forbidden.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "no-empty-sequence-entry": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "recommended",
+                  "standard",
+                ],
+                "description": "disallow empty sequence entries",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/no-empty-sequence-entry",
+                "ruleName": "no-empty-sequence-entry",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/no-empty-sequence-entry.html",
+              },
+              "messages": {
+                "unexpectedEmpty": "Empty sequence entries are forbidden.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "no-irregular-whitespace": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "recommended",
+                  "standard",
+                ],
+                "description": "disallow irregular whitespace",
+                "extensionRule": "no-irregular-whitespace",
+                "layout": false,
+                "ruleId": "yml/no-irregular-whitespace",
+                "ruleName": "no-irregular-whitespace",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/no-irregular-whitespace.html",
+              },
+              "messages": {
+                "disallow": "Irregular whitespace not allowed.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "skipComments": {
+                      "default": false,
+                      "type": "boolean",
+                    },
+                    "skipQuotedScalars": {
+                      "default": true,
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "problem",
+            },
+          },
+          "no-multiple-empty-lines": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "disallow multiple empty lines",
+                "extensionRule": "no-multiple-empty-lines",
+                "layout": true,
+                "ruleId": "yml/no-multiple-empty-lines",
+                "ruleName": "no-multiple-empty-lines",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/no-multiple-empty-lines.html",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "blankBeginningOfFile": "Too many blank lines at the beginning of file. Max of {{max}} allowed.",
+                "blankEndOfFile": "Too many blank lines at the end of file. Max of {{max}} allowed.",
+                "consecutiveBlank": "More than {{max}} blank {{pluralizedLines}} not allowed.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "max": {
+                      "minimum": 0,
+                      "type": "integer",
+                    },
+                    "maxBOF": {
+                      "minimum": 0,
+                      "type": "integer",
+                    },
+                    "maxEOF": {
+                      "minimum": 0,
+                      "type": "integer",
+                    },
+                  },
+                  "required": [
+                    "max",
+                  ],
+                  "type": "object",
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "no-tab-indent": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "recommended",
+                  "standard",
+                ],
+                "description": "disallow tabs for indentation.",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/no-tab-indent",
+                "ruleName": "no-tab-indent",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/no-tab-indent.html",
+              },
+              "messages": {
+                "disallow": "Unexpected tabs.",
+              },
+              "schema": [],
+              "type": "problem",
+            },
+          },
+          "no-trailing-spaces": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "disallow trailing whitespace at the end of lines",
+                "extensionRule": "no-trailing-spaces",
+                "layout": true,
+                "ruleId": "yml/no-trailing-spaces",
+                "ruleName": "no-trailing-spaces",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/no-trailing-spaces.html",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "trailingSpace": "Trailing spaces not allowed.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "ignoreComments": {
+                      "default": false,
+                      "type": "boolean",
+                    },
+                    "skipBlankLines": {
+                      "default": false,
+                      "type": "boolean",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "no-trailing-zeros": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "disallow trailing zeros for floats",
+                "extensionRule": false,
+                "layout": true,
+                "ruleId": "yml/no-trailing-zeros",
+                "ruleName": "no-trailing-zeros",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/no-trailing-zeros.html",
+              },
+              "fixable": "code",
+              "messages": {
+                "wrongZeros": "Trailing zeros are not allowed, fix to `{{fixed}}`.",
+              },
+              "schema": [],
+              "type": "layout",
+            },
+          },
+          "plain-scalar": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "require or disallow plain style scalar.",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/plain-scalar",
+                "ruleName": "plain-scalar",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/plain-scalar.html",
+              },
+              "fixable": "code",
+              "messages": {
+                "disallow": "Must use quoted style scalar.",
+                "required": "Must use plain style scalar.",
+              },
+              "schema": [
+                {
+                  "enum": [
+                    "always",
+                    "never",
+                  ],
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "ignorePatterns": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                    "overrides": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "mappingKey": {
+                          "enum": [
+                            "always",
+                            "never",
+                            null,
+                          ],
+                        },
+                      },
+                      "type": "object",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "quotes": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "enforce the consistent use of either double, or single quotes",
+                "extensionRule": false,
+                "layout": true,
+                "ruleId": "yml/quotes",
+                "ruleName": "quotes",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/quotes.html",
+              },
+              "fixable": "code",
+              "messages": {
+                "wrongQuotes": "Strings must use {{description}}.",
+              },
+              "schema": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "avoidEscape": {
+                      "type": "boolean",
+                    },
+                    "prefer": {
+                      "enum": [
+                        "double",
+                        "single",
+                      ],
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "layout",
+            },
+          },
+          "require-string-key": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": null,
+                "description": "disallow mapping keys other than strings",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/require-string-key",
+                "ruleName": "require-string-key",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/require-string-key.html",
+              },
+              "messages": {
+                "expectedString": "The key must be a string.",
+              },
+              "schema": [],
+              "type": "suggestion",
+            },
+          },
+          "sort-keys": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": null,
+                "description": "require mapping keys to be sorted",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/sort-keys",
+                "ruleName": "sort-keys",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/sort-keys.html",
+              },
+              "fixable": "code",
+              "messages": {
+                "shouldBeAfter": "Expected mapping keys to be in {{orderText}} order. '{{thisName}}' should be after '{{targetName}}'.",
+                "shouldBeBefore": "Expected mapping keys to be in {{orderText}} order. '{{thisName}}' should be before '{{targetName}}'.",
+              },
+              "schema": {
+                "oneOf": [
+                  {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "allowLineSeparatedGroups": {
+                          "type": "boolean",
+                        },
+                        "hasProperties": {
+                          "items": {
+                            "type": "string",
+                          },
+                          "type": "array",
+                        },
+                        "minKeys": {
+                          "minimum": 2,
+                          "type": "integer",
+                        },
+                        "order": {
+                          "oneOf": [
+                            {
+                              "items": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                  },
+                                  {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "keyPattern": {
+                                        "type": "string",
+                                      },
+                                      "order": {
+                                        "oneOf": [
+                                          {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                              "caseSensitive": {
+                                                "type": "boolean",
+                                              },
+                                              "natural": {
+                                                "type": "boolean",
+                                              },
+                                              "type": {
+                                                "enum": [
+                                                  "asc",
+                                                  "desc",
+                                                ],
+                                              },
+                                            },
+                                            "type": "object",
+                                          },
+                                          {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                              "type": {
+                                                "enum": [
+                                                  "ignore",
+                                                ],
+                                              },
+                                            },
+                                            "required": [
+                                              "type",
+                                            ],
+                                            "type": "object",
+                                          },
+                                        ],
+                                      },
+                                    },
+                                    "type": "object",
+                                  },
+                                ],
+                              },
+                              "type": "array",
+                              "uniqueItems": true,
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "caseSensitive": {
+                                  "type": "boolean",
+                                },
+                                "natural": {
+                                  "type": "boolean",
+                                },
+                                "type": {
+                                  "enum": [
+                                    "asc",
+                                    "desc",
+                                  ],
+                                },
+                              },
+                              "type": "object",
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "type": {
+                                  "enum": [
+                                    "ignore",
+                                  ],
+                                },
+                              },
+                              "required": [
+                                "type",
+                              ],
+                              "type": "object",
+                            },
+                          ],
+                        },
+                        "pathPattern": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "pathPattern",
+                        "order",
+                      ],
+                      "type": "object",
+                    },
+                    "minItems": 1,
+                    "type": "array",
+                  },
+                  {
+                    "additionalItems": false,
+                    "items": [
+                      {
+                        "enum": [
+                          "asc",
+                          "desc",
+                        ],
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "allowLineSeparatedGroups": {
+                            "type": "boolean",
+                          },
+                          "caseSensitive": {
+                            "type": "boolean",
+                          },
+                          "minKeys": {
+                            "minimum": 2,
+                            "type": "integer",
+                          },
+                          "natural": {
+                            "type": "boolean",
+                          },
+                        },
+                        "type": "object",
+                      },
+                    ],
+                    "type": "array",
+                  },
+                ],
+              },
+              "type": "suggestion",
+            },
+          },
+          "sort-sequence-values": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": null,
+                "description": "require sequence values to be sorted",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/sort-sequence-values",
+                "ruleName": "sort-sequence-values",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/sort-sequence-values.html",
+              },
+              "fixable": "code",
+              "messages": {
+                "shouldBeAfter": "Expected sequence values to be in {{orderText}} order. '{{thisValue}}' should be after '{{targetValue}}'.",
+                "shouldBeBefore": "Expected sequence values to be in {{orderText}} order. '{{thisValue}}' should be before '{{targetValue}}'.",
+              },
+              "schema": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "minValues": {
+                      "minimum": 2,
+                      "type": "integer",
+                    },
+                    "order": {
+                      "oneOf": [
+                        {
+                          "items": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                              },
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "order": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "caseSensitive": {
+                                        "type": "boolean",
+                                      },
+                                      "key": {
+                                        "type": "string",
+                                      },
+                                      "natural": {
+                                        "type": "boolean",
+                                      },
+                                      "type": {
+                                        "enum": [
+                                          "asc",
+                                          "desc",
+                                        ],
+                                      },
+                                    },
+                                    "type": "object",
+                                  },
+                                  "valuePattern": {
+                                    "type": "string",
+                                  },
+                                },
+                                "type": "object",
+                              },
+                            ],
+                          },
+                          "type": "array",
+                          "uniqueItems": true,
+                        },
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "caseSensitive": {
+                              "type": "boolean",
+                            },
+                            "key": {
+                              "type": "string",
+                            },
+                            "natural": {
+                              "type": "boolean",
+                            },
+                            "type": {
+                              "enum": [
+                                "asc",
+                                "desc",
+                              ],
+                            },
+                          },
+                          "type": "object",
+                        },
+                      ],
+                    },
+                    "pathPattern": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "pathPattern",
+                    "order",
+                  ],
+                  "type": "object",
+                },
+                "minItems": 1,
+                "type": "array",
+              },
+              "type": "suggestion",
+            },
+          },
+          "spaced-comment": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "standard",
+                ],
+                "description": "enforce consistent spacing after the `#` in a comment",
+                "extensionRule": "spaced-comment",
+                "layout": false,
+                "ruleId": "yml/spaced-comment",
+                "ruleName": "spaced-comment",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/spaced-comment.html",
+              },
+              "fixable": "whitespace",
+              "messages": {
+                "expectedExceptionAfter": "Expected exception block, space after '{{refChar}}' in comment.",
+                "expectedSpaceAfter": "Expected space after '{{refChar}}' in comment.",
+                "unexpectedSpaceAfter": "Unexpected space after '{{refChar}}' in comment.",
+                "unexpectedSpaceAfterMarker": "Unexpected space after marker ({{refChar}}) in comment.",
+              },
+              "schema": [
+                {
+                  "enum": [
+                    "always",
+                    "never",
+                  ],
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "exceptions": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                    "markers": {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "suggestion",
+            },
+          },
+          "vue-custom-block/no-parsing-error": {
+            "create": [Function],
+            "meta": {
+              "docs": {
+                "categories": [
+                  "recommended",
+                  "standard",
+                ],
+                "description": "disallow parsing errors in Vue custom blocks",
+                "extensionRule": false,
+                "layout": false,
+                "ruleId": "yml/vue-custom-block/no-parsing-error",
+                "ruleName": "vue-custom-block/no-parsing-error",
+                "url": "https://ota-meshi.github.io/eslint-plugin-yml/rules/vue-custom-block/no-parsing-error.html",
+              },
+              "messages": {},
+              "schema": [],
+              "type": "problem",
+            },
+          },
+        },
+      },
+    },
+    "rules": {
+      "yml/block-mapping-colon-indicator-newline": "off",
+      "yml/block-mapping-question-indicator-newline": "off",
+      "yml/block-sequence-hyphen-indicator-newline": "off",
+      "yml/flow-mapping-curly-newline": "off",
+      "yml/flow-mapping-curly-spacing": "off",
+      "yml/flow-sequence-bracket-newline": "off",
+      "yml/flow-sequence-bracket-spacing": "off",
+      "yml/indent": "off",
+      "yml/key-spacing": "off",
+      "yml/no-empty-document": "error",
+      "yml/no-empty-key": "error",
+      "yml/no-empty-mapping-value": 0,
+      "yml/no-empty-sequence-entry": "error",
+      "yml/no-irregular-whitespace": "error",
+      "yml/no-multiple-empty-lines": "off",
+      "yml/no-tab-indent": "error",
+      "yml/no-trailing-spaces": "off",
+      "yml/no-trailing-zeros": "off",
+      "yml/quotes": "off",
+      "yml/vue-custom-block/no-parsing-error": "error",
+    },
+  },
+  {
+    "files": [
       "**/package.json",
     ],
     "language": "json/json",
@@ -81192,6 +84965,53 @@ If a function does not access `this`, it can be annotated with `this: void`.",
       "wrap-iife": "off",
       "wrap-regex": "off",
       "yield-star-spacing": "off",
+    },
+  },
+  {
+    "files": [
+      "**/deno.json",
+    ],
+    "name": "lzear/prettier/deno-json",
+    "rules": {
+      "prettier/prettier": [
+        2,
+        {
+          "parser": "json-stringify",
+          "semi": false,
+          "singleQuote": true,
+        },
+      ],
+    },
+  },
+  {
+    "files": [
+      "**/.yarnrc.yml",
+    ],
+    "name": "lzear/prettier/yarnrc",
+    "rules": {
+      "prettier/prettier": [
+        2,
+        {
+          "semi": false,
+          "singleQuote": false,
+        },
+      ],
+    },
+  },
+  {
+    "files": [
+      "**/*.md/*.js",
+      "**/*.md/*.cjs",
+      "**/*.md/*.mjs",
+      "**/*.md/*.ts",
+      "**/*.md/*.cts",
+      "**/*.md/*.mts",
+      "**/*.md/*.jsx",
+      "**/*.md/*.tsx",
+    ],
+    "name": "lzear/prettier/markdown-code",
+    "rules": {
+      "prettier/prettier": 0,
     },
   },
 ]

@@ -39,6 +39,8 @@
     "@e18e/eslint-plugin": "^0.8",
     "@eslint-community/eslint-plugin-eslint-comments": "^4",
     "@eslint/js": "^10",
+    "@eslint/json": "^2",
+    "@eslint/markdown": "^8",
     "@stylistic/eslint-plugin": "^5",
     "@vitest/eslint-plugin": "^1",
     "eslint-config-prettier": "^10",
@@ -61,6 +63,7 @@
     "eslint-plugin-simple-import-sort": "^14",
     "eslint-plugin-sonarjs": "^4",
     "eslint-plugin-unicorn": "^77",
+    "eslint-plugin-yml": "^3",
     "globals": "^17",
     "prettier": "^3",
     "typescript-eslint": "^8"

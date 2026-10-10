@@ -25,32 +25,39 @@ export default [
 
 Defaults come from the dependencies in the cwd's `package.json` and its workspaces'; explicit options win.
 
-| Option       | Default                                    | Effect                                              |
-|--------------|--------------------------------------------|-----------------------------------------------------|
-| `node`       | `true`                                     | enable the layer                                    |
-| `react`      | `react` is a dependency                    | enable the layer                                    |
-| `typescript` | `typescript` is one, or a `tsconfig.json`  | enable the layer                                    |
-| `vitest`     | `vitest` is a dependency                   | enable the layer                                    |
-| `local`      |                                            | npm scope whose imports sort after third-party ones |
+| Option       | Default                                   | Effect                                              |
+| ------------ | ----------------------------------------- | --------------------------------------------------- |
+| `json`       | `true`                                    | enable the layer                                    |
+| `markdown`   | `true`                                    | enable the layer                                    |
+| `node`       | `true`                                    | enable the layer                                    |
+| `react`      | `react` is a dependency                   | enable the layer                                    |
+| `typescript` | `typescript` is one, or a `tsconfig.json` | enable the layer                                    |
+| `vitest`     | `vitest` is a dependency                  | enable the layer                                    |
+| `yaml`       | `true`                                    | enable the layer                                    |
+| `local`      |                                           | npm scope whose imports sort after third-party ones |
 
 ## Layers
 
 Each is exported too, for replacing one wholesale. `prettier` comes last so it overrides the rest.
 
-| Layer         | Files            | Plugins                                                                                                                            |
-|---------------|------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| `core`        | JS, TS, JSX, TSX | `@eslint/js`, stylistic, unicorn, sonarjs, import-x, simple-import-sort, promise, regexp, de-morgan, eslint-comments, prefer-arrow |
-| `typescript`  | TS, TSX          | typescript-eslint `strictTypeChecked` + `stylisticTypeChecked` (project service)                                                   |
-| `react`       | JSX, TSX         | react-x, react-dom, react-web-api, react-hooks, react-compiler                                                                     |
-| `a11y`        | JSX, TSX         | jsx-a11y-x, as `jsx-a11y`                                                                                                          |
-| `node`        | JS, TS, JSX, TSX | n                                                                                                                                  |
-| `vitest`      | tests            | `@vitest/eslint-plugin`; relaxes `no-non-null-assertion`, `no-unsafe-*` and `sonarjs/no-duplicate-string`                          |
-| `packageJson` | `package.json`   | eslint-package-json, `e18e/ban-dependencies`, `lzear/major-version-only`                                                           |
-| `prettier`    | all              | prettier: no semicolons, single quotes                                                                                             |
-| `ignores`     |                  | `dist`, `coverage`, `build`, caches                                                                                                |
+| Layer         | Files              | Plugins                                                                                                                                            |
+| ------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `core`        | JS, TS, JSX, TSX   | `@eslint/js`, stylistic, unicorn, sonarjs, import-x, simple-import-sort, promise, regexp, de-morgan, eslint-comments, prefer-arrow                 |
+| `typescript`  | TS, TSX            | typescript-eslint `strictTypeChecked` + `stylisticTypeChecked` (project service)                                                                   |
+| `react`       | JSX, TSX           | react-x, react-dom, react-web-api, react-hooks, react-compiler                                                                                     |
+| `a11y`        | JSX, TSX           | jsx-a11y-x, as `jsx-a11y`                                                                                                                          |
+| `node`        | JS, TS, JSX, TSX   | n                                                                                                                                                  |
+| `vitest`      | tests              | `@vitest/eslint-plugin`; relaxes `no-non-null-assertion`, `no-unsafe-*` and `sonarjs/no-duplicate-string`                                          |
+| `json`        | JSON, JSONC, JSON5 | `@eslint/json`; JSONC: `*.jsonc`, tsconfigs, `.vscode`, `.devcontainer`, `.fallowrc.json`                                                          |
+| `markdown`    | `*.md`             | `@eslint/markdown` (GFM, YAML front matter); JS/TS code blocks get the layers above, without type-aware rules                                      |
+| `yaml`        | `*.yml`, `*.yaml`  | eslint-plugin-yml `recommended`, minus `no-empty-mapping-value`                                                                                    |
+| `packageJson` | `package.json`     | eslint-package-json, `e18e/ban-dependencies`, `lzear/major-version-only`                                                                           |
+| `prettier`    | all                | prettier: no semicolons, single quotes; `deno.json` as JSON.stringify writes it, `.yarnrc.yml` double-quoted, code blocks with their Markdown file |
+| `ignores`     |                    | `dist`, `coverage`, `build`, caches                                                                                                                |
 
 Arrow functions only, `curly: multi`, inline type imports, `it` over `test`. Unused disable directives and inline configs are errors.
 On TS files, sonarjs rules that tsc or typescript-eslint already enforce are off; `sonarjs/aws-*` everywhere. `only-throw-error` allows TanStack Router's `redirect()` and `notFound()`. The `n` layer leaves Node builtins alone in JSX/TSX (browser code). react-x reads the installed React version.
+The data layers keep correctness rules: Prettier formats those files. In code blocks, imports may name the package itself and values go unused; `<!-- eslint-skip -->` above a block skips it.
 
 Adding your own `no-restricted-syntax` replaces forge's: spread `RESTRICTED_SYNTAX` into it.
 
@@ -60,7 +67,11 @@ import { FILES, RESTRICTED_SYNTAX } from '@lzear/eslint-config'
 const restricted = {
   files: FILES.REACT,
   rules: {
-    'no-restricted-syntax': [2, ...RESTRICTED_SYNTAX, { selector: 'WithStatement', message: 'No with.' }],
+    'no-restricted-syntax': [
+      2,
+      ...RESTRICTED_SYNTAX,
+      { selector: 'WithStatement', message: 'No with.' },
+    ],
   },
 }
 ```
