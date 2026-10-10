@@ -37,7 +37,7 @@ export default [
 export { default } from '@lzear/configs/vitest'
 ```
 
-Globals and v8 coverage (json, lcov, text): add `@vitest/coverage-v8`, and `"types": ["vitest/globals"]` to `tsconfig.json`.
+Globals and v8 coverage (json, lcov, text; text-summary under a coding agent): add `@vitest/coverage-v8`, and `"types": ["vitest/globals"]` to `tsconfig.json`.
 
 Under a coding agent ([std-env](https://github.com/unjs/std-env) `isAgent`, which Vitest also reads for its `minimal` reporter), tsdown builds are silent bar their startup lines and Vite logs warnings and errors only: agents re-read tool output every turn.
 

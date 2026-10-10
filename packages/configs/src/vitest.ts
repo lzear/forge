@@ -9,6 +9,7 @@ export { default } from '@lzear/configs/vitest'
 @module
 */
 
+import { isAgent } from 'std-env'
 import { defineConfig, type ViteUserConfig } from 'vitest/config'
 
 /**
@@ -19,7 +20,8 @@ const config: ViteUserConfig = defineConfig({
     globals: true,
     coverage: {
       provider: 'v8',
-      reporter: ['json', 'lcov', 'text'],
+      // agents re-read output: a summary; json and lcov stay for Codacy and fallow
+      reporter: ['json', 'lcov', isAgent ? 'text-summary' : 'text'],
     },
   },
 })

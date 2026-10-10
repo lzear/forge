@@ -28,6 +28,7 @@
       "default": "./dist/repo-lint.js"
     },
     "./tsconfig/app": "./tsconfig/app.json",
+    "./tsconfig/base": "./tsconfig/base.json",
     "./tsconfig/lib": "./tsconfig/lib.json",
     "./tsconfig/react": "./tsconfig/react.json",
     "./tsdown": {
