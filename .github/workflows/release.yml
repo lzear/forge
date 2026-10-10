@@ -20,10 +20,6 @@ on:
         description: also `deno publish` the deno.json workspace
         type: boolean
         default: false
-      snapshot-branch:
-        description: stage a snapshot (dist-tag `snapshot`) on every push to this branch
-        type: string
-        default: ''
 
 jobs:
   # opens the "Version Packages" PR while changesets are pending
@@ -82,25 +78,3 @@ jobs:
           deno-version: v2.x
       - if: inputs.jsr
         run: deno publish
-
-  # snapshot versions are unique per push: no PR, no release. Their own
-  # dist-tag keeps them off `beta`/`rc`, which changesets pre mode publishes
-  snapshot:
-    if: inputs.snapshot-branch != '' && github.ref_name == inputs.snapshot-branch
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - run: corepack enable
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ inputs.node-version }}
-      - run: yarn install --immutable
-      - run: yarn build
-      - run: yarn changeset version --snapshot snapshot
-      - run: yarn lzear-publish --publish
