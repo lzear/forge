@@ -508,6 +508,24 @@ describe('LOCAL_CHECKS', () => {
       } as never)
       expect(await check('pkg-publint', dir)).toMatchObject({ pass: false })
     })
+    it("packs a workspace package with the root's package manager", async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({
+          private: true,
+          workspaces: ['packages/*'],
+          packageManager: 'bun@1.4.2',
+        }),
+      )
+      write(dir, 'packages/a/package.json', JSON.stringify({}))
+      vi.mocked(publint).mockResolvedValue({ messages: [] } as never)
+      await check('pkg-publint', dir)
+      expect(vi.mocked(publint)).toHaveBeenCalledWith({
+        pkgDir: path.join(dir, 'packages/a'),
+        pack: 'bun',
+      })
+    })
   })
 
   describe('pkg-attw', () => {
@@ -652,6 +670,21 @@ describe('LOCAL_CHECKS', () => {
         expect.any(Function),
       )
     })
+    it('fails Bun only on high severity', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ packageManager: 'bun@1.4.2' }),
+      )
+      mockSpawn(0)
+      await check('deps-audit', dir)
+      expect(vi.mocked(childProcess.execFile)).toHaveBeenCalledWith(
+        'bun',
+        ['audit', '--audit-level=high'],
+        expect.objectContaining({ cwd: dir }),
+        expect.any(Function),
+      )
+    })
     it('fails with the error when the command cannot spawn', async () => {
       write(dir, 'package.json', JSON.stringify({}))
       mockSpawn('ENOENT')
@@ -743,6 +776,19 @@ describe('LOCAL_CHECKS', () => {
       })
       const result = await check('deps-deprecated', dir)
       expect(result).toMatchObject({ pass: false })
+    })
+
+    it("skips the workspaces' own packages", async () => {
+      write(dir, 'package.json', JSON.stringify({ workspaces: ['packages/*'] }))
+      write(
+        dir,
+        'packages/a/package.json',
+        JSON.stringify({ name: '@x/a', dependencies: { '@x/b': '*' } }),
+      )
+      write(dir, 'packages/b/package.json', JSON.stringify({ name: '@x/b' }))
+      mockRegistry({})
+      expect(await check('deps-deprecated', dir)).toBe(true)
+      expect(fetchMock).not.toHaveBeenCalled()
     })
   })
 

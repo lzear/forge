@@ -1,4 +1,4 @@
-// Scaffolds `forge init`'s Yarn library and Bun app into temp dirs, with this
+// Scaffolds `forge init`'s Yarn and Bun libraries and apps into temp dirs, with this
 // workspace's packages packed and resolved in place of npm's, installs the dev
 // deps it prints from the registry, then runs every printed command, each
 // script and a second `forge init`, whose check must pass now. Not in qa: it
@@ -35,11 +35,13 @@ const SCAFFOLDS: Scaffold[] = [
     name: 'app-bun',
     pm: 'bun',
     flags: ['--app', '--bun'],
-    package: {
-      name: 'demo-app',
-      // bun audit reports dev deps' low advisories: katex, via @eslint/markdown
-      forge: { skip: { 'deps-audit': 'bun audit: low, dev only' } },
-    },
+    package: { name: 'demo-app' },
+  },
+  {
+    name: 'lib-bun',
+    pm: 'bun',
+    flags: ['--bun'],
+    package: { name: 'demo-bun', version: '0.0.0' },
   },
   {
     name: 'react-yarn',

@@ -8,7 +8,7 @@ Yarn workspaces monorepo of shared dev tooling, published to npm and JSR. Packag
 CI=true yarn qa                                      # build, then typecheck, lint, test, forge check at once
 cd packages/<name> && yarn vitest run src/x.test.ts  # one test file
 yarn zizmor                                          # audit workflows (brew/uv zizmor; CI runs the action)
-yarn e2e:init [lib-yarn|app-bun|react-yarn]          # scaffold, install from npm, run each script: after changing forge init or its configs
+yarn e2e:init [lib-yarn|app-bun|lib-bun|react-yarn]  # scaffold, install from npm, run each script: after changing forge init or its configs
 ```
 
 `CI=true` keeps colors on when output is piped: color-dependent tests otherwise pass locally and fail in CI. Run Vitest through `yarn`: the config snapshot holds a rule message naming the package manager that runs it (`npm i` from a bare `vitest -u`).
@@ -28,3 +28,4 @@ yarn e2e:init [lib-yarn|app-bun|react-yarn]          # scaffold, install from np
 - `deps-fresh` runs `ncu` on peer ranges too, raising `>=` floors: a peer that must not track the latest major (`typescript`: TS 7 has no JS API for typescript-eslint) takes `*` and leaves the range to the plugins.
 - A shared config naming a package by string (commitlint's `parserPreset`) gets it resolved from the consumer, where Bun's isolated linker hides transitive deps: depend on it and inline the import.
 - `qa`'s `forge check` runs the remote check against `lzear/forge` through `gh`: logged out, it fails on `gh`.
+- `bin.ts` ends an output-printing command with `process.exitCode`, not `process.exit()`: exit cuts a piped stdout past 64 KB (macOS). `bin.test.ts` reads and resets it.

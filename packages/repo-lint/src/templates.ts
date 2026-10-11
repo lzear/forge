@@ -36,7 +36,7 @@ export type SyncOptions = {
 const TEMPLATES: Record<string, string> = {
   '.editorconfig': 'editorconfig',
   'lefthook.yml': 'lefthook.yml',
-  // shared as-is: allows @main refs to forge, hash-pins everything else
+  // shared as-is: hash-pins every action
   '.github/zizmor.yml': 'zizmor.yml',
   // Codacy is opt-in: updated where present, never created
   '.codacy.yml': 'codacy.yml',

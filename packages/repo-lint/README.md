@@ -45,14 +45,14 @@ const init = await initRepo({ dir, kind, react, packageManager, dry, version }) 
 | `pkg-size-limit`   | within `size-limit` budgets (where configured)                                      |
 | `pkg-fallow`       | no unused files, exports or dependencies (`fallow`)                                 |
 | `monorepo-lint`    | `sherif` passes (monorepos only)                                                    |
-| `deps-audit`       | no high+ prod vulnerabilities (package manager `audit`)                             |
+| `deps-audit`       | no high+ prod vulnerabilities (package manager `audit`; Bun's counts dev deps too)  |
 | `deps-deprecated`  | no direct dependency resolves to a deprecated version                               |
 | `deps-fresh`       | dependencies up to date (`ncu`, honors `.ncurc`)                                    |
 | `deps-release-age` | package manager installs only versions ≥ 3 days old                                 |
 | `renovate-active`  | with `renovate.json`: open Dependency Dashboard, or a `renovate[bot]` PR in 60 days |
 | `forge-config`     | the `forge` field below is valid (only when present)                                |
 
-`renovate-active`, the only remote check, queries GitHub through `gh` (`skipRemote`, `--skip-remote` skips it); with `gh` missing or logged out, a single `gh` result fails instead.
+`renovate-active`, the only remote check, queries GitHub through `gh` (`skipRemote`, `--skip-remote` skips it); with `gh` missing or logged out, or no GitHub repo (`forge.repo` or a github.com `origin`), a single `gh` result fails instead.
 
 ## Skipping checks
 

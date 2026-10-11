@@ -51,10 +51,13 @@ const run = async (...arguments_: string[]): Promise<number | undefined> => {
   vi.resetModules()
   try {
     await import('./bin.ts')
-    return undefined
+    return process.exitCode === undefined ? undefined : Number(process.exitCode)
   } catch (error) {
     if (error instanceof ExitError) return error.code
     throw error
+  } finally {
+    // the test run's own exit code
+    process.exitCode = undefined
   }
 }
 

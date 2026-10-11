@@ -261,3 +261,21 @@ it('fails once when gh cannot run, skipping on --skip-remote', async () => {
   checks.ghProblem = null
   checks.remote = []
 })
+
+it('fails the remote checks once when no GitHub repo is known', async () => {
+  const dir = remoteDir()
+  const check = vi.fn(() => true)
+  checks.remote = [remote('r1', check), remote('r2', check)]
+  const report = await checkLocal({ dir })
+  expect(report.repo).toBe(path.basename(dir))
+  expect(report.results).toEqual([
+    {
+      id: 'gh',
+      desc: 'gh CLI for remote checks',
+      pass: false,
+      detail: 'no GitHub repo: set forge.repo or a github.com origin',
+    },
+  ])
+  expect(check).not.toHaveBeenCalled()
+  checks.remote = []
+})

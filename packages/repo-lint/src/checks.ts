@@ -264,7 +264,7 @@ const auditCommand = (pm: PackageManager): [string, ...string[]] => {
     case 'pnpm':
       return ['pnpm', 'audit', '--prod', '--audit-level', 'high']
     case 'bun':
-      return ['bun', 'audit']
+      return ['bun', 'audit', '--audit-level=high']
     case 'yarn':
       return pm.version?.startsWith('1.')
         ? ['yarn', 'audit', '--level', 'high']
@@ -317,10 +317,16 @@ const collectFromPackage = (
   }
 }
 
+// without the repo's own packages: npm lacks them, whatever their range
 const collectDependencies = (dir: string): Map<string, string> => {
   const dependencies = new Map<string, string>()
-  for (const packageDir of [dir, ...getWorkspaceDirectories(dir)])
+  const packageDirs = [dir, ...getWorkspaceDirectories(dir)]
+  for (const packageDir of packageDirs)
     collectFromPackage(dependencies, packageDir)
+  for (const packageDir of packageDirs) {
+    const name = readPackage(packageDir)?.name
+    if (typeof name === 'string') dependencies.delete(name)
+  }
   return dependencies
 }
 
@@ -670,9 +676,11 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     desc: 'publint',
     type: 'local',
     publishedOnly: true,
-    check: (dir) =>
-      eachPublishedPackage(dir, async (pkgDir) => {
-        const { messages } = await publint({ pkgDir })
+    check: (dir) => {
+      // `pack: 'auto'` misses the root's manager from a workspace package
+      const pack = detectPackageManager(dir).name
+      return eachPublishedPackage(dir, async (pkgDir) => {
+        const { messages } = await publint({ pkgDir, pack })
         const failures = messages.filter(
           (m) => m.type === 'error' || m.type === 'warning',
         )
@@ -681,7 +689,8 @@ export const LOCAL_CHECKS: LocalCheck[] = [
           pass: false,
           detail: failures.map((m) => `[${m.type}] ${m.code}`).join('\n'),
         }
-      }),
+      })
+    },
   },
   {
     id: 'pkg-attw',

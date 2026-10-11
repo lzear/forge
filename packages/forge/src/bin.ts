@@ -157,7 +157,8 @@ program
         log.error(error instanceof Error ? error.message : String(error))
         process.exit(1)
       }
-      process.exit(printResults(result, json) ? 1 : 0)
+      // exit() would cut a piped stdout past 64 KB
+      process.exitCode = printResults(result, json) ? 1 : 0
     },
   )
 
@@ -238,7 +239,8 @@ program
           2,
         ),
       )
-      process.exit(missing.length > 0 ? 1 : 0)
+      process.exitCode = missing.length > 0 ? 1 : 0
+      return
     }
 
     for (const s of present) log.success(s.name)
@@ -300,7 +302,7 @@ program
       if (isJson)
         console.log(JSON.stringify({ ...report, pass: !isAnyFail }, null, 2))
       else printUpdateReport(report)
-      process.exit(isAnyFail ? 1 : 0)
+      process.exitCode = isAnyFail ? 1 : 0
     },
   )
 

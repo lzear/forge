@@ -137,6 +137,7 @@ const readConfig = (
 }
 
 const GH_CHECK = { id: 'gh', desc: 'gh CLI for remote checks' }
+const NO_REPO = 'no GitHub repo: set forge.repo or a github.com origin'
 
 const toResult = (c: Check, raw: boolean | CheckDetail): CheckResult =>
   typeof raw === 'boolean'
@@ -161,11 +162,12 @@ const settle = async (
 // one failing result when `gh` can't run them, rather than one per check
 const runRemoteChecks = async (
   dir: string,
-  repo: string,
+  repo: string | undefined,
   isApplicable: (c: Check) => boolean,
 ): Promise<CheckResult[]> => {
   const checks = REMOTE_CHECKS.filter((c) => isApplicable(c))
   if (checks.length === 0) return []
+  if (!repo) return [{ ...GH_CHECK, pass: false, detail: NO_REPO }]
   const problem = await ghProblem(dir)
   return problem
     ? [{ ...GH_CHECK, pass: false, detail: problem }]
@@ -174,7 +176,7 @@ const runRemoteChecks = async (
 
 const runChecks = async (
   dir: string,
-  repo: string,
+  repo: string | undefined,
   isApplicable: (c: Check) => boolean,
 ): Promise<CheckResult[]> => {
   const [localResults, remoteResults] = await Promise.all([
@@ -263,7 +265,8 @@ export const checkLocal = async (
   if (unknown.length > 0)
     throw new Error(`Unknown check: ${unknown.join(', ')} (${validIds()})`)
 
-  const repo = options.repo ?? detectRepo(dir) ?? path.basename(dir)
+  const gitHubRepo = options.repo ?? detectRepo(dir)
+  const repo = gitHubRepo ?? path.basename(dir)
   const config = readConfig(dir)
   const reasons = new Map([
     ...Object.entries(config.skip),
@@ -275,7 +278,7 @@ export const checkLocal = async (
     (!only || only.includes(c.id)) &&
     (!skipRemote || c.type !== 'remote')
   const check = (): Promise<CheckResult[]> =>
-    runChecks(dir, repo, (c) => isApplicable(c) && !reasons.has(c.id))
+    runChecks(dir, gitHubRepo, (c) => isApplicable(c) && !reasons.has(c.id))
   let results = await check()
   const fixed = isFix ? await runFixes(dir, results) : []
   if (fixed.length > 0) results = await check()
