@@ -27,10 +27,10 @@
 
 ```sh
 yarn add -D @lzear/forge   # or bun add -D
-yarn forge init            # --app, --react, --bun|--yarn, --dry
+yarn forge init            # --app, --bun|--yarn, --dry
 ```
 
-`forge init` writes what is missing, never overwriting: `package.json` scripts, `packageManager` (the newest past the age gate), `type`, `engines` and, for a library, the fields npm and tsdown need (lorem ipsum `description` and `keywords` to replace), `tsconfig.json`, ESLint, Vitest and commitlint configs extending forge's ([configs](packages/configs), [ESLint config](packages/eslint-config)), `renovate.json`, `.github/workflows/main.yml` calling [CI](#ci) (and release, for a Yarn library) pinned to the release, `.gitignore`, LICENSE and a badged README (libraries), the release-age gate, `forge sync`'s files and, without `src/`, a `src/index.ts` and its test (and Vite's `index.html` for React). It prints the steps left (the dev deps at forge's ranges, npm's trusted publisher, optional Codacy), ending with `forge check --skip-remote` ([checks](packages/repo-lint#checks); `--fix` repairs some), which it runs itself once the dev deps are installed.
+`forge init` writes what is missing, never overwriting: `package.json` scripts, `packageManager` (the newest past the age gate), `type`, `engines` and, for a library, the fields npm and tsdown need (lorem ipsum `description` and `keywords` to replace), `tsconfig.json`, ESLint, Vitest and commitlint configs extending forge's ([configs](packages/configs), [ESLint config](packages/eslint-config)), `renovate.json`, `.github/workflows/main.yml` calling [CI](#ci) (and release, for a Yarn library) pinned to the release, `.gitignore`, LICENSE and a badged README (libraries), the release-age gate, `forge sync`'s files and, without `src/`, a `src/index.ts` and its test (and Vite's `index.html` when `react` is a dependency, which also picks the React tsconfig and the jsdom Vitest config). It prints the steps left (the dev deps at forge's ranges, npm's trusted publisher, optional Codacy), ending with `forge check --skip-remote` ([checks](packages/repo-lint#checks); `--fix` repairs some), which it runs itself once the dev deps are installed.
 
 `lefthook.yml` runs `eslint --fix` on staged files, gitleaks on staged changes (skipped when not installed) and commitlint, under any package manager.
 

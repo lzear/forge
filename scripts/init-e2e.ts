@@ -21,6 +21,8 @@ type Scaffold = {
   pm: 'bun' | 'yarn'
   flags: string[]
   package: Record<string, unknown>
+  // written after init, over its own
+  files?: Record<string, string>
 }
 
 const SCAFFOLDS: Scaffold[] = [
@@ -46,8 +48,36 @@ const SCAFFOLDS: Scaffold[] = [
   {
     name: 'react-yarn',
     pm: 'yarn',
-    flags: ['--app', '--react', '--yarn'],
-    package: { name: 'demo-react' },
+    flags: ['--app', '--yarn'],
+    // `react` picks init's React configs
+    package: {
+      name: 'demo-react',
+      dependencies: {
+        react: '^19',
+        '@types/react': '^19',
+      },
+    },
+    // a component, so the React layer, the JSX tsconfig and fallow see `react` used
+    files: {
+      'src/hello.tsx': [
+        "import { useId } from 'react'",
+        '',
+        'export const Hello = ({ name }: { name: string }) => {',
+        '  const id = useId()',
+        '  return <p id={id}>Hello, {name}!</p>',
+        '}',
+        '',
+      ].join('\n'),
+      'src/index.ts': [
+        "export { Hello } from './hello.tsx'",
+        '',
+        '/**',
+        'Greets `name`.',
+        '*/',
+        'export const greet = (name: string): string => `Hello, ${name}!`',
+        '',
+      ].join('\n'),
+    },
   },
 ]
 
@@ -79,7 +109,7 @@ const pack = (dir: string): Record<string, string> => {
 
 // the first failing step, or null
 const scaffold = (
-  { pm, flags, package: package_ }: Scaffold,
+  { pm, flags, package: package_, files = {} }: Scaffold,
   dir: string,
   tarballs: Record<string, string>,
 ): string | null => {
@@ -100,6 +130,8 @@ const scaffold = (
   })
   process.stdout.write(init.stdout + init.stderr)
   if (init.status !== 0) return 'forge init'
+  for (const [file, content] of Object.entries(files))
+    writeFileSync(path.join(dir, file), content)
   const commands = stripVTControlCharacters(init.stdout)
     .split('\n')
     .map((line) => /^\s*→\s+((?:bun|yarn) .*)$/.exec(line)?.[1])

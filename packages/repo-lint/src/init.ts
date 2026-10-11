@@ -47,7 +47,6 @@ export type InitOptions = {
   a published library (default), or a private app
   */
   kind?: 'lib' | 'app'
-  react?: boolean
   /**
   defaults to Bun when detected, else Yarn
   */
@@ -341,14 +340,18 @@ const devDependencies = ({ isLib, isReact, pm }: Context): string[] => [
   ...(isReact ? ['jsdom'] : []),
 ]
 
-// `name@range`, quoted for shells that glob `^` and `~`
-const missingDependencies = (context: Context): string[] => {
-  const package_ = readPackage(context.dir)
-  const listed = new Set(
+const listedDependencies = (dir: string): Set<string> => {
+  const package_ = readPackage(dir)
+  return new Set(
     ['dependencies', 'devDependencies'].flatMap((field) =>
       Object.keys((package_?.[field] ?? {}) as Record<string, string>),
     ),
   )
+}
+
+// `name@range`, quoted for shells that glob `^` and `~`
+const missingDependencies = (context: Context): string[] => {
+  const listed = listedDependencies(context.dir)
   return devDependencies(context)
     .filter((name) => !listed.has(name))
     .map((name) => `'${name}@${DEV_RANGES[name] ?? context.forgeRange}'`)
@@ -442,7 +445,8 @@ export const initRepo = async (
   const context: Context = {
     dir,
     isLib: options.kind !== 'app',
-    isReact: options.react ?? false,
+    // as the ESLint config's React layer: a framework-made app brings its own Vite setup
+    isReact: listedDependencies(dir).has('react'),
     pm,
     pmField,
     isDry: options.dry ?? false,

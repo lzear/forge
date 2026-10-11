@@ -44,6 +44,8 @@ const FORGE_YARN = (
 
 const BUN_LOCK = JSON.stringify({ lockfileVersion: 1, workspaces: { '': {} } })
 
+const REACT_PACKAGE = JSON.stringify({ dependencies: { react: '^19' } })
+
 // `yarn add -D 'a@^1' 'b@npm:c@^2'` → { a: '^1', b: 'npm:c@^2' }
 const addedRanges = (add: string): Record<string, string> =>
   Object.fromEntries(
@@ -205,8 +207,8 @@ describe('initRepo', () => {
   })
 
   it('writes a React app without release, LICENSE or badges', async () => {
-    const dir = repo({ 'bun.lock': BUN_LOCK })
-    const { results, next } = await init(dir, { kind: 'app', react: true })
+    const dir = repo({ 'bun.lock': BUN_LOCK, 'package.json': REACT_PACKAGE })
+    const { results, next } = await init(dir, { kind: 'app' })
     expect(results.map((r) => r.file)).not.toContain('LICENSE')
     expect(results.map((r) => r.file)).not.toContain('.codacy.yml')
     expect(readJson(dir, 'package.json')).toMatchObject({
@@ -321,9 +323,9 @@ describe('initRepo', () => {
   })
 
   it('leaves an existing src/ alone', async () => {
-    const dir = repo()
+    const dir = repo({ 'package.json': REACT_PACKAGE })
     mkdirSync(path.join(dir, 'src'))
-    const { results } = await init(dir, { kind: 'app', react: true })
+    const { results } = await init(dir, { kind: 'app' })
     expect(results.map((r) => r.file)).not.toContain('src/index.ts')
     expect(existsSync(path.join(dir, 'index.html'))).toBe(false)
   })

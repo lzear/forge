@@ -303,10 +303,9 @@ describe('forge init', () => {
   it('writes the files and next steps, then checks without remote', async () => {
     mockInit()
     vi.mocked(checkLocal).mockResolvedValue(report(true, false))
-    expect(await run('init', '--app', '--react', '--bun')).toBe(1)
+    expect(await run('init', '--app', '--bun')).toBe(1)
     expect(initRepo).toHaveBeenCalledWith({
       kind: 'app',
-      react: true,
       packageManager: 'bun',
       dry: false,
       version: expect.any(String),
@@ -332,7 +331,6 @@ describe('forge init', () => {
     expect(await run('init', '--dry')).toBeUndefined()
     expect(initRepo).toHaveBeenCalledWith({
       kind: 'lib',
-      react: false,
       dry: true,
       version: expect.any(String),
     })

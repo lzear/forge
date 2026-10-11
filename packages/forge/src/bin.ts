@@ -261,14 +261,12 @@ program
   .description('scaffold the missing forge files, then check once installed')
   .addOption(new Option('--lib', 'a published library (default)'))
   .addOption(new Option('--app', 'a private app').conflicts('lib'))
-  .option('--react', 'React tsconfig and Vitest config', false)
   .addOption(new Option('--bun', 'Bun (default when bun.lock exists)'))
   .addOption(new Option('--yarn', 'Yarn').conflicts('bun'))
   .option('--dry', 'print what would be written, do not write', false)
   .action(
     async (options: {
       app?: boolean
-      react: boolean
       bun?: boolean
       yarn?: boolean
       dry: boolean
@@ -280,7 +278,6 @@ program
       const packageManager = options.bun ? 'bun' : options.yarn && 'yarn'
       const report = await initRepo({
         kind: options.app ? 'app' : 'lib',
-        react: options.react,
         ...(packageManager && { packageManager }),
         dry: isDry,
         version,
