@@ -1,3 +1,176 @@
+## 5.0.0
+
+`forge check` fails on the gate; drift (`forge-pins`, `deps-fresh`, `deps-audit`, `deps-deprecated`, `renovate-active`) warns, `--strict` fails on it.
+
+Skip checks with reasons in `package.json`'s `forge.skip`, or per run with `forge check --only`/`--skip`.
+
+`forge check --fix` repairs `git-hooks`, `renovate`, `deps-release-age`, `template-sync` and `forge-pins` failures; `git-hooks` chains onto `prepare`, replacing husky.
+
+`forge check` checks `renovate-active` and `gitignore-env`; checks run concurrently, remote ones with details.
+
+`forge init` (`initRepo`) scaffolds the missing forge files, pinned to the release, into a repo that passes its own qa: `packageManager`, forge's ranges (TS 6 and 7, Vite), `src/`, the package fields lint wants, React configs when `react` is a dependency; then it checks, once the dev dependencies are installed. A throwing check fails alone.
+
+`forge-pins` check: forge workflow and action pins must be the latest release; `latestForgeRelease()` helper.
+
+`forge sync` writes the templates bundled with its version, offline; `--check` and the `template-sync` check flag drift.
+
+Codacy is opt-in: the `codacy` check, the `CODACY_PROJECT_TOKEN` secret check, `forge setup` and `listSecrets` are removed (set the secret with `gh secret set CODACY_PROJECT_TOKEN`). `forge sync` and the `template-sync` check update `.codacy.yml` only where it exists; `forge init` writes no Codacy badges.
+
+Commitlint config resolves its parser preset under Bun's isolated linker.
+
+Coverage prints a summary under a coding agent; the react tsconfig targets ES2025; new `@lzear/forge/tsconfig/base` export.
+
+Fix `forge check` in consumer repos: Bun's audit fails on high severity only, workspace packages skip npm lookups, publint packs with the root's manager, remote checks need a GitHub repo, `--json` keeps long output.
+
+`defineReactConfig` and the `@vitejs/plugin-react` peer removed: add `react()` and `forgePlugin()` to your Vite config's `plugins`.
+
+`eslint-plugin-react-compiler` removed: react-hooks' recommended rules run the compiler's checks. Rename `react-compiler/react-compiler` in your config and disable comments to the `react-hooks/*` rule that reports.
+
+- Release drops the `snapshot-branch` input and its `snapshot` job.
+- `lzear-prerelease` is gone: `changeset pre enter|exit` remains.
+
+`./tsdown` (tsdown config factories) replaces `./tsup`; its `tsup` peer and the base tsconfig's `ignoreDeprecations` are gone.
+
+`react`, `typescript` and `vitest` default to whether the cwd's manifests (root and workspaces) depend on them (`typescript` also on a `tsconfig.json`); breaking only for a repo that relied on a layer it doesn't depend on: pass it explicitly.
+
+Lint JSON, Markdown (and its code blocks) and YAML: `json`, `markdown`, `yaml` layers, on by default.
+
+Own consumers' repeated overrides: TanStack's `only-throw-error` allow, Node builtins off on JSX/TSX, `default-export-style` separate, sonarjs duplicates of TS and `aws-*` off, `RESTRICTED_SYNTAX` export, detected React version.
+
+`forge update` holds the package manager, Node and Bun to the release-age gate, keeps corepack's hash, updates every Bun workspace keeping its ranges, and runs its network steps concurrently. Workspaces resolve from `pnpm-workspace.yaml`, `**` globs and `!` negations.
+
+The lefthook template's pre-commit lints md, yml, yaml and jsonc files with ESLint too, and runs gitleaks on the staged changes when it is installed, naming a leak's file, line and rule.
+
+- `monorepo-lint` reads pnpm-workspace.yaml, so it runs sherif on pnpm-only workspaces.
+- The `forge` field takes `repo` (`owner/name`), used before the `origin` remote for remote checks and `forge init`.
+
+The `type="number"` ban applies to `<input>` only.
+
+The TypeScript import resolver matches the `types@>=5.5` export condition.
+
+- CI drops its advisory steps (`forge check`, fallow, `e18e analyze`) and the `run-check` input.
+- The Vitest config no longer writes the `json` coverage report.
+
+Upgrade from 4:
+
+- `forge update` moves the `^4` ranges to `^5` (ncu crosses majors).
+- `forge check --fix` repins forge's workflows, syncs `lefthook.yml` (gitleaks, Markdown, YAML and JSON lint) and writes the release-age gate.
+- `eslint --fix` for the JSON, Markdown and YAML layers.
+- `.codacy.yml` is no longer required.
+
+### ESLint rules
+
+#### `lzear/core`
+
+- `sonarjs/argument-type`: `off` → `error`
+- `sonarjs/aws-apigateway-public-api`, `sonarjs/aws-ec2-rds-dms-public`, `sonarjs/aws-ec2-unencrypted-ebs-volume`, `sonarjs/aws-efs-unencrypted`, `sonarjs/aws-iam-all-privileges`, `sonarjs/aws-iam-privilege-escalation`, `sonarjs/aws-iam-public-access`, `sonarjs/aws-opensearchservice-domain`, `sonarjs/aws-rds-unencrypted-databases`, `sonarjs/aws-restricted-ip-admin-access`, `sonarjs/aws-s3-bucket-granted-access`, `sonarjs/aws-s3-bucket-insecure-http`, `sonarjs/aws-s3-bucket-public-access`, `sonarjs/aws-s3-bucket-versioning`, `sonarjs/aws-sagemaker-unencrypted-notebook`, `sonarjs/aws-sns-unencrypted-topics`, `sonarjs/aws-sqs-unencrypted-queue`: `error` → `off`
+- `unicorn/default-export-style`: options `none` → `{ "functions": "separate" }`
+
+#### `lzear/react`
+
+- `no-restricted-syntax`: options changed
+- `react-compiler/react-compiler`: removed
+
+#### `lzear/node-browser`
+
+- new block, 1 rule
+
+#### `lzear/typescript`
+
+- `@typescript-eslint/only-throw-error`: added, `error`
+- `sonarjs/argument-type`, `sonarjs/deprecation`, `sonarjs/different-types-comparison`, `sonarjs/in-operator-type-error`, `sonarjs/no-array-delete`, `sonarjs/no-unused-vars`, `sonarjs/no-useless-intersection`, `sonarjs/unused-import`: added, `off`
+
+#### `lzear/json`
+
+- new block, 4 rules
+
+#### `lzear/jsonc`
+
+- new block, 4 rules
+
+#### `lzear/json5`
+
+- new block, 4 rules
+
+#### `lzear/markdown`
+
+- new block, 17 rules
+
+#### `lzear/markdown/code-blocks`
+
+- new block, 74 rules
+
+#### `lzear/yaml`
+
+- new block, 20 rules
+
+#### `lzear/prettier/deno-json`
+
+- new block, 1 rule
+
+#### `lzear/prettier/yarnrc`
+
+- new block, 1 rule
+
+#### `lzear/prettier/markdown-code`
+
+- new block, 1 rule
+
+### Commits
+
+- [`a2e38aa`](https://github.com/lzear/forge/commit/a2e38aa) chore(deps): update actions/setup-node action to v7.1.0
+- [`ee48f08`](https://github.com/lzear/forge/commit/ee48f08) chore: build before housekeep runs forge update
+- [`45488d1`](https://github.com/lzear/forge/commit/45488d1) docs(changeset): fold duplicate and internal-only entries into user-facing ones
+- [`4464091`](https://github.com/lzear/forge/commit/4464091) docs(changeset): add the forge 4 to 5 upgrade note
+- [`c6d7054`](https://github.com/lzear/forge/commit/c6d7054) chore: yarn housekeep
+- [`baa292d`](https://github.com/lzear/forge/commit/baa292d) feat(repo-lint): warn on drift checks, fail on them with --strict
+- [`706a67d`](https://github.com/lzear/forge/commit/706a67d) feat(repo-lint): pick forge init's React configs from the react dependency
+- [`700e3b1`](https://github.com/lzear/forge/commit/700e3b1) feat(configs)!: remove defineReactConfig
+- [`65ad89f`](https://github.com/lzear/forge/commit/65ad89f) feat(forge)!: remove forge setup
+- [`68f023d`](https://github.com/lzear/forge/commit/68f023d) feat(eslint-config)!: drop eslint-plugin-react-compiler
+- [`7fa47a9`](https://github.com/lzear/forge/commit/7fa47a9) fix(repo-lint): make forge check pass in consumer repos
+- [`01a9e5b`](https://github.com/lzear/forge/commit/01a9e5b) test: add an end-to-end check of forge init's scaffolds
+- [`52da195`](https://github.com/lzear/forge/commit/52da195) fix(repo-lint): make forge init scaffold a repo that passes its own qa
+- [`f9963b2`](https://github.com/lzear/forge/commit/f9963b2) feat(repo-lint)!: make Codacy opt-in
+- [`7d65da0`](https://github.com/lzear/forge/commit/7d65da0) feat(repo-lint): scan staged changes with gitleaks on pre-commit
+- [`2e3fa57`](https://github.com/lzear/forge/commit/2e3fa57) feat(repo-lint)!: drop the secret-scanning and workflow-token-read checks
+- [`5066690`](https://github.com/lzear/forge/commit/5066690) feat(release)!: drop snapshot releases and lzear-prerelease
+- [`0008d47`](https://github.com/lzear/forge/commit/0008d47) feat(ci)!: drop the advisory CI steps nobody reads
+- [`9eeaca3`](https://github.com/lzear/forge/commit/9eeaca3) docs: note that an exported regex fails the dts build
+- [`7ac04d4`](https://github.com/lzear/forge/commit/7ac04d4) feat(repo-lint): name the GitHub repo in the forge config
+- [`5ca605f`](https://github.com/lzear/forge/commit/5ca605f) fix(repo-lint): sync .codacy.yml only into repos that publish
+- [`0f1bd68`](https://github.com/lzear/forge/commit/0f1bd68) fix(repo-lint): run sherif on pnpm-only workspaces
+- [`f9313a2`](https://github.com/lzear/forge/commit/f9313a2) style(repo-lint): format the README with Prettier
+- [`3bee5ca`](https://github.com/lzear/forge/commit/3bee5ca) docs: document the gitleaks job and the CI trigger events
+- [`2fe6658`](https://github.com/lzear/forge/commit/2fe6658) feat(repo-lint): lint md, yml, yaml and jsonc files on pre-commit
+- [`48b5893`](https://github.com/lzear/forge/commit/48b5893) fix(repo-lint): forge init records the packageManager field
+- [`7a14e5a`](https://github.com/lzear/forge/commit/7a14e5a) feat(forge): forge init scaffolds a repo in one command
+- [`422024e`](https://github.com/lzear/forge/commit/422024e) feat(repo-lint): check GitHub settings, Renovate activity and .env ignore
+- [`f45eb22`](https://github.com/lzear/forge/commit/f45eb22) fix(repo-lint): git-hooks fix replaces husky in prepare
+- [`4682a2d`](https://github.com/lzear/forge/commit/4682a2d) chore: yarn zizmor script passing --config .github/zizmor.yml
+- [`95fe8af`](https://github.com/lzear/forge/commit/95fe8af) feat(configs): coverage summary under coding agents, react tsconfig on ES2025, forge tsconfig/base
+- [`492bb05`](https://github.com/lzear/forge/commit/492bb05) feat(eslint-config): note rule changes in the release changelog
+- [`75d7bd9`](https://github.com/lzear/forge/commit/75d7bd9) feat(repo-lint): forge check --fix repairs fixable failures
+- [`df03636`](https://github.com/lzear/forge/commit/df03636) test(eslint-config): give config tests 30s
+- [`8e68425`](https://github.com/lzear/forge/commit/8e68425) style: format JSON files with Prettier
+- [`25ed934`](https://github.com/lzear/forge/commit/25ed934) feat(eslint-config): lint JSON, Markdown and YAML
+- [`5c796f9`](https://github.com/lzear/forge/commit/5c796f9) feat(repo-lint): forge-pins check, latestForgeRelease helper
+- [`b8a78ba`](https://github.com/lzear/forge/commit/b8a78ba) feat(repo-lint): skip checks via package.json forge.skip, --only/--skip
+- [`1a0fd42`](https://github.com/lzear/forge/commit/1a0fd42) feat(repo-lint): bundle templates, forge sync --check, template-sync check
+- [`666303e`](https://github.com/lzear/forge/commit/666303e) feat(eslint-config): detect react, typescript and vitest from manifests
+- [`5121207`](https://github.com/lzear/forge/commit/5121207) feat(eslint-config): own consumers' repeated overrides
+- [`299c61a`](https://github.com/lzear/forge/commit/299c61a) fix(repo-lint): resolve pnpm-workspace.yaml, ** and ! workspace globs
+- [`ba1f37a`](https://github.com/lzear/forge/commit/ba1f37a) fix(repo-lint): gate forge update's package manager, Node and Bun bumps by release age
+- [`4167ed7`](https://github.com/lzear/forge/commit/4167ed7) feat(configs)!: drop the tsup factory
+- [`d8baded`](https://github.com/lzear/forge/commit/d8baded) fix(eslint-config): resolve TS's types@>=5.5 export condition
+- [`5bea250`](https://github.com/lzear/forge/commit/5bea250) fix(configs): inline commitlint's parser preset for isolated installs
+- [`1e2e8a4`](https://github.com/lzear/forge/commit/1e2e8a4) fix(repo-lint): bun update every workspace, keep the ranges
+- [`9297882`](https://github.com/lzear/forge/commit/9297882) chore: `yarn housekeep`
+- [`2725293`](https://github.com/lzear/forge/commit/2725293) fix(eslint-config): limit the number-input ban to <input>
+- [`1f2467d`](https://github.com/lzear/forge/commit/1f2467d) feat(configs): build with tsdown, add tsdown config factories
+- [`b0eeb80`](https://github.com/lzear/forge/commit/b0eeb80) perf: run forge check alongside lint in qa
+- [`6ce276a`](https://github.com/lzear/forge/commit/6ce276a) perf(repo-lint): run local check commands concurrently
+
 ## 4.10.0
 
 `unicorn/no-top-level-side-effects` is off in `*.config.*` files.
