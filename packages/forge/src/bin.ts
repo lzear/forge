@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
-The `forge` CLI: `init`, `check`, `update`, `setup` and `sync`.
+The `forge` CLI: `init`, `check`, `update` and `sync`.
 
 ```sh
 npx @lzear/forge check
@@ -10,7 +10,6 @@ npx @lzear/forge check
 @module
 */
 
-import { spawnSync } from 'node:child_process'
 import { createRequire } from 'node:module'
 import * as clack from '@clack/prompts'
 import { Command, Option } from 'commander'
@@ -18,10 +17,8 @@ import pc from 'picocolors'
 import { isAgent } from 'std-env'
 import {
   checkLocal,
-  detectRepo,
   initRepo,
   type InitReport,
-  listSecrets,
   type PackageManager,
   type RepoReport,
   runUpdate,
@@ -161,104 +158,6 @@ program
       process.exitCode = printResults(result, json) ? 1 : 0
     },
   )
-
-const promptAndSet = async (
-  s: { name: string; desc: string },
-  repo: string,
-): Promise<void> => {
-  if (!isTTY) {
-    log.error(
-      `${s.name}: non-interactive shell — run in a TTY or: gh secret set ${s.name} --repo ${repo}`,
-    )
-    return
-  }
-  const value = await clack.password({
-    message: `${s.name}: ${pc.dim(s.desc)}`,
-  })
-  if (clack.isCancel(value) || !value.trim()) {
-    log.warn(`${s.name} skipped.`)
-    return
-  }
-  // stdin, not --body, keeps the value out of the process list
-  const result = spawnSync('gh', ['secret', 'set', s.name, '--repo', repo], {
-    input: value.trim(),
-    encoding: 'utf8',
-    stdio: ['pipe', 'ignore', 'pipe'],
-  })
-  if (result.status === 0) {
-    log.success(`${s.name} set.`)
-    return
-  }
-  const reason = result.stderr.trim() || `gh exited ${result.status}`
-  log.error(`${s.name} not set: ${reason}`)
-}
-
-const REQUIRED_SECRETS = (repo: string) => [
-  {
-    name: 'CODACY_PROJECT_TOKEN',
-    desc: `Codacy project token — find at app.codacy.com/gh/${repo}/settings/coverage`,
-  },
-]
-
-program
-  .command('setup')
-  .description('check and set required GitHub secrets for a repo')
-  .option('--repo <repo>', 'repo to set up (e.g. lzear/my-repo)')
-  .option('--dry', 'check only, do not prompt for values', false)
-  .option('--json', 'output results as JSON', false)
-  .action(async (options: { repo?: string; dry: boolean; json: boolean }) => {
-    const repo = options.repo ?? detectRepo()
-    if (!repo) {
-      log.error('Could not detect repo. Pass --repo <owner/repo>.')
-      process.exit(1)
-    }
-    const { dry, json } = options
-
-    if (!json) log.intro(pc.bold(`forge setup · ${pc.cyan(repo)}`))
-
-    const existing = await listSecrets(repo)
-    if (!existing) {
-      log.error(
-        'Failed to list secrets. Install gh (https://cli.github.com), then: gh auth login',
-      )
-      process.exit(1)
-    }
-    const secrets = REQUIRED_SECRETS(repo)
-    const present = secrets.filter((s) => existing.includes(s.name))
-    const missing = secrets.filter((s) => !existing.includes(s.name))
-
-    if (json) {
-      console.log(
-        JSON.stringify(
-          {
-            repo,
-            present: present.map((s) => s.name),
-            missing: missing.map((s) => s.name),
-          },
-          null,
-          2,
-        ),
-      )
-      process.exitCode = missing.length > 0 ? 1 : 0
-      return
-    }
-
-    for (const s of present) log.success(s.name)
-    for (const s of missing) log.error(`${s.name} — missing`)
-
-    if (missing.length === 0) {
-      log.outro(pc.green('All secrets present.'))
-      return
-    }
-    if (dry) {
-      log.outro(pc.yellow('Dry run — skipping.'))
-      return
-    }
-
-    for (const s of missing) await promptAndSet(s, repo)
-
-    log.outro(pc.green('Done.'))
-  })
 
 const formatPackageManager = (pm: PackageManager): string => {
   const version = pm.version ? `@${pm.version}` : ''

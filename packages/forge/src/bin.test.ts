@@ -1,12 +1,9 @@
-import { spawnSync, type SpawnSyncReturns } from 'node:child_process'
 import { stripVTControlCharacters } from 'node:util'
 import * as clack from '@clack/prompts'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   checkLocal,
-  detectRepo,
   initRepo,
-  listSecrets,
   type RepoReport,
   runUpdate,
   type SyncStatus,
@@ -15,13 +12,10 @@ import {
 
 vi.mock('@lzear/repo-lint', () => ({
   checkLocal: vi.fn(),
-  detectRepo: vi.fn(),
   initRepo: vi.fn(),
-  listSecrets: vi.fn(),
   runUpdate: vi.fn(),
   syncTemplates: vi.fn(),
 }))
-vi.mock('node:child_process', () => ({ spawnSync: vi.fn() }))
 // vitest itself may run under an agent: pin it per test
 const environment = vi.hoisted(() => ({ isAgent: false }))
 vi.mock('std-env', () => environment)
@@ -29,8 +23,6 @@ vi.mock('@clack/prompts', () => ({
   intro: vi.fn(),
   outro: vi.fn(),
   log: { success: vi.fn(), error: vi.fn(), warn: vi.fn() },
-  password: vi.fn(),
-  isCancel: (value: unknown) => typeof value === 'symbol',
   cancel: vi.fn(),
 }))
 
@@ -81,22 +73,6 @@ const report = (...passes: boolean[]): RepoReport => ({
   })),
 })
 
-const spawned = (status: number): SpawnSyncReturns<string> => ({
-  status,
-  stdout: '',
-  stderr: '',
-  pid: 0,
-  output: [],
-  signal: null,
-})
-
-// answers `detectRepo`, `listSecrets`, then `gh secret set`
-const mockGh = ({ secrets = [] as string[] | null, set = 0 } = {}): void => {
-  vi.mocked(detectRepo).mockReturnValue('lzear/x')
-  vi.mocked(listSecrets).mockResolvedValue(secrets)
-  vi.mocked(spawnSync).mockReturnValue(spawned(set))
-}
-
 const updateReport = (pass: boolean) => ({
   dir: '/r',
   packageManager: { name: 'yarn', version: '4.0.0', source: 'lockfile' },
@@ -122,7 +98,7 @@ const mockInit = (isInstalled = true): void => {
       { file: 'package.json', status: 'updated', detail: 'scripts: + qa' },
       { file: 'LICENSE', status: 'unchanged' },
     ],
-    next: ['forge setup'],
+    next: ['gh secret set CODACY_PROJECT_TOKEN'],
     isInstalled,
   })
 }
@@ -259,94 +235,6 @@ describe('forge check', () => {
   })
 })
 
-// ── setup ────────────────────────────────────────────────────────────────────
-
-describe('forge setup', () => {
-  it('needs a repo', async () => {
-    mockGh()
-    vi.mocked(detectRepo).mockReturnValue(undefined)
-    expect(await run('setup')).toBe(1)
-    expect(printed()).toContain('Could not detect repo')
-  })
-
-  it('needs a working gh', async () => {
-    mockGh({ secrets: null })
-    expect(await run('setup')).toBe(1)
-    expect(printed()).toContain('gh auth login')
-  })
-
-  it('prints JSON, failing on missing secrets', async () => {
-    mockGh({ secrets: ['OTHER'] })
-    expect(await run('setup', '--json')).toBe(1)
-    expect(json()).toEqual({
-      repo: 'lzear/x',
-      present: [],
-      missing: ['CODACY_PROJECT_TOKEN'],
-    })
-  })
-
-  it('is done when every secret is present', async () => {
-    mockGh({ secrets: ['CODACY_PROJECT_TOKEN'] })
-    expect(await run('setup', '--repo', 'lzear/y')).toBeUndefined()
-    expect(printed()).toContain('forge setup · ')
-    expect(printed()).toContain('All secrets present.')
-  })
-
-  it('does not prompt on --dry', async () => {
-    mockGh()
-    expect(await run('setup', '--dry')).toBeUndefined()
-    expect(printed()).toContain('Dry run')
-  })
-
-  it('points to gh secret set outside a TTY', async () => {
-    mockGh()
-    expect(await run('setup')).toBeUndefined()
-    expect(printed()).toContain(
-      'gh secret set CODACY_PROJECT_TOKEN --repo lzear/x',
-    )
-    expect(clack.password).not.toHaveBeenCalled()
-  })
-
-  it('prompts for missing secrets in a TTY', async () => {
-    setTTY(true)
-    mockGh()
-    vi.mocked(clack.password).mockResolvedValueOnce(' codacy-token ')
-    expect(await run('setup')).toBeUndefined()
-    expect(spawnSync).toHaveBeenCalledWith(
-      'gh',
-      ['secret', 'set', 'CODACY_PROJECT_TOKEN', '--repo', 'lzear/x'],
-      {
-        input: 'codacy-token',
-        encoding: 'utf8',
-        stdio: ['pipe', 'ignore', 'pipe'],
-      },
-    )
-    expect(clack.log.success).toHaveBeenCalledWith('CODACY_PROJECT_TOKEN set.')
-    expect(clack.outro).toHaveBeenCalledWith(expect.stringContaining('Done.'))
-  })
-
-  it('reports a failed gh secret set', async () => {
-    setTTY(true)
-    mockGh({ set: 1 })
-    vi.mocked(clack.password).mockResolvedValueOnce('codacy-token')
-    expect(await run('setup')).toBeUndefined()
-    expect(clack.log.error).toHaveBeenCalledWith(
-      'CODACY_PROJECT_TOKEN not set: gh exited 1',
-    )
-    expect(clack.log.success).not.toHaveBeenCalledWith(
-      'CODACY_PROJECT_TOKEN set.',
-    )
-  })
-
-  it('skips a cancelled prompt', async () => {
-    setTTY(true)
-    mockGh()
-    vi.mocked(clack.password).mockResolvedValueOnce(Symbol('cancel') as never)
-    expect(await run('setup')).toBeUndefined()
-    expect(clack.log.warn).toHaveBeenCalledWith('CODACY_PROJECT_TOKEN skipped.')
-  })
-})
-
 // ── update ───────────────────────────────────────────────────────────────────
 
 describe('forge update', () => {
@@ -428,14 +316,14 @@ describe('forge init', () => {
     expect(printed()).toContain('package.json (updated)')
     expect(printed()).toContain('scripts: + qa')
     expect(printed()).toContain('LICENSE (exists)')
-    expect(printed()).toContain('→  forge setup')
+    expect(printed()).toContain('→  gh secret set CODACY_PROJECT_TOKEN')
     expect(printed()).toContain('1/2')
   })
 
   it('leaves the check to the user before install', async () => {
     mockInit(false)
     expect(await run('init')).toBeUndefined()
-    expect(printed()).toContain('→  forge setup')
+    expect(printed()).toContain('→  gh secret set CODACY_PROJECT_TOKEN')
     expect(checkLocal).not.toHaveBeenCalled()
   })
 

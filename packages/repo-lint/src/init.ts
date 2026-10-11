@@ -382,7 +382,7 @@ const nextSteps = (
     ...(release
       ? []
       : ['forge tags unreachable, workflows on @main: forge check --fix']),
-    'optional: add the repo on app.codacy.com, then `forge setup`',
+    'optional: add the repo on app.codacy.com, then `gh secret set CODACY_PROJECT_TOKEN`',
     ...(isRelease
       ? [`npm trusted publisher: ${repo} / main.yml, once the package exists`]
       : []),

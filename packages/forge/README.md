@@ -12,13 +12,14 @@ yarn add -D @lzear/forge
 
 ## CLI
 
-`check`, `update` and `setup` take `--json`.
+`check` and `update` take `--json`.
 
 - `forge init [--lib|--app] [--react] [--bun|--yarn] [--dry]` — scaffold a forge repo, writing only missing files ([Adopt](https://github.com/lzear/forge#adopt)), workflows pinned to this version's release; prints the steps left, then runs `forge check --skip-remote` once the dev deps are installed.
 - `forge check [--skip-remote] [--only <ids>] [--skip <ids>] [--fix]` — audit the repo against forge standards ([checks](https://www.npmjs.com/package/@lzear/repo-lint#checks), [skipping](https://www.npmjs.com/package/@lzear/repo-lint#skipping-checks)); `--fix` repairs what it can ([fixes](https://www.npmjs.com/package/@lzear/repo-lint#fixes)), then checks again; a coding agent sees failures only.
 - `forge update [--dry] [--no-install]` — bump dependency ranges (ncu, versions ≥ 3 days old except own packages, honors `.ncurc`, skips workspaces that are git submodules), `packageManager`, `.nvmrc`/`.node-version`/`.bun-version` and the LICENSE year, then install and dedupe.
-- `forge setup [--repo owner/name] [--dry]` — set the `CODACY_PROJECT_TOKEN` GitHub secret, for the optional Codacy coverage upload.
 - `forge sync [--dry] [--check]` — write `.editorconfig`, `lefthook.yml` and `.github/zizmor.yml` from the templates bundled with this version, and update `.codacy.yml` where it exists; `--check` exits 1 on drift.
+
+Optional Codacy coverage upload: `gh secret set CODACY_PROJECT_TOKEN` (`-R owner/name` when `origin` points elsewhere).
 
 ## Re-exports
 

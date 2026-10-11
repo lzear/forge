@@ -296,7 +296,6 @@ export const checkLocal = async (
 export {
   CHECKS,
   latestForgeRelease,
-  listSecrets,
   LOCAL_CHECKS,
   REMOTE_CHECKS,
 } from './checks.ts'

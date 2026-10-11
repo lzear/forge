@@ -882,26 +882,6 @@ const ghApi = async <T>(endpoint: string, cwd: string): Promise<T> => {
   return JSON.parse(r.stdout) as T
 }
 
-/**
-Lists the repo's GitHub Actions secret names, or `null` when `gh` fails.
-*/
-export const listSecrets = async (
-  repo: string,
-  cwd: string = process.cwd(),
-): Promise<string[] | null> => {
-  const r = await run(
-    'gh',
-    ['secret', 'list', '--repo', repo, '--json', 'name'],
-    { cwd },
-  )
-  if (r.status !== 0) return null
-  try {
-    return (JSON.parse(r.stdout) as { name: string }[]).map((s) => s.name)
-  } catch {
-    return null
-  }
-}
-
 type GhIssue = {
   title: string
   state: string

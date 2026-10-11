@@ -198,7 +198,7 @@ describe('initRepo', () => {
       ),
       'yarn changeset init',
       'package.json: replace the lorem ipsum description and keywords',
-      'optional: add the repo on app.codacy.com, then `forge setup`',
+      'optional: add the repo on app.codacy.com, then `gh secret set CODACY_PROJECT_TOKEN`',
       `npm trusted publisher: lzear/${name} / main.yml, once the package exists`,
       'yarn build && yarn forge check --skip-remote',
     ])

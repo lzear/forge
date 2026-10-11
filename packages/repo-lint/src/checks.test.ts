@@ -16,7 +16,6 @@ import {
   forgeRelease,
   ghProblem,
   latestForgeRelease,
-  listSecrets,
   LOCAL_CHECKS,
   REMOTE_CHECKS,
 } from './checks.ts'
@@ -1161,17 +1160,6 @@ describe('REMOTE_CHECKS', () => {
     it('says gh is missing', async () => {
       mockSpawn('ENOENT')
       expect(await ghProblem()).toMatch('not installed')
-    })
-  })
-
-  describe('listSecrets', () => {
-    it('lists secret names', async () => {
-      mockGh({ 'secret list': [{ name: 'CODACY_PROJECT_TOKEN' }] })
-      expect(await listSecrets(repo)).toEqual(['CODACY_PROJECT_TOKEN'])
-    })
-    it('returns null when gh fails', async () => {
-      mockGh({ 'secret list': 1 })
-      expect(await listSecrets(repo)).toBeNull()
     })
   })
 
