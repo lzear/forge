@@ -43810,7 +43810,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-dom",
-          "version": "5.24.7",
+          "version": "5.24.9",
         },
         "rules": {
           "no-dangerously-set-innerhtml": {
@@ -44806,7 +44806,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-web-api",
-          "version": "5.24.7",
+          "version": "5.24.9",
         },
         "rules": {
           "no-leaked-event-listener": {
@@ -45348,7 +45348,7 @@
         },
         "meta": {
           "name": "eslint-plugin-react-x",
-          "version": "5.24.7",
+          "version": "5.24.9",
         },
         "rules": {
           "error-boundaries": {
