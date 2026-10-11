@@ -3,4 +3,4 @@
 '@lzear/forge': major
 ---
 
-Drop `./tsup`, its `tsup` peer and the base tsconfig's `ignoreDeprecations`: build with `./tsdown`.
+`./tsdown` (tsdown config factories) replaces `./tsup`; its `tsup` peer and the base tsconfig's `ignoreDeprecations` are gone.

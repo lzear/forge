@@ -1,5 +1,5 @@
 ---
-'@lzear/eslint-config': minor
+'@lzear/eslint-config': patch
 ---
 
-`no-restricted-syntax` rejects `<input type="number">`.
+The `type="number"` ban applies to `<input>` only.

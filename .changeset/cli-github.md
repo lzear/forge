@@ -2,4 +2,4 @@
 '@lzear/repo-lint': minor
 ---
 
-`forge check` checks `renovate-active` and `gitignore-env`; remote checks run async with details.
+`forge check` checks `renovate-active` and `gitignore-env`; checks run concurrently, remote ones with details.
