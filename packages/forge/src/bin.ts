@@ -17,6 +17,7 @@ import pc from 'picocolors'
 import { isAgent } from 'std-env'
 import {
   checkLocal,
+  type CheckResult,
   initRepo,
   type InitReport,
   type PackageManager,
@@ -76,15 +77,21 @@ const printFixes = (fixed: NonNullable<RepoReport['fixed']>): void => {
   if (fixed.length > 0) process.stdout.write('\n')
 }
 
-const printSummary = (report: RepoReport): void => {
+const resultMark = (r: CheckResult, isStrict: boolean): string => {
+  if (r.pass) return pc.green('✓')
+  return !isStrict && r.drift ? pc.yellow('!') : pc.red('✗')
+}
+
+const printSummary = (report: RepoReport, isStrict: boolean): void => {
   const pass = report.results.filter((r) => r.pass).length
   const total = report.results.length
+  const drifted = isStrict
+    ? 0
+    : report.results.filter((r) => !r.pass && r.drift).length
   for (const r of report.results) {
     // agents re-read tool output every turn: passes would only cost tokens
     if (isAgent && r.pass) continue
-    process.stdout.write(
-      `  ${r.pass ? pc.green('✓') : pc.red('✗')}  ${r.desc}\n`,
-    )
+    process.stdout.write(`  ${resultMark(r, isStrict)}  ${r.desc}\n`)
     if (!r.pass && r.detail)
       for (const line of r.detail.split('\n'))
         process.stdout.write(`       ${pc.dim(line)}\n`)
@@ -93,14 +100,19 @@ const printSummary = (report: RepoReport): void => {
     pass === total
       ? pc.green(`${pass}/${total}`)
       : pc.yellow(`${pass}/${total}`)
-  process.stdout.write(`\n  ${score} checks passed\n`)
+  const drift = drifted > 0 ? ', ' + pc.yellow(`${drifted} drifted`) : ''
+  process.stdout.write(`\n  ${score} checks passed${drift}\n`)
   const skipped = `${report.skipped.length} skipped`
   if (!isAgent && report.skipped.length > 0)
     process.stdout.write(`  ${pc.dim(skipped)}\n`)
 }
 
-const printResults = (report: RepoReport, json: boolean): boolean => {
-  const isAnyFail = report.results.some((r) => !r.pass)
+// whether the run fails: drift only counts when strict
+const printResults = (
+  report: RepoReport,
+  json: boolean,
+  isStrict = false,
+): boolean => {
   if (json) {
     console.log(
       JSON.stringify(
@@ -109,17 +121,17 @@ const printResults = (report: RepoReport, json: boolean): boolean => {
           results: report.results,
           skipped: report.skipped,
           ...(report.fixed && { fixed: report.fixed }),
-          pass: !isAnyFail,
+          pass: report.pass,
         },
         null,
         2,
       ),
     )
-    return isAnyFail
+    return !report.pass
   }
   if (report.fixed) printFixes(report.fixed)
-  printSummary(report)
-  return isAnyFail
+  printSummary(report, isStrict)
+  return !report.pass
 }
 
 const splitIds = (value: string): string[] =>
@@ -135,6 +147,7 @@ program
   .option('--only <ids>', 'run only these checks (comma-separated)', splitIds)
   .option('--skip <ids>', 'skip these checks (comma-separated)', splitIds)
   .option('--fix', 'fix failures, then check again')
+  .option('--strict', 'fail on drift too (new releases, advisories)')
   .option('--json', 'output results as JSON', false)
   .action(
     async (options: {
@@ -142,6 +155,7 @@ program
       only?: string[]
       skip?: string[]
       fix?: boolean
+      strict?: boolean
       json: boolean
     }) => {
       const { json, ...checkOptions } = options
@@ -155,7 +169,7 @@ program
         process.exit(1)
       }
       // exit() would cut a piped stdout past 64 KB
-      process.exitCode = printResults(result, json) ? 1 : 0
+      process.exitCode = printResults(result, json, options.strict) ? 1 : 0
     },
   )
 

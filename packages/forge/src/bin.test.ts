@@ -71,6 +71,18 @@ const report = (...passes: boolean[]): RepoReport => ({
     pass,
     ...(!pass && { detail: 'why\nit failed' }),
   })),
+  pass: passes.every(Boolean),
+})
+
+// a passing check and a drifted one; checkLocal fails it only when strict
+const driftReport = (isStrict = false): RepoReport => ({
+  repo: 'lzear/x',
+  skipped: [],
+  results: [
+    { id: 'c0', desc: 'check 0', pass: true },
+    { id: 'c1', desc: 'pins', pass: false, drift: true, detail: 'v4.10.0' },
+  ],
+  pass: !isStrict,
 })
 
 const updateReport = (pass: boolean) => ({
@@ -226,6 +238,39 @@ describe('forge check', () => {
     vi.mocked(checkLocal).mockResolvedValue({ ...report(false), fixed })
     expect(await run('check', '--fix', '--json')).toBe(1)
     expect(json()).toMatchObject({ fixed, pass: false })
+  })
+
+  it('warns on drift, exiting 0', async () => {
+    vi.mocked(checkLocal).mockResolvedValue(driftReport())
+    expect(await run('check')).toBe(0)
+    expect(checkLocal).toHaveBeenCalledWith({ skipRemote: false })
+    expect(printed()).toMatch(/! {2}pins\n\s+v4\.10\.0/)
+    expect(printed()).toContain('1/2 checks passed, 1 drifted')
+  })
+
+  it('shows drift to a coding agent', async () => {
+    environment.isAgent = true
+    vi.mocked(checkLocal).mockResolvedValue(driftReport())
+    expect(await run('check')).toBe(0)
+    expect(printed()).not.toContain('check 0')
+    expect(printed()).toMatch(/! {2}pins\n\s+v4\.10\.0/)
+  })
+
+  it('--strict fails on drift', async () => {
+    vi.mocked(checkLocal).mockResolvedValue(driftReport(true))
+    expect(await run('check', '--strict')).toBe(1)
+    expect(checkLocal).toHaveBeenCalledWith({ skipRemote: false, strict: true })
+    expect(printed()).toContain('✗  pins')
+    expect(printed()).not.toContain('drifted')
+  })
+
+  it('marks drift in JSON, passing unless strict', async () => {
+    vi.mocked(checkLocal).mockResolvedValue(driftReport())
+    expect(await run('check', '--json')).toBe(0)
+    expect(json()).toMatchObject({
+      results: [{ id: 'c0' }, { id: 'c1', pass: false, drift: true }],
+      pass: true,
+    })
   })
 
   it('fails on an unknown check id', async () => {

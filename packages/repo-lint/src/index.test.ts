@@ -41,6 +41,7 @@ it('reads the repo from the origin of dir, not of the cwd', async () => {
     repo: 'a/b',
     results: [],
     skipped: [],
+    pass: true,
   })
 })
 
@@ -212,6 +213,48 @@ it('lists no fixes when nothing failed, and none without fix', async () => {
   expect(await checkLocal({ dir, repo: 'r' })).not.toHaveProperty('fixed')
 })
 
+// ── drift ────────────────────────────────────────────────────────────────────
+
+const drifting = (id: string, pass: boolean): LocalCheck => ({
+  id,
+  desc: `${id} desc`,
+  type: 'local',
+  drift: true,
+  check: () => pass,
+})
+
+it('passes despite drift unless strict, marking drift results', async () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'repo-lint-drift-test-'))
+  checks.local = [passing('a'), drifting('d1', true), drifting('d2', false)]
+  const report = await checkLocal({ dir, repo: 'r' })
+  expect(report.results).toEqual([
+    { id: 'a', desc: 'a desc', pass: true },
+    { id: 'd1', desc: 'd1 desc', drift: true, pass: true },
+    { id: 'd2', desc: 'd2 desc', drift: true, pass: false },
+  ])
+  expect(report.pass).toBe(true)
+  await expect(
+    checkLocal({ dir, repo: 'r', strict: true }),
+  ).resolves.toMatchObject({ pass: false })
+})
+
+it('fails on the gate whatever the drift', async () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'repo-lint-drift-test-'))
+  checks.local = [{ ...passing('a'), check: () => false }, drifting('d', true)]
+  await expect(checkLocal({ dir, repo: 'r' })).resolves.toMatchObject({
+    pass: false,
+  })
+})
+
+it('runs drift fixes, marking them', async () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'repo-lint-drift-test-'))
+  checks.local = [{ ...drifting('d', false), fix: () => 'repinned' }]
+  const report = await checkLocal({ dir, repo: 'r', fix: true })
+  expect(report.fixed).toEqual([
+    { id: 'd', desc: 'd desc', drift: true, pass: true, detail: 'repinned' },
+  ])
+})
+
 // ── remote ───────────────────────────────────────────────────────────────────
 
 const remote = (id: string, check: RemoteCheck['check']): RemoteCheck => ({
@@ -258,6 +301,24 @@ it('fails once when gh cannot run, skipping on --skip-remote', async () => {
   const skipped = await checkLocal({ dir, repo: 'o/r', skipRemote: true })
   expect(skipped.results).toEqual([])
   expect(check).not.toHaveBeenCalled()
+  checks.ghProblem = null
+  checks.remote = []
+})
+
+it('fails gh as drift when only drift checks need it', async () => {
+  const dir = remoteDir()
+  const drift = { ...remote('r1', () => true), drift: true }
+  checks.remote = [drift]
+  checks.ghProblem = 'gh not authenticated: gh auth login'
+  const report = await checkLocal({ dir, repo: 'o/r' })
+  expect(report.results).toEqual([
+    expect.objectContaining({ id: 'gh', pass: false, drift: true }),
+  ])
+  expect(report.pass).toBe(true)
+  checks.remote = [drift, remote('r2', () => true)]
+  const gate = await checkLocal({ dir, repo: 'o/r' })
+  expect(gate.results[0]).not.toHaveProperty('drift')
+  expect(gate.pass).toBe(false)
   checks.ghProblem = null
   checks.remote = []
 })

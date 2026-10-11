@@ -41,6 +41,10 @@ export type CheckResult = {
   desc: string
   pass: boolean
   detail?: string
+  /**
+  a drift check's result: fails on time, not on the tree
+  */
+  drift?: true
 }
 
 /**
@@ -59,6 +63,10 @@ export type RepoReport = {
   repo: string
   results: CheckResult[]
   skipped: SkippedCheck[]
+  /**
+  every result passed, drift aside unless `strict`
+  */
+  pass: boolean
   /**
   with `fix`: each fix run, `detail` being what it changed or why it failed
   */
@@ -139,10 +147,16 @@ const readConfig = (
 const GH_CHECK = { id: 'gh', desc: 'gh CLI for remote checks' }
 const NO_REPO = 'no GitHub repo: set forge.repo or a github.com origin'
 
+const label = (c: Check): Pick<CheckResult, 'id' | 'desc' | 'drift'> => ({
+  id: c.id,
+  desc: c.desc,
+  ...(c.drift && { drift: true }),
+})
+
 const toResult = (c: Check, raw: boolean | CheckDetail): CheckResult =>
   typeof raw === 'boolean'
-    ? { id: c.id, desc: c.desc, pass: raw }
-    : { id: c.id, desc: c.desc, ...raw }
+    ? { ...label(c), pass: raw }
+    : { ...label(c), ...raw }
 
 const errorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
@@ -155,11 +169,12 @@ const settle = async (
   try {
     return toResult(c, await check())
   } catch (error) {
-    return { id: c.id, desc: c.desc, pass: false, detail: errorMessage(error) }
+    return { ...label(c), pass: false, detail: errorMessage(error) }
   }
 }
 
-// one failing result when `gh` can't run them, rather than one per check
+// one failing result when `gh` can't run them, rather than one per check:
+// drift when only drift checks needed it
 const runRemoteChecks = async (
   dir: string,
   repo: string | undefined,
@@ -167,10 +182,15 @@ const runRemoteChecks = async (
 ): Promise<CheckResult[]> => {
   const checks = REMOTE_CHECKS.filter((c) => isApplicable(c))
   if (checks.length === 0) return []
-  if (!repo) return [{ ...GH_CHECK, pass: false, detail: NO_REPO }]
+  const gh: CheckResult = {
+    ...GH_CHECK,
+    pass: false,
+    ...(checks.every((c) => c.drift) && { drift: true }),
+  }
+  if (!repo) return [{ ...gh, detail: NO_REPO }]
   const problem = await ghProblem(dir)
   return problem
-    ? [{ ...GH_CHECK, pass: false, detail: problem }]
+    ? [{ ...gh, detail: problem }]
     : Promise.all(checks.map((c) => settle(c, () => c.check(repo, dir))))
 }
 
@@ -200,19 +220,9 @@ const runFixes = async (
     if (!c.fix || results.every((r) => r.id !== c.id || r.pass)) continue
     try {
       const detail = await c.fix(dir)
-      fixed.push({
-        id: c.id,
-        desc: c.desc,
-        pass: true,
-        ...(detail && { detail }),
-      })
+      fixed.push({ ...label(c), pass: true, ...(detail && { detail }) })
     } catch (error) {
-      fixed.push({
-        id: c.id,
-        desc: c.desc,
-        pass: false,
-        detail: errorMessage(error),
-      })
+      fixed.push({ ...label(c), pass: false, detail: errorMessage(error) })
     }
   }
   return fixed
@@ -237,6 +247,10 @@ export type CheckLocalOptions = {
   run the failing checks' fixes, then every check again
   */
   fix?: boolean
+  /**
+  fail `pass` on drift checks too
+  */
+  strict?: boolean
 }
 
 /**
@@ -247,6 +261,9 @@ validates it.
 
 With `fix`, failing checks that have a fix run it, then every check runs
 again; `fixed` lists the fixes.
+
+Drift checks (`drift: true`: new releases, advisories) fail on time, not on
+the tree: `pass` ignores them unless `strict`.
 
 @param options `dir` defaults to the cwd, `repo` to the `origin` remote
 @throws on an unknown id in `only` or `skip`
@@ -260,6 +277,7 @@ export const checkLocal = async (
     only,
     skip = [],
     fix: isFix = false,
+    strict: isStrict = false,
   } = options
   const unknown = unknownIds([...(only ?? []), ...skip])
   if (unknown.length > 0)
@@ -285,10 +303,12 @@ export const checkLocal = async (
   const skipped = CHECKS.filter(
     (c) => isApplicable(c) && reasons.has(c.id),
   ).map((c) => ({ id: c.id, desc: c.desc, skipped: reasons.get(c.id) ?? '' }))
+  if (config.result) results = [config.result, ...results]
   return {
     repo,
-    results: config.result ? [config.result, ...results] : results,
+    results,
     skipped,
+    pass: results.every((r) => r.pass || (r.drift && !isStrict)),
     ...(isFix && { fixed }),
   }
 }

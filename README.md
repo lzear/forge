@@ -77,7 +77,8 @@ Renovate: `"extends": ["github>lzear/forge"]` (digest-pinned actions, updates wa
 ## Development
 
 ```sh
-yarn qa          # build + typecheck + lint + test + forge check
+yarn qa          # build + typecheck + lint + test + forge check (drift warns)
+yarn housekeep   # update deps, refresh snapshots, qa, then forge check --strict
 yarn changeset   # then merge to main
 ```
 

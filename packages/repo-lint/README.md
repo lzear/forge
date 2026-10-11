@@ -14,13 +14,14 @@ import {
   syncTemplates,
 } from '@lzear/repo-lint'
 
-const { results, skipped, fixed } = await checkLocal({
+const { results, skipped, fixed, pass } = await checkLocal({
   dir,
   skipRemote,
   only,
   skip,
   fix,
-}) // [{ pass, desc, detail? }], [{ id, desc, skipped }], fix runs: [{ pass, desc, detail? }]
+  strict,
+}) // [{ pass, desc, detail?, drift? }], [{ id, desc, skipped }], fix runs: [{ pass, desc, detail? }], pass: drift aside unless strict
 const update = await runUpdate({ dir, dry, install })
 const sync = await syncTemplates({ dir, dry }) // [{ file, status }], from templates/; `.codacy.yml` only where it exists
 const init = await initRepo({ dir, kind, react, packageManager, dry, version }) // results: [{ file, status, detail? }], next: [steps left], isInstalled, from templates/init/
@@ -28,31 +29,33 @@ const init = await initRepo({ dir, kind, react, packageManager, dry, version }) 
 
 ## Checks
 
-| Check              | Passes when                                                                         |
-| ------------------ | ----------------------------------------------------------------------------------- |
-| `gitignore-env`    | `git check-ignore .env` succeeds                                                    |
-| `readme-exists`    | `README.md` exists                                                                  |
-| `readme-npm-badge` | README has an npm badge                                                             |
-| `license`          | `LICENSE` exists                                                                    |
-| `jsr-config`       | `deno.json` name & version match `package.json`                                     |
-| `ci-workflow`      | a workflow calls the forge reusable CI workflow                                     |
-| `forge-pins`       | forge workflow/action pins are the latest `v*` tag                                  |
-| `renovate`         | `renovate.json` extends `github>lzear/forge`                                        |
-| `git-hooks`        | `lefthook.yml`, installed by `prepare` (Yarn) or Bun                                |
-| `template-sync`    | shared files match [`templates/`](templates)                                        |
-| `pkg-publint`      | published packages pass `publint`                                                   |
-| `pkg-attw`         | published packages pass `attw` (ESM-only profile)                                   |
-| `pkg-size-limit`   | within `size-limit` budgets (where configured)                                      |
-| `pkg-fallow`       | no unused files, exports or dependencies (`fallow`)                                 |
-| `monorepo-lint`    | `sherif` passes (monorepos only)                                                    |
-| `deps-audit`       | no high+ prod vulnerabilities (package manager `audit`; Bun's counts dev deps too)  |
-| `deps-deprecated`  | no direct dependency resolves to a deprecated version                               |
-| `deps-fresh`       | dependencies up to date (`ncu`, honors `.ncurc`)                                    |
-| `deps-release-age` | package manager installs only versions ≥ 3 days old                                 |
-| `renovate-active`  | with `renovate.json`: open Dependency Dashboard, or a `renovate[bot]` PR in 60 days |
-| `forge-config`     | the `forge` field below is valid (only when present)                                |
+| Check              | Drift | Passes when                                                                         |
+| ------------------ | ----- | ----------------------------------------------------------------------------------- |
+| `gitignore-env`    |       | `git check-ignore .env` succeeds                                                    |
+| `readme-exists`    |       | `README.md` exists                                                                  |
+| `readme-npm-badge` |       | README has an npm badge                                                             |
+| `license`          |       | `LICENSE` exists                                                                    |
+| `jsr-config`       |       | `deno.json` name & version match `package.json`                                     |
+| `ci-workflow`      |       | a workflow calls the forge reusable CI workflow                                     |
+| `forge-pins`       | ✓     | forge workflow/action pins are the latest `v*` tag                                  |
+| `renovate`         |       | `renovate.json` extends `github>lzear/forge`                                        |
+| `git-hooks`        |       | `lefthook.yml`, installed by `prepare` (Yarn) or Bun                                |
+| `template-sync`    |       | shared files match [`templates/`](templates)                                        |
+| `pkg-publint`      |       | published packages pass `publint`                                                   |
+| `pkg-attw`         |       | published packages pass `attw` (ESM-only profile)                                   |
+| `pkg-size-limit`   |       | within `size-limit` budgets (where configured)                                      |
+| `pkg-fallow`       |       | no unused files, exports or dependencies (`fallow`)                                 |
+| `monorepo-lint`    |       | `sherif` passes (monorepos only)                                                    |
+| `deps-audit`       | ✓     | no high+ prod vulnerabilities (package manager `audit`; Bun's counts dev deps too)  |
+| `deps-deprecated`  | ✓     | no direct dependency resolves to a deprecated version                               |
+| `deps-fresh`       | ✓     | dependencies up to date (`ncu`, honors `.ncurc`)                                    |
+| `deps-release-age` |       | package manager installs only versions ≥ 3 days old                                 |
+| `renovate-active`  | ✓     | with `renovate.json`: open Dependency Dashboard, or a `renovate[bot]` PR in 60 days |
+| `forge-config`     |       | the `forge` field below is valid (only when present)                                |
 
-`renovate-active`, the only remote check, queries GitHub through `gh` (`skipRemote`, `--skip-remote` skips it); with `gh` missing or logged out, or no GitHub repo (`forge.repo` or a github.com `origin`), a single `gh` result fails instead.
+`forge check` exits 1 when a gate check fails: deterministic for a given tree. Drift checks fail on time instead (a forge release, a new version, an advisory): they print as warnings (`!`), counted apart (`18/20 checks passed, 2 drifted`), leaving the exit code at 0; `--strict` (`checkLocal({ strict: true })`) fails on them too. In `--json`, their results carry `drift: true`; the top-level `pass` ignores them unless strict.
+
+`renovate-active`, the only remote check, queries GitHub through `gh` (`skipRemote`, `--skip-remote` skips it); with `gh` missing or logged out, or no GitHub repo (`forge.repo` or a github.com `origin`), a single `gh` result fails instead, drift while only drift checks need `gh`.
 
 ## Skipping checks
 

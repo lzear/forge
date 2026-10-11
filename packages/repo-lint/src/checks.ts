@@ -37,6 +37,10 @@ export type LocalCheck = {
   desc: string
   type: 'local'
   publishedOnly?: boolean
+  /**
+  fails on time, not on the tree (new releases, advisories): warns unless strict
+  */
+  drift?: boolean
   check: (dir: string) => CheckResult
   /**
   repairs a failure, resolving to what it changed
@@ -52,6 +56,10 @@ export type RemoteCheck = {
   desc: string
   type: 'remote'
   publishedOnly?: boolean
+  /**
+  fails on time, not on the tree: warns unless strict
+  */
+  drift?: boolean
   check: (repo: string, dir: string) => CheckResult
 }
 
@@ -552,6 +560,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'forge-pins',
     desc: 'forge pins latest',
     type: 'local',
+    drift: true,
     check: async (dir) => {
       if (isForgeRepo(dir)) return { pass: true, detail: 'forge itself' }
       const pins = findForgePins(dir)
@@ -776,6 +785,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'deps-audit',
     desc: 'audit',
     type: 'local',
+    drift: true,
     check: async (dir) => {
       const pm = detectPackageManager(dir)
       const [command, ...arguments_] = auditCommand(pm)
@@ -790,6 +800,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'deps-deprecated',
     desc: 'no deprecated deps',
     type: 'local',
+    drift: true,
     check: async (dir) => {
       const dependencies = collectDependencies(dir)
       const failures: string[] = []
@@ -814,6 +825,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'deps-fresh',
     desc: 'deps up to date',
     type: 'local',
+    drift: true,
     // the dry run of `forge update`, so .ncurc rejects apply to both
     check: async (dir) => {
       const { pass, changed, detail = '' } = await stepDeps(dir, true)
@@ -899,6 +911,7 @@ export const REMOTE_CHECKS: RemoteCheck[] = [
     id: 'renovate-active',
     desc: 'Renovate active',
     type: 'remote',
+    drift: true,
     // the issues endpoint lists PRs too
     check: async (repo, dir) => {
       if (!existsSync(path.join(dir, 'renovate.json')))
