@@ -15,19 +15,13 @@ export const RESTRICTED_SYNTAX: { selector: string; message: string }[] = [
 export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
   if (!config.react) return {}
 
-  const [
-    reactCompilerPlugin,
-    reactHooksPlugin,
-    reactXPlugin,
-    reactDomPlugin,
-    reactWebApiPlugin,
-  ] = await Promise.all([
-    interopDefault(import('eslint-plugin-react-compiler')),
-    interopDefault(import('eslint-plugin-react-hooks')),
-    interopDefault(import('eslint-plugin-react-x')),
-    interopDefault(import('eslint-plugin-react-dom')),
-    interopDefault(import('eslint-plugin-react-web-api')),
-  ] as const)
+  const [reactHooksPlugin, reactXPlugin, reactDomPlugin, reactWebApiPlugin] =
+    await Promise.all([
+      interopDefault(import('eslint-plugin-react-hooks')),
+      interopDefault(import('eslint-plugin-react-x')),
+      interopDefault(import('eslint-plugin-react-dom')),
+      interopDefault(import('eslint-plugin-react-web-api')),
+    ] as const)
 
   const files = config.typescript ? FILES.REACT : FILES.JSX
 
@@ -37,7 +31,6 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
     files,
 
     plugins: {
-      'react-compiler': reactCompilerPlugin,
       'react-dom': reactDomPlugin,
       'react-hooks': reactHooksPlugin,
       'react-web-api': reactWebApiPlugin,
@@ -45,8 +38,6 @@ export const react = async (config: ConfigOptions): Promise<Linter.Config> => {
     },
 
     rules: {
-      'react-compiler/react-compiler': 2,
-
       ...reactHooksPlugin.configs.recommended.rules,
 
       ...reactXPlugin.configs[

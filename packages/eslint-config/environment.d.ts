@@ -47,13 +47,6 @@ declare module 'eslint-plugin-promise' {
   export = { ...plugin, configs }
 }
 
-declare module 'eslint-plugin-react-compiler' {
-  import type { ESLint } from 'eslint'
-
-  let plugin: ESLint.Plugin
-  export = plugin
-}
-
 declare module 'eslint-plugin-react-hooks' {
   import type { ESLint, Linter } from 'eslint'
 

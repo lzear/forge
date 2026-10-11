@@ -43750,62 +43750,6 @@
     ],
     "name": "lzear/react",
     "plugins": {
-      "react-compiler": {
-        "configs": {
-          "recommended": {
-            "plugins": {
-              "react-compiler": {
-                "rules": {
-                  "react-compiler": {
-                    "create": [Function],
-                    "meta": {
-                      "docs": {
-                        "description": "Surfaces diagnostics from React Forget",
-                        "recommended": true,
-                      },
-                      "fixable": "code",
-                      "hasSuggestions": true,
-                      "schema": [
-                        {
-                          "additionalProperties": true,
-                          "type": "object",
-                        },
-                      ],
-                      "type": "problem",
-                    },
-                  },
-                },
-              },
-            },
-            "rules": {
-              "react-compiler/react-compiler": "error",
-            },
-          },
-        },
-        "meta": {
-          "name": "eslint-plugin-react-compiler",
-        },
-        "rules": {
-          "react-compiler": {
-            "create": [Function],
-            "meta": {
-              "docs": {
-                "description": "Surfaces diagnostics from React Forget",
-                "recommended": true,
-              },
-              "fixable": "code",
-              "hasSuggestions": true,
-              "schema": [
-                {
-                  "additionalProperties": true,
-                  "type": "object",
-                },
-              ],
-              "type": "problem",
-            },
-          },
-        },
-      },
       "react-dom": {
         "configs": {
           "recommended": {
@@ -46378,7 +46322,6 @@ This useMemo() value is unused. useMemo() is for computing and caching values, n
           "selector": "JSXOpeningElement[name.name='input'] > JSXAttribute[name.name='type'][value.value='number']",
         },
       ],
-      "react-compiler/react-compiler": 2,
       "react-dom/no-dangerously-set-innerhtml": "warn",
       "react-dom/no-dangerously-set-innerhtml-with-children": "error",
       "react-dom/no-find-dom-node": "error",
