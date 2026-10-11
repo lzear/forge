@@ -82,7 +82,6 @@
   "devDependencies": {
     "@commitlint/lint": "^21",
     "@commitlint/load": "^21",
-    "@vitejs/plugin-react": "^6",
     "@vitest/coverage-v8": "^5",
     "jsdom": "~30",
     "tsdown": "^0.23",
@@ -90,16 +89,12 @@
     "vitest": "^5"
   },
   "peerDependencies": {
-    "@vitejs/plugin-react": "^6",
     "jsdom": "~30",
     "tsdown": "^0.23",
     "vite": "^8",
     "vitest": "^5"
   },
   "peerDependenciesMeta": {
-    "@vitejs/plugin-react": {
-      "optional": true
-    },
     "jsdom": {
       "optional": true
     },

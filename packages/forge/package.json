@@ -86,7 +86,6 @@
   },
   "devDependencies": {
     "@types/node": "^26",
-    "@vitejs/plugin-react": "^6",
     "@vitest/coverage-v8": "^5",
     "eslint": "^10",
     "tsdown": "^0.23",
@@ -95,7 +94,6 @@
     "vitest": "^5"
   },
   "peerDependencies": {
-    "@vitejs/plugin-react": "^6",
     "eslint": "^10",
     "tsdown": "^0.23",
     "typescript": "*",
@@ -103,9 +101,6 @@
     "vitest": "^5"
   },
   "peerDependenciesMeta": {
-    "@vitejs/plugin-react": {
-      "optional": true
-    },
     "eslint": {
       "optional": true
     },

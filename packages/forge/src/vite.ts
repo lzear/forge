@@ -1,15 +1,16 @@
 /**
-Re-export of `@lzear/configs/vite`: Vite config factory for React apps, and
-its plugin for framework configs (React Router, TanStack Start).
+Re-export of `@lzear/configs/vite`: the Vite plugin for app and framework
+configs (React Router, TanStack Start).
 
 ```ts
 // vite.config.ts
-import { defineReactConfig } from '@lzear/forge/vite'
+import { forgePlugin } from '@lzear/forge/vite'
+import { defineConfig } from 'vite'
 
-export default defineReactConfig()
+export default defineConfig({ plugins: [forgePlugin()] })
 ```
 
 @module
 */
 
-export { defineReactConfig, forgePlugin } from '@lzear/configs/vite'
+export { forgePlugin } from '@lzear/configs/vite'

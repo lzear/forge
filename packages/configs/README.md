@@ -10,7 +10,7 @@ tsconfig, tsdown, vitest, vite and commitlint configs for [forge](https://github
 yarn add -D @lzear/configs
 ```
 
-Peers are optional: install the tools you use (`tsdown`, `vite`, `vitest`, `jsdom`, `@vitejs/plugin-react`).
+Peers are optional: install the tools you use (`tsdown`, `vite`, `vitest`, `jsdom`).
 
 ```jsonc
 // tsconfig.json
@@ -42,13 +42,14 @@ Globals and v8 coverage (lcov, text; text-summary under a coding agent): add `@v
 Under a coding agent ([std-env](https://github.com/unjs/std-env) `isAgent`, which Vitest also reads for its `minimal` reporter), tsdown builds are silent bar their startup lines and Vite logs warnings and errors only: agents re-read tool output every turn.
 
 ```ts
-// vite.config.ts — React plugin; overrides merge shallowly
-import { defineReactConfig } from '@lzear/configs/vite'
+// vite.config.ts
+import { defineConfig } from 'vite'
+import { forgePlugin } from '@lzear/configs/vite'
 
-export default defineReactConfig()
+export default defineConfig({ plugins: [forgePlugin()] })
 ```
 
-React Router, TanStack Start and other frameworks bring their own config: add `forgePlugin()` to its `plugins` for the same log level, plus a dev 404 for `/.well-known/*` probes (Chrome DevTools), which would otherwise reach SSR.
+`forgePlugin()` sets that log level and answers dev `/.well-known/*` probes (Chrome DevTools) with a bare 404, which would otherwise reach SSR. React Router, TanStack Start and other frameworks: add it to their config's `plugins`.
 
 ```ts
 // commitlint.config.ts — Conventional Commits, header ≤ 100

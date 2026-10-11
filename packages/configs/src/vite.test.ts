@@ -1,6 +1,6 @@
 import type { Connect, UserConfig, ViteDevServer } from 'vite'
 import { describe, expect, it, vi } from 'vitest'
-import { defineReactConfig, forgePlugin } from './vite.ts'
+import { forgePlugin } from './vite.ts'
 
 // vitest itself may run under an agent: pin it per test
 const environment = vi.hoisted(() => ({ isAgent: false }))
@@ -62,14 +62,5 @@ describe('forgePlugin', () => {
     const { next, writeHead } = request('/blog')
     expect(next).toHaveBeenCalled()
     expect(writeHead).not.toHaveBeenCalled()
-  })
-})
-
-describe('defineReactConfig', () => {
-  it('adds the React plugin and forgePlugin', () => {
-    const plugins = defineReactConfig().plugins?.flat()
-    expect(plugins?.some((p) => p && 'name' in p && p.name === 'forge')).toBe(
-      true,
-    )
   })
 })

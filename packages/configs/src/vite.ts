@@ -1,20 +1,19 @@
 /**
-Vite config factory for React apps, and the plugin behind it for framework
-configs (React Router, TanStack Start).
+Vite plugin for app and framework configs (React Router, TanStack Start).
 
 ```ts
 // vite.config.ts
-import { defineReactConfig } from '@lzear/configs/vite'
+import { forgePlugin } from '@lzear/configs/vite'
+import { defineConfig } from 'vite'
 
-export default defineReactConfig()
+export default defineConfig({ plugins: [forgePlugin()] })
 ```
 
 @module
 */
 
-import react from '@vitejs/plugin-react'
 import { isAgent } from 'std-env'
-import type { Plugin, UserConfig } from 'vite'
+import type { Plugin } from 'vite'
 
 /**
 Warnings and errors only under a coding agent, unless `logLevel` is set; in
@@ -32,14 +31,4 @@ export const forgePlugin = (): Plugin => ({
       else next()
     })
   },
-})
-
-/**
-Vite config with the React plugin and {@link forgePlugin}.
-
-@param overrides merged shallowly over the defaults
-*/
-export const defineReactConfig = (overrides: UserConfig = {}): UserConfig => ({
-  plugins: [react(), forgePlugin()],
-  ...overrides,
 })
