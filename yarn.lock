@@ -1310,7 +1310,7 @@ __metadata:
     eslint-config-prettier: "npm:^10"
     eslint-import-resolver-typescript: "npm:^4"
     eslint-module-utils: "npm:^2"
-    eslint-package-json: "npm:^2"
+    eslint-package-json: "npm:^3.0.0"
     eslint-plugin-de-morgan: "npm:^2"
     eslint-plugin-import-x: "npm:^4"
     eslint-plugin-jsx-a11y-x: "npm:^0.2"
@@ -3381,9 +3381,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-package-json@npm:^2":
-  version: 2.0.0
-  resolution: "eslint-package-json@npm:2.0.0"
+"eslint-package-json@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "eslint-package-json@npm:3.0.0"
   dependencies:
     "@eslint/json": "npm:^2.0.1"
     detect-indent: "npm:^7.0.2"
@@ -3394,7 +3394,7 @@ __metadata:
     validate-npm-package-name: "npm:^7.0.2"
   peerDependencies:
     eslint: ">=10.4"
-  checksum: 10c0/221a481f49822587da5cf956567b8868a90ab5e0a558a6a57eb578bc9f75410d2bc52540ceb8645191020fed3b1e06fb4569da00931ac10635a00681cc58140c
+  checksum: 10c0/1d19f79e811cbb451988e0d5668c4ba30f31a971c5ce17da44d3f86b9559841e50741c01578e6f437099aee6ea2b1404626b85be5670fe088ead6faff5a414b3
   languageName: node
   linkType: hard
 
