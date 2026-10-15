@@ -48,7 +48,7 @@ on:
 
 jobs:
   ci:
-    uses: lzear/forge/.github/workflows/ci.yml@<sha> # v4.3.0
+    uses: lzear/forge/.github/workflows/ci.yml@<sha> # v5.0.0
     secrets:
       CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
     # with:
@@ -57,7 +57,7 @@ jobs:
   release:
     if: github.event_name == 'push'
     needs: ci
-    uses: lzear/forge/.github/workflows/release.yml@<sha> # v4.5.0
+    uses: lzear/forge/.github/workflows/release.yml@<sha> # v5.0.0
     permissions:
       contents: write
       pull-requests: write
