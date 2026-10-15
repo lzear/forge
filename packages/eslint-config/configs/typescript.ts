@@ -86,7 +86,6 @@ export const typescript = async (
         ecmaVersion: 'latest',
         projectService: true,
         sourceType: 'module',
-        tsconfigRootDir: process.cwd(),
       },
     },
   })
