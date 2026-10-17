@@ -1,3 +1,14 @@
+## 5.1.0
+
+`lzear-prerelease` is back: it publishes pending changesets as a beta without committing.
+
+### Commits
+
+- [`949a658`](https://github.com/lzear/forge/commit/949a658) chore(deps): update dependency tsdown to v0.23.1 (#39)
+- [`6117f58`](https://github.com/lzear/forge/commit/6117f58) chore(deps): update dependency prettier to v3.9.10 (#38)
+- [`41a77e2`](https://github.com/lzear/forge/commit/41a77e2) chore(deps): update dependency @types/node to v26.6.5 (#37)
+- [`54ce93a`](https://github.com/lzear/forge/commit/54ce93a) feat(configs): restore lzear-prerelease
+
 ## 5.0.0
 
 `forge check` fails on the gate; drift (`forge-pins`, `deps-fresh`, `deps-audit`, `deps-deprecated`, `renovate-active`) warns, `--strict` fails on it.
