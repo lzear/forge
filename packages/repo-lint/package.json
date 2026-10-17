@@ -1,6 +1,6 @@
 {
   "name": "@lzear/repo-lint",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "Checks lzear repos against forge standards",
   "license": "MIT",
   "repository": {
