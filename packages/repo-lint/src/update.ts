@@ -1,11 +1,11 @@
 import { Buffer } from 'node:buffer'
-import { spawnSync } from 'node:child_process'
+import { execFile, spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { existsSync, globSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { run as ncuRun } from 'npm-check-updates'
-import { coerce, gt, maxSatisfying } from 'semver'
+import { coerce, compare, gt, maxSatisfying } from 'semver'
 
 /**
 Package managers `forge update` can install with.
@@ -42,12 +42,41 @@ export type UpdateReport = {
 }
 
 /**
+The `forge update` steps, in the order they report.
+*/
+export const UPDATE_STEPS = [
+  'deps',
+  'package-manager',
+  'node-version',
+  'bun-version',
+  'actions',
+  'license-year',
+  'install',
+] as const
+
+/**
+An id of {@linkcode UPDATE_STEPS}.
+*/
+export type UpdateStepId = (typeof UPDATE_STEPS)[number]
+
+/**
 Options for {@linkcode runUpdate}.
 */
 export type UpdateOptions = {
   dir?: string
   dry?: boolean
+  /**
+  `false` skips the install step
+  */
   install?: boolean
+  /**
+  run only these step ids
+  */
+  only?: string[]
+  /**
+  skip these step ids
+  */
+  skip?: string[]
 }
 
 const LOCKFILES: [string, PackageManagerName][] = [
@@ -204,10 +233,67 @@ export const detectPackageManager = (dir: string): PackageManager => {
   return { name: 'npm', source: 'default' }
 }
 
-const fetchJson = async (url: string): Promise<Record<string, unknown>> => {
-  const response = await fetch(url)
+const fetchJson = async <T>(
+  url: string,
+  headers?: Record<string, string>,
+): Promise<T> => {
+  const response = await fetch(url, headers && { headers })
   if (!response.ok) throw new Error(`GET ${url} — HTTP ${response.status}`)
-  return (await response.json()) as Record<string, unknown>
+  return (await response.json()) as T
+}
+
+type Spawned = {
+  status: number | null
+  stdout: string
+  stderr: string
+  error?: Error
+}
+
+/**
+`spawnSync`'s result without blocking the event loop, so steps and checks
+overlap.
+*/
+export const run = (
+  command: string,
+  arguments_: string[],
+  options: { cwd: string; env?: NodeJS.ProcessEnv },
+): Promise<Spawned> =>
+  new Promise((resolve) => {
+    execFile(
+      command,
+      arguments_,
+      { ...options, encoding: 'utf8' },
+      (error, stdout, stderr) => {
+        // a numeric code is the exit status; anything else failed to spawn
+        if (!error) resolve({ status: 0, stdout, stderr })
+        else if (typeof error.code === 'number')
+          resolve({ status: error.code, stdout, stderr })
+        else resolve({ status: null, stdout, stderr, error })
+      },
+    )
+  })
+
+/**
+Tag → commit of a git remote, from `git ls-remote --tags`; an annotated tag's
+peeled `^{}` line gives its commit. `null` when unreachable.
+*/
+export const remoteTags = async (
+  url: string,
+  cwd: string,
+): Promise<Map<string, string> | null> => {
+  const r = await run('git', ['ls-remote', '--tags', url], {
+    cwd,
+    env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+  })
+  if (r.status !== 0) return null
+  const tags = new Map<string, string>()
+  for (const line of r.stdout.split('\n')) {
+    const match = /^([\da-f]{40})\trefs\/tags\/([^^]+)(\^\{\})?$/.exec(line)
+    if (!match) continue
+    const [, sha = '', tag = '', peeled] = match
+    if (peeled || !tags.has(tag)) tags.set(tag, sha)
+  }
+  return tags
 }
 
 // yarn ≥2 is not published as `yarn` on npm (that package is stuck on 1.x);
@@ -229,9 +315,7 @@ type Packument = {
 // the newest version up to `latest` past the age gate, from the full packument
 // (the abbreviated one has no publish times)
 const gatedRelease = async (name: string): Promise<Release> => {
-  const data = (await fetchJson(
-    `https://registry.npmjs.org/${name}`,
-  )) as Packument
+  const data = await fetchJson<Packument>(`https://registry.npmjs.org/${name}`)
   const latest = data['dist-tags']?.latest
   if (!latest) throw new TypeError(`no latest version for ${name}`)
   const time = data.time ?? {}
@@ -527,6 +611,178 @@ const stepLicenseYear = (dir: string, isDry: boolean): UpdateResult => {
   }
 }
 
+const ACTION_FILES = [
+  '.github/workflows/*.{yml,yaml}',
+  '.github/actions/**/*.{yml,yaml}',
+  'action.{yml,yaml}',
+  'actions/**/action.{yml,yaml}',
+]
+
+// `uses: <action>@<ref><rest>`, the action `owner/repo[/path]`: local and
+// docker ones don't match ACTION_RE; the rest holds a `# comment`
+const USES_RE =
+  /^([ \t]*(?:-[ \t]+)?uses:[ \t]*["']?)([^\s"'@]+)@([^\s"'#]+)((?:[ \t"'#].*)?)$/gm
+const ACTION_RE = /^[\w-][\w.-]*\/[\w.-]+/
+const repoOf = (action: string): string | undefined =>
+  ACTION_RE.exec(action)?.[0]
+const COMMENT_RE = /^(["']?)(?:[ \t]+#[ \t]*(\S+))?/
+
+const SHA_RE = /^[\da-f]{40}$/
+
+// v7 < v7.0.1: on a tie, the more precise tag
+const compareTags = (a: string, b: string): number =>
+  compare(coerce(a) ?? '0.0.0', coerce(b) ?? '0.0.0') ||
+  a.split('.').length - b.split('.').length
+
+type GitHubRelease = {
+  tag_name: string
+  published_at: string | null
+  draft: boolean
+  prerelease: boolean
+}
+
+const githubHeaders = (): Record<string, string> => {
+  const token = process.env.GH_TOKEN ?? process.env.GITHUB_TOKEN
+  return {
+    accept: 'application/vnd.github+json',
+    ...(token && { authorization: `Bearer ${token}` }),
+  }
+}
+
+// an action's tags and its newest version tag past the age gate, dated by its
+// GitHub releases (own actions skip the gate); no `latest` says why in `note`
+type ActionTags = { tags: Map<string, string>; latest?: string; note?: string }
+
+const resolveAction = async (
+  repo: string,
+  cwd: string,
+): Promise<ActionTags> => {
+  const tags = await remoteTags(`https://github.com/${repo}`, cwd)
+  if (!tags) throw new Error('tags unreachable')
+  let versions = tags.keys().filter((t) => VERSION_FILE_RE.test(t))
+  if (!repo.startsWith('lzear/')) {
+    const releases = await fetchJson<GitHubRelease[]>(
+      `https://api.github.com/repos/${repo}/releases?per_page=100`,
+      githubHeaders(),
+    )
+    if (releases.length === 0) return { tags, note: 'no releases to date' }
+    const old = new Set(
+      releases
+        .filter(
+          (r) =>
+            !r.draft &&
+            !r.prerelease &&
+            r.published_at !== null &&
+            isOldEnough(r.published_at),
+        )
+        .map((r) => r.tag_name),
+    )
+    versions = versions.filter((t) => old.has(t))
+  }
+  const latest = versions.toArray().toSorted(compareTags).at(-1)
+  return latest
+    ? { tags, latest }
+    : { tags, note: `no release is ${MIN_RELEASE_AGE_DAYS} days old yet` }
+}
+
+// the pin's next ref and comment, or null to keep it: a SHA follows the
+// newest tag, a version tag keeps its precision (v4 → v5); branches stay
+const bumpPin = (
+  ref: string,
+  comment: string | undefined,
+  { tags, latest }: ActionTags,
+): { from: string; to: string; ref: string; comment?: string } | null => {
+  const sha = latest && tags.get(latest)
+  if (!latest || !sha) return null
+  if (SHA_RE.test(ref)) {
+    const from =
+      comment && VERSION_FILE_RE.test(comment)
+        ? comment
+        : [...tags]
+            .filter(([t, s]) => s === ref && VERSION_FILE_RE.test(t))
+            .map(([t]) => t)
+            .toSorted(compareTags)
+            .at(-1)
+    return !from || compareTags(latest, from) <= 0
+      ? null
+      : { from, to: latest, ref: sha, comment: latest }
+  }
+  const [, prefix = '', version] = VERSION_FILE_RE.exec(ref) ?? []
+  if (!version) return null
+  const parts = latest.replace(/^v/, '').split('.')
+  const next = prefix + parts.slice(0, version.split('.').length).join('.')
+  const bumped = tags.has(next) ? next : latest
+  return compare(coerce(bumped) ?? '0.0.0', coerce(ref) ?? '0.0.0') <= 0
+    ? null
+    : { from: ref, to: bumped, ref: bumped, ...(comment && { comment }) }
+}
+
+const stepActions = async (
+  dir: string,
+  isDry: boolean,
+): Promise<UpdateResult> => {
+  const base = { id: 'actions', desc: 'GitHub Actions pins' }
+  const contents = new Map(
+    globSync(ACTION_FILES, { cwd: dir })
+      .toSorted((a, b) => a.localeCompare(b))
+      .map((f) => [f, readFileSync(path.join(dir, f), 'utf8')]),
+  )
+  const repos = new Set(
+    contents
+      .values()
+      .flatMap((c) => c.matchAll(USES_RE).map((m) => repoOf(m[2] ?? '')))
+      .filter((r) => r !== undefined),
+  )
+  if (repos.size === 0)
+    return { ...base, pass: true, changed: false, detail: 'no action pins' }
+  const resolved = new Map<string, ActionTags | { error: string }>(
+    await Promise.all(
+      [...repos].map(async (repo) => {
+        try {
+          return [repo, await resolveAction(repo, dir)] as const
+        } catch (error) {
+          return [repo, { error: String(error) }] as const
+        }
+      }),
+    ),
+  )
+  const lines = new Set<string>()
+  for (const [repo, r] of resolved)
+    if ('error' in r) lines.add(`${repo}: ${r.error}`)
+    else if (r.note) lines.add(`${repo}: ${r.note}, kept`)
+  const bumps = new Set<string>()
+  for (const [file, content] of contents) {
+    const next = content.replaceAll(
+      USES_RE,
+      (
+        line: string,
+        prefix: string,
+        action: string,
+        ref: string,
+        rest: string,
+      ) => {
+        const repo = repoOf(action)
+        const tags = repo && resolved.get(repo)
+        const [match = '', quote = '', comment] = COMMENT_RE.exec(rest) ?? []
+        const bump = tags && !('error' in tags) && bumpPin(ref, comment, tags)
+        if (!bump) return line
+        bumps.add(`${repo} ${bump.from}  →  ${bump.to}`)
+        const note = bump.comment ? ` # ${bump.comment}` : ''
+        return `${prefix}${action}@${bump.ref}${quote}${note}${rest.slice(match.length)}`
+      },
+    )
+    if (next !== content && !isDry)
+      writeFileSync(path.join(dir, file), next, 'utf8')
+  }
+  const isFailed = resolved.values().some((r) => 'error' in r)
+  return {
+    ...base,
+    pass: !isFailed,
+    changed: bumps.size > 0,
+    detail: [...bumps, ...lines].join('\n') || 'up to date',
+  }
+}
+
 export const installCommands = (
   pm: PackageManager,
 ): [string, ...string[]][] => {
@@ -611,11 +867,15 @@ const stepInstall = (dir: string, pm: PackageManager): UpdateResult => {
   }
 }
 
+const STEP_IDS = new Set<string>(UPDATE_STEPS)
+
 /**
 Bumps dependency ranges, the `packageManager` field, Node and Bun version
-files and the LICENSE year, then installs.
+files, GitHub Actions pins and the LICENSE year, then installs.
 
-@param options `dry` writes nothing, `install: false` skips the install
+@param options `dry` writes nothing, `install: false` skips the install,
+`only` and `skip` pick steps by id ({@linkcode UPDATE_STEPS})
+@throws on an unknown id in `only` or `skip`
 */
 export const runUpdate = async (
   options: UpdateOptions = {},
@@ -624,21 +884,35 @@ export const runUpdate = async (
     dir = process.cwd(),
     dry: isDry = false,
     install: isInstall = true,
+    only,
+    skip = [],
   } = options
+  const unknown = [...(only ?? []), ...skip].filter((id) => !STEP_IDS.has(id))
+  if (unknown.length > 0)
+    throw new Error(
+      `Unknown step: ${unknown.join(', ')} (valid: ${UPDATE_STEPS.join(', ')})`,
+    )
+  const isOn = (id: UpdateStepId): boolean =>
+    (!only || only.includes(id)) && !skip.includes(id)
   const packageManager = detectPackageManager(dir)
 
   // stepDeps and stepPackageManager both write package.json: deps first, the
   // rest (network-bound, other files) at once
-  const results = [
-    await stepDeps(dir, isDry),
-    ...(await Promise.all([
-      stepPackageManager(dir, isDry),
-      stepNodeVersion(dir, isDry),
-      stepBunVersion(dir, isDry),
-    ])),
-    stepLicenseYear(dir, isDry),
+  const steps: [UpdateStepId, () => Promise<UpdateResult>][] = [
+    ['package-manager', () => stepPackageManager(dir, isDry)],
+    ['node-version', () => stepNodeVersion(dir, isDry)],
+    ['bun-version', () => stepBunVersion(dir, isDry)],
+    ['actions', () => stepActions(dir, isDry)],
+    ['license-year', () => Promise.resolve(stepLicenseYear(dir, isDry))],
   ]
-  if (isInstall && !isDry) results.push(stepInstall(dir, packageManager))
+  const results = [
+    ...(isOn('deps') ? [await stepDeps(dir, isDry)] : []),
+    ...(await Promise.all(
+      steps.filter(([id]) => isOn(id)).map(([, step]) => step()),
+    )),
+  ]
+  if (isInstall && !isDry && isOn('install'))
+    results.push(stepInstall(dir, packageManager))
 
   return { dir, packageManager, results }
 }

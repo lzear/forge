@@ -1,4 +1,3 @@
-import { execFile } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -14,6 +13,8 @@ import {
   type PackageManagerName,
   readJsonFile,
   readPackage,
+  remoteTags,
+  run,
   stepDeps,
   writeJsonFile,
 } from './update.ts'
@@ -79,34 +80,6 @@ const findBin = (name: string, startDir: string): string | null => {
   }
 }
 
-type Spawned = {
-  status: number | null
-  stdout: string
-  stderr: string
-  error?: Error
-}
-
-// spawnSync's result without blocking the event loop, so checks overlap
-const run = (
-  command: string,
-  arguments_: string[],
-  options: { cwd: string; env?: NodeJS.ProcessEnv },
-): Promise<Spawned> =>
-  new Promise((resolve) => {
-    execFile(
-      command,
-      arguments_,
-      { ...options, encoding: 'utf8' },
-      (error, stdout, stderr) => {
-        // a numeric code is the exit status; anything else failed to spawn
-        if (!error) resolve({ status: 0, stdout, stderr })
-        else if (typeof error.code === 'number')
-          resolve({ status: error.code, stdout, stderr })
-        else resolve({ status: null, stdout, stderr, error })
-      },
-    )
-  })
-
 const head = (output: string): string =>
   output.trim().split('\n').slice(0, 20).join('\n')
 
@@ -160,22 +133,10 @@ A forge release: its `vX.Y.Z` tag and the commit it points to.
 */
 export type ForgeRelease = { tag: string; sha: string }
 
-// tag per commit, from `git ls-remote --tags`; an annotated tag's peeled
-// `^{}` line gives its commit, overriding the tag object's SHA
+// tag per commit, `v`-prefixed only
 const forgeTags = async (cwd: string): Promise<Map<string, string> | null> => {
-  const r = await run('git', ['ls-remote', '--tags', FORGE_REMOTE], {
-    cwd,
-    env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
-  })
-  if (r.status !== 0) return null
-  const tags = new Map<string, string>()
-  for (const line of r.stdout.split('\n')) {
-    const match = /^([\da-f]{40})\trefs\/tags\/(v[^^]+)(\^\{\})?$/.exec(line)
-    if (!match) continue
-    const [, sha = '', tag = '', peeled] = match
-    if (peeled || !tags.has(tag)) tags.set(tag, sha)
-  }
-  return tags
+  const tags = await remoteTags(FORGE_REMOTE, cwd)
+  return tags && new Map([...tags].filter(([tag]) => tag.startsWith('v')))
 }
 
 const newestRelease = (tags: Map<string, string>): ForgeRelease | null => {

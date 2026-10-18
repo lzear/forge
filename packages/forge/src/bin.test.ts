@@ -15,6 +15,7 @@ vi.mock('@lzear/repo-lint', () => ({
   initRepo: vi.fn(),
   runUpdate: vi.fn(),
   syncTemplates: vi.fn(),
+  UPDATE_STEPS: ['deps', 'actions'],
 }))
 // vitest itself may run under an agent: pin it per test
 const environment = vi.hoisted(() => ({ isAgent: false }))
@@ -302,6 +303,25 @@ describe('forge update', () => {
     expect(await run('update', '--json')).toBe(0)
     expect(runUpdate).toHaveBeenCalledWith({ dry: false, install: true })
     expect(json()).toMatchObject({ pass: true })
+  })
+
+  it('passes --only and --skip through', async () => {
+    vi.mocked(runUpdate).mockResolvedValue(updateReport(true) as never)
+    expect(
+      await run('update', '--only', 'deps,actions', '--skip', 'actions'),
+    ).toBe(0)
+    expect(runUpdate).toHaveBeenCalledWith({
+      dry: false,
+      install: true,
+      only: ['deps', 'actions'],
+      skip: ['actions'],
+    })
+  })
+
+  it('exits 1 on an unknown step', async () => {
+    vi.mocked(runUpdate).mockRejectedValue(new Error('Unknown step: nope'))
+    expect(await run('update', '--skip', 'nope')).toBe(1)
+    expect(printed()).toContain('Unknown step: nope')
   })
 })
 

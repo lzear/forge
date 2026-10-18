@@ -335,5 +335,6 @@ export type {
   UpdateOptions,
   UpdateReport,
   UpdateResult,
+  UpdateStepId,
 } from './update.ts'
-export { detectPackageManager, runUpdate } from './update.ts'
+export { detectPackageManager, runUpdate, UPDATE_STEPS } from './update.ts'

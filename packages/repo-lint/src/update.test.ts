@@ -15,7 +15,7 @@ import {
 vi.mock('npm-check-updates', () => ({ run: vi.fn() }))
 vi.mock('node:child_process', async (importOriginal) => {
   const module_ = await importOriginal<typeof childProcess>()
-  return { ...module_, spawnSync: vi.fn() }
+  return { ...module_, execFile: vi.fn(), spawnSync: vi.fn() }
 })
 
 const fetchMock = vi.fn()
@@ -82,6 +82,53 @@ const mockRegistry = (
         json: () => Promise.resolve(NODE_INDEX),
       })
     return Promise.resolve({ ok: false, status: 404 })
+  })
+}
+
+// `git ls-remote --tags` per GitHub repo: { tag: commit letter }
+const mockTags = (repos: Record<string, Record<string, string>>): void => {
+  vi.mocked(childProcess.execFile).mockImplementation(((
+    ...arguments_: unknown[]
+  ) => {
+    const url = (arguments_[1] as string[]).at(-1) ?? ''
+    const tags = repos[url.replace('https://github.com/', '')]
+    const callback = arguments_.at(-1) as (
+      error: (Error & { code: number }) | null,
+      stdout: string,
+      stderr: string,
+    ) => void
+    if (tags)
+      callback(
+        null,
+        Object.entries(tags)
+          .map(([tag, letter]) => `${sha(letter)}\trefs/tags/${tag}\n`)
+          .join(''),
+        '',
+      )
+    else callback(Object.assign(new Error('128'), { code: 128 }), '', '')
+  }) as never)
+}
+
+const sha = (letter: string): string => letter.repeat(40)
+
+// GitHub releases per repo: { tag: age in days }
+const mockReleases = (repos: Record<string, Record<string, number>>): void => {
+  fetchMock.mockImplementation((url: string) => {
+    const repo = /repos\/(.+)\/releases/.exec(url)?.[1] ?? ''
+    const releases = repos[repo]
+    if (!releases) return Promise.resolve({ ok: false, status: 404 })
+    return Promise.resolve({
+      ok: true,
+      json: () =>
+        Promise.resolve(
+          Object.entries(releases).map(([tag_name, age]) => ({
+            tag_name,
+            published_at: daysAgo(age),
+            draft: false,
+            prerelease: false,
+          })),
+        ),
+    })
   })
 }
 
@@ -647,6 +694,33 @@ describe('runUpdate', () => {
     expect(resultById(report.results, 'install')).toMatchObject({ pass: false })
   })
 
+  it('runs only the steps asked for, minus the skipped', async () => {
+    write(dir, 'package.json', '{}')
+    const ids = async (only?: string[], skip?: string[]): Promise<string[]> => {
+      const report = await runUpdate({
+        dir,
+        ...(only && { only }),
+        ...(skip && { skip }),
+      })
+      return report.results.map((r) => r.id)
+    }
+    expect(await ids(['license-year', 'actions'])).toEqual([
+      'actions',
+      'license-year',
+    ])
+    expect(await ids(undefined, ['deps', 'install'])).toEqual([
+      'package-manager',
+      'node-version',
+      'bun-version',
+      'actions',
+      'license-year',
+    ])
+    expect(childProcess.spawnSync).not.toHaveBeenCalled()
+    await expect(runUpdate({ dir, skip: ['nope'] })).rejects.toThrow(
+      'Unknown step: nope',
+    )
+  })
+
   it('reports registry failures without throwing', async () => {
     write(
       dir,
@@ -658,5 +732,133 @@ describe('runUpdate', () => {
     expect(resultById(report.results, 'package-manager')).toMatchObject({
       pass: false,
     })
+  })
+})
+
+describe('runUpdate actions', () => {
+  let dir: string
+  const update = (dry = false): Promise<UpdateResult | undefined> =>
+    runUpdate({ dir, dry, only: ['actions'] }).then((r) =>
+      resultById(r.results, 'actions'),
+    )
+  beforeEach(() => {
+    dir = tmpDir()
+    mockTags({
+      'actions/checkout': { v4: 'a', 'v4.2.0': 'a', v5: 'b', 'v5.0.1': 'b' },
+      'github/codeql-action': { 'v3.1.0': 'c', 'v3.2.0': 'd' },
+      'lzear/forge': { 'v5.0.0': 'e', 'v5.1.0': 'f' },
+    })
+    mockReleases({
+      'actions/checkout': { 'v4.2.0': 90, 'v5.0.1': 10 },
+      // v3.2.0 is younger than the age gate
+      'github/codeql-action': { 'v3.1.0': 30, 'v3.2.0': 1 },
+    })
+  })
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('moves SHA pins to the newest release past the age gate', async () => {
+    write(
+      dir,
+      '.github/workflows/ci.yml',
+      [
+        'jobs:',
+        '  ci:',
+        `    uses: lzear/forge/.github/workflows/ci.yml@${sha('e')} # v5.0.0`,
+        '  build:',
+        '    steps:',
+        `      - uses: actions/checkout@${sha('a')} # v4.2.0`,
+        `      - uses: github/codeql-action/init@${sha('c')} # v3.1.0`,
+        `      - uses: actions/checkout@${sha('a')}`,
+        '',
+      ].join('\n'),
+    )
+    expect(await update()).toMatchObject({ pass: true, changed: true })
+    expect(read(dir, '.github/workflows/ci.yml')).toBe(
+      [
+        'jobs:',
+        '  ci:',
+        `    uses: lzear/forge/.github/workflows/ci.yml@${sha('f')} # v5.1.0`,
+        '  build:',
+        '    steps:',
+        `      - uses: actions/checkout@${sha('b')} # v5.0.1`,
+        `      - uses: github/codeql-action/init@${sha('c')} # v3.1.0`,
+        `      - uses: actions/checkout@${sha('b')} # v5.0.1`,
+        '',
+      ].join('\n'),
+    )
+    // own actions skip the gate, so their releases are not fetched
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it("keeps a version tag's precision, its quotes and comment", async () => {
+    write(
+      dir,
+      'actions/setup/action.yml',
+      [
+        '    - uses: actions/checkout@v4',
+        "    - uses: 'actions/checkout@v4.1' # pinned",
+        '    - uses: actions/checkout@main',
+        '    - uses: ./actions/local',
+        '    - uses: docker://alpine:3',
+        '',
+      ].join('\n'),
+    )
+    const result = await update()
+    expect(result?.detail).toBe(
+      'actions/checkout v4  →  v5\nactions/checkout v4.1  →  v5.0.1',
+    )
+    expect(read(dir, 'actions/setup/action.yml')).toBe(
+      [
+        '    - uses: actions/checkout@v5',
+        "    - uses: 'actions/checkout@v5.0.1' # pinned",
+        '    - uses: actions/checkout@main',
+        '    - uses: ./actions/local',
+        '    - uses: docker://alpine:3',
+        '',
+      ].join('\n'),
+    )
+  })
+
+  it('does not write in dry mode', async () => {
+    const content = '- uses: actions/checkout@v4\n'
+    write(dir, '.github/workflows/ci.yml', content)
+    expect(await update(true)).toMatchObject({ changed: true })
+    expect(read(dir, '.github/workflows/ci.yml')).toBe(content)
+  })
+
+  it('keeps pins it cannot date, failing on unreachable ones', async () => {
+    write(
+      dir,
+      '.github/workflows/ci.yml',
+      [
+        '- uses: actions/checkout@v4',
+        '- uses: gone/action@v1',
+        '- uses: tags/only@v1',
+        '',
+      ].join('\n'),
+    )
+    mockTags({
+      'actions/checkout': { v5: 'b' },
+      'tags/only': { v1: 'a', v2: 'b' },
+    })
+    mockReleases({ 'actions/checkout': { v5: 10 }, 'tags/only': {} })
+    const result = await update()
+    expect(result).toMatchObject({ pass: false, changed: true })
+    expect(result?.detail).toContain('gone/action: Error: tags unreachable')
+    expect(result?.detail).toContain('tags/only: no releases to date, kept')
+    expect(read(dir, '.github/workflows/ci.yml')).toContain(
+      'actions/checkout@v5\n- uses: gone/action@v1\n- uses: tags/only@v1',
+    )
+  })
+
+  it('reports no pins without a workflow', async () => {
+    expect(await update()).toMatchObject({
+      pass: true,
+      changed: false,
+      detail: 'no action pins',
+    })
+    expect(childProcess.execFile).not.toHaveBeenCalled()
   })
 })

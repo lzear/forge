@@ -26,6 +26,7 @@ import {
   type SyncReport,
   type SyncStatus,
   syncTemplates,
+  UPDATE_STEPS,
   type UpdateReport,
   type UpdateResult,
 } from '@lzear/repo-lint'
@@ -198,19 +199,44 @@ const printUpdateReport = (report: UpdateReport): void => {
 
 program
   .command('update')
-  .description('update dependencies, packageManager, and runtime version files')
+  .description(
+    'update dependencies, packageManager, runtime version files, GitHub Actions pins and the LICENSE year',
+  )
   .option('--dry', 'preview changes, do not write', false)
   .option('--no-install', 'skip install & lockfile refresh')
+  .option(
+    '--only <ids>',
+    `run only these steps (comma-separated: ${UPDATE_STEPS.join(', ')})`,
+    splitIds,
+  )
+  .option('--skip <ids>', 'skip these steps (comma-separated)', splitIds)
   .option('--json', 'output results as JSON', false)
   .action(
-    async (options: { dry: boolean; install: boolean; json: boolean }) => {
-      const { dry: isDry, install: isInstall, json: isJson } = options
+    async (options: {
+      dry: boolean
+      install: boolean
+      only?: string[]
+      skip?: string[]
+      json: boolean
+    }) => {
+      const { dry: isDry, install, only, skip, json: isJson } = options
       if (!isJson)
         process.stdout.write(
           `\n  ${pc.bold('forge update')}${isDry ? pc.dim(' (dry run)') : ''}\n\n`,
         )
       debug('runUpdate', process.cwd())
-      const report = await runUpdate({ dry: isDry, install: isInstall })
+      let report: UpdateReport
+      try {
+        report = await runUpdate({
+          dry: isDry,
+          install,
+          ...(only && { only }),
+          ...(skip && { skip }),
+        })
+      } catch (error) {
+        log.error(error instanceof Error ? error.message : String(error))
+        process.exit(1)
+      }
       const isAnyFail = report.results.some((r) => !r.pass)
       if (isJson)
         console.log(JSON.stringify({ ...report, pass: !isAnyFail }, null, 2))
