@@ -11,7 +11,7 @@ yarn zizmor                                          # audit workflows (brew/uv 
 yarn e2e:init [lib-yarn|app-bun|lib-bun|react-yarn]  # scaffold, install from npm, run each script: after changing forge init or its configs
 ```
 
-`CI=true` keeps colors on when output is piped: color-dependent tests otherwise pass locally and fail in CI. Run Vitest through `yarn`: the config snapshot holds a rule message naming the package manager that runs it (`npm i` from a bare `vitest -u`).
+`CI=true` keeps colors on when output is piped: color-dependent tests otherwise pass locally and fail in CI.
 
 ## Gotchas
 
