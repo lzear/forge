@@ -76,7 +76,7 @@ const mockRegistry = (
               ),
             ),
         })
-    if (url.includes('nodejs.org'))
+    if (new URL(url).hostname === 'nodejs.org')
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve(NODE_INDEX),

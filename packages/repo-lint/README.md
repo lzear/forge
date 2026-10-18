@@ -29,29 +29,29 @@ const init = await initRepo({ dir, kind, react, packageManager, dry, version }) 
 
 ## Checks
 
-| Check              | Drift | Passes when                                                                         |
-| ------------------ | ----- | ----------------------------------------------------------------------------------- |
-| `gitignore-env`    |       | `git check-ignore .env` succeeds                                                    |
-| `readme-exists`    |       | `README.md` exists                                                                  |
-| `readme-npm-badge` |       | README has an npm badge                                                             |
-| `license`          |       | `LICENSE` exists                                                                    |
-| `jsr-config`       |       | `deno.json` name & version match `package.json`                                     |
-| `ci-workflow`      |       | a workflow calls the forge reusable CI workflow                                     |
-| `forge-pins`       | ✓     | forge workflow/action pins are the latest `v*` tag                                  |
-| `renovate`         |       | `renovate.json` extends `github>lzear/forge`                                        |
-| `git-hooks`        |       | `lefthook.yml`, installed by `prepare` (Yarn) or Bun                                |
-| `template-sync`    |       | shared files match [`templates/`](templates)                                        |
-| `pkg-publint`      |       | published packages pass `publint`                                                   |
-| `pkg-attw`         |       | published packages pass `attw` (ESM-only profile)                                   |
-| `pkg-size-limit`   |       | within `size-limit` budgets (where configured)                                      |
-| `pkg-fallow`       |       | no unused files, exports or dependencies (`fallow`)                                 |
-| `monorepo-lint`    |       | `sherif` passes (monorepos only)                                                    |
-| `deps-audit`       | ✓     | no high+ prod vulnerabilities (package manager `audit`; Bun's counts dev deps too)  |
-| `deps-deprecated`  | ✓     | no direct dependency resolves to a deprecated version                               |
-| `deps-fresh`       | ✓     | dependencies up to date (`ncu`, honors `.ncurc`)                                    |
-| `deps-release-age` |       | package manager installs only versions ≥ 3 days old                                 |
-| `renovate-active`  | ✓     | with `renovate.json`: open Dependency Dashboard, or a `renovate[bot]` PR in 60 days |
-| `forge-config`     |       | the `forge` field below is valid (only when present)                                |
+| Check              | Drift | Passes when                                                                                                                        |
+| ------------------ | ----- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `gitignore-env`    |       | `git check-ignore .env` succeeds                                                                                                   |
+| `readme-exists`    |       | `README.md` exists                                                                                                                 |
+| `readme-npm-badge` |       | README has an npm badge                                                                                                            |
+| `license`          |       | `LICENSE` exists                                                                                                                   |
+| `jsr-config`       |       | `deno.json` name & version match `package.json`                                                                                    |
+| `ci-workflow`      |       | a workflow calls the forge reusable CI workflow                                                                                    |
+| `forge-pins`       | ✓     | forge workflow/action pins are the latest `v*` tag (`vX.Y.Z` or `main` in the comment)                                             |
+| `renovate`         |       | the first Renovate config, in its order (`renovate.json(5)`, `.github/`, `.gitlab/`, `.renovaterc`…), extends `github>lzear/forge` |
+| `git-hooks`        |       | `lefthook.yml`, installed by `prepare` (Yarn) or Bun                                                                               |
+| `template-sync`    |       | shared files match [`templates/`](templates)                                                                                       |
+| `pkg-publint`      |       | published packages pass `publint`                                                                                                  |
+| `pkg-attw`         |       | published packages pass `attw` (ESM-only profile)                                                                                  |
+| `pkg-size-limit`   |       | within `size-limit` budgets (where configured)                                                                                     |
+| `pkg-fallow`       |       | no unused files, exports or dependencies (`fallow`)                                                                                |
+| `monorepo-lint`    |       | `sherif` passes (monorepos only)                                                                                                   |
+| `deps-audit`       | ✓     | no high+ prod vulnerabilities (package manager `audit`; Bun's counts dev deps too)                                                 |
+| `deps-deprecated`  | ✓     | no direct dependency range (each distinct one, dist-tags too) resolves to a deprecated version                                     |
+| `deps-fresh`       | ✓     | dependencies up to date (`ncu`, honors `.ncurc`)                                                                                   |
+| `deps-release-age` |       | package manager installs only versions ≥ 3 days old                                                                                |
+| `renovate-active`  | ✓     | with a Renovate config: open Dependency Dashboard, or a `renovate[bot]` PR in 60 days                                              |
+| `forge-config`     |       | the `forge` field below is valid (only when present)                                                                               |
 
 `forge check` exits 1 when a gate check fails: deterministic for a given tree. Drift checks fail on time instead (a forge release, a new version, an advisory): they print as warnings (`!`), counted apart (`18/20 checks passed, 2 drifted`), leaving the exit code at 0; `--strict` (`checkLocal({ strict: true })`) fails on them too. In `--json`, their results carry `drift: true`; the top-level `pass` ignores them unless strict.
 
@@ -65,7 +65,7 @@ A repo opts out of a check in its root `package.json`, with a reason (`ForgeConf
 { "forge": { "skip": { "pkg-attw": "Bun app, nothing published for Node" } } }
 ```
 
-`"repo": "<owner>/<name>"` names the GitHub repo when `origin` points elsewhere (remote checks, `forge init`); `gh secret set CODACY_PROJECT_TOKEN` needs `-R <owner>/<name>` then. An empty reason, an unknown id or a malformed `repo` fails `forge-config`. One run: `forge check --only <ids>` / `--skip <ids>` (comma-separated). Skips show in `--json` as `{ id, desc, skipped: reason }`.
+`"repo": "<owner>/<name>"` names the GitHub repo when `origin` points elsewhere (remote checks, `forge init`); `gh secret set CODACY_PROJECT_TOKEN` needs `-R <owner>/<name>` then. An empty reason, an unknown id or key, or a malformed `repo` fails `forge-config`. One run: `forge check --only <ids>` / `--skip <ids>` (comma-separated). Skips show in `--json` as `{ id, desc, skipped: reason }`.
 
 ## Fixes
 
@@ -74,9 +74,9 @@ A repo opts out of a check in its root `package.json`, with a reason (`ForgeConf
 | Check              | Fix                                                                                                               |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------- |
 | `git-hooks`        | writes `lefthook.yml`; chains `lefthook install` onto `prepare` (replacing husky), or Bun's `trustedDependencies` |
-| `renovate`         | creates `renovate.json`, or adds `github>lzear/forge` to `extends`                                                |
+| `renovate`         | adds `github>lzear/forge` to the config's `extends` (JSON5: says what to add), else creates `renovate.json`       |
 | `deps-release-age` | sets the age gate (`bunfig.toml`, `.npmrc`, `pnpm-workspace.yaml`, `yarn config set`)                             |
 | `template-sync`    | `forge sync`                                                                                                      |
-| `forge-pins`       | repins forge refs to the latest release: `@<sha> # vX.Y.Z`                                                        |
+| `forge-pins`       | repins forge refs to the latest release: `@<sha> # vX.Y.Z`, keeping the comment's other words                     |
 
 `deps-fresh` is `forge update`'s job.

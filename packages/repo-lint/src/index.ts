@@ -96,6 +96,8 @@ const CONFIG_CHECK = {
   desc: '`forge` field in package.json is valid',
 }
 
+const CONFIG_KEYS = new Set(['skip', 'repo'])
+
 const unknownIds = (ids: string[]): string[] =>
   ids.filter((id) => CHECKS.every((c) => c.id !== id))
 
@@ -122,6 +124,11 @@ const readConfig = (
     }
   const repo = isRecord(config) ? config.repo : undefined
   const errors = [
+    ...Object.keys(isRecord(config) ? config : {})
+      .filter((key) => !CONFIG_KEYS.has(key))
+      .map(
+        (key) => `${key}: unknown key (valid: ${[...CONFIG_KEYS].join(', ')})`,
+      ),
     ...(repo === undefined || isRepo(repo)
       ? []
       : ['repo: expected "<owner>/<name>"']),

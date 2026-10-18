@@ -44,7 +44,7 @@ type RegistryPackage = {
 const mockRegistry = (packages: Record<string, RegistryPackage>): void => {
   fetchMock.mockImplementation((url: string) => {
     const entry = Object.entries(packages).find(([name]) =>
-      url.endsWith(name.replace('/', '%2F')),
+      url.endsWith(name.replaceAll('/', '%2F')),
     )
     if (!entry) return Promise.resolve({ ok: false, status: 404 })
     return Promise.resolve({
@@ -313,6 +313,15 @@ describe('LOCAL_CHECKS', () => {
         ].join('\n'),
       )
     })
+    it('reads the ref among the comment words', async () => {
+      mockSpawn(0, LS_REMOTE)
+      write(
+        dir,
+        '.github/workflows/main.yml',
+        pin('.github/workflows/ci.yml', sha('b'), 'renovate: v4.10.0'),
+      )
+      expect(await check('forge-pins', dir)).toBe(true)
+    })
     it('passes, unchecked, offline', async () => {
       mockSpawn(128)
       write(
@@ -363,6 +372,23 @@ describe('LOCAL_CHECKS', () => {
     })
     it('passes when extending the forge preset', async () => {
       write(dir, 'renovate.json', '{"extends":["github>lzear/forge#v4"]}')
+      expect(await check('renovate', dir)).toBe(true)
+    })
+    it('reads the first config in Renovate order', async () => {
+      write(dir, '.github/renovate.json', '{"extends":["github>lzear/forge"]}')
+      expect(await check('renovate', dir)).toBe(true)
+      write(dir, 'renovate.json5', '{ extends: ["config:base"] }')
+      expect(await check('renovate', dir)).toEqual({
+        pass: false,
+        detail: 'add "github>lzear/forge" to renovate.json5 extends',
+      })
+    })
+    it('finds the preset in JSON5', async () => {
+      write(
+        dir,
+        '.renovaterc.json5',
+        "{\n  extends: ['github>lzear/forge'],\n}",
+      )
       expect(await check('renovate', dir)).toBe(true)
     })
   })
@@ -534,6 +560,16 @@ describe('LOCAL_CHECKS', () => {
     it('passes when private with no workspaces', async () => {
       write(dir, 'package.json', JSON.stringify({ private: true }))
       expect(await check('pkg-attw', dir)).toMatchObject({ pass: true })
+    })
+    it('passes, without attw, when every package is private', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ private: true, workspaces: ['packages/*'] }),
+      )
+      write(dir, 'packages/a/package.json', JSON.stringify({ private: true }))
+      expect(await check('pkg-attw', dir)).toMatchObject({ pass: true })
+      expect(vi.mocked(childProcess.execFile)).not.toHaveBeenCalled()
     })
     it('passes when attw exits 0', async () => {
       write(dir, 'package.json', JSON.stringify({}))
@@ -777,6 +813,51 @@ describe('LOCAL_CHECKS', () => {
       expect(result).toMatchObject({ pass: false })
     })
 
+    it('checks every distinct range', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({
+          workspaces: ['packages/*'],
+          dependencies: { dual: '^2' },
+        }),
+      )
+      write(
+        dir,
+        'packages/a/package.json',
+        JSON.stringify({ dependencies: { dual: '^1' } }),
+      )
+      mockRegistry({
+        dual: {
+          versions: { '1.0.0': { deprecated: 'old' }, '2.0.0': {} },
+          'dist-tags': { latest: '2.0.0' },
+        },
+      })
+      expect(await check('deps-deprecated', dir)).toEqual({
+        pass: false,
+        detail: 'dual@1.0.0 — old',
+      })
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('resolves dist-tag ranges', async () => {
+      write(
+        dir,
+        'package.json',
+        JSON.stringify({ dependencies: { tagged: 'next' } }),
+      )
+      mockRegistry({
+        tagged: {
+          versions: { '1.0.0': {}, '2.0.0-beta.1': { deprecated: 'beta' } },
+          'dist-tags': { latest: '1.0.0', next: '2.0.0-beta.1' },
+        },
+      })
+      expect(await check('deps-deprecated', dir)).toEqual({
+        pass: false,
+        detail: 'tagged@2.0.0-beta.1 — beta',
+      })
+    })
+
     it("skips the workspaces' own packages", async () => {
       write(dir, 'package.json', JSON.stringify({ workspaces: ['packages/*'] }))
       write(
@@ -959,6 +1040,24 @@ describe('LOCAL_CHECKS', () => {
         write(dir, 'renovate.json', '{')
         await expect(fix('renovate', dir)).rejects.toThrow()
       })
+      it('extends the existing config, creating no renovate.json', async () => {
+        write(dir, '.github/renovate.json', '{"extends":[]}\n')
+        expect(await fix('renovate', dir)).toBe(
+          '.github/renovate.json extends: + github>lzear/forge',
+        )
+        expect(read(dir, '.github/renovate.json')).toBe(
+          '{\n  "extends": [\n    "github>lzear/forge"\n  ]\n}\n',
+        )
+        expect(existsSync(path.join(dir, 'renovate.json'))).toBe(false)
+      })
+      it('says what to add to JSON5, leaving it as is', async () => {
+        write(dir, '.renovaterc.json5', '{}')
+        await expect(fix('renovate', dir)).rejects.toThrow(
+          'add "github>lzear/forge" to .renovaterc.json5 extends',
+        )
+        expect(read(dir, '.renovaterc.json5')).toBe('{}')
+        expect(existsSync(path.join(dir, 'renovate.json'))).toBe(false)
+      })
     })
 
     describe('deps-release-age', () => {
@@ -1078,6 +1177,20 @@ describe('LOCAL_CHECKS', () => {
         )
         expect(await check('forge-pins', dir)).toBe(true)
       })
+      it('replaces only the ref in the comment', async () => {
+        mockSpawn(0, LS_REMOTE)
+        write(
+          dir,
+          '.github/workflows/main.yml',
+          pin('.github/workflows/ci.yml', sha('a'), 'renovate: v4.7.0') +
+            pin('.github/workflows/release.yml', sha('a'), 'keep'),
+        )
+        await fix('forge-pins', dir)
+        expect(read(dir, '.github/workflows/main.yml')).toBe(
+          pin('.github/workflows/ci.yml', sha('b'), 'renovate: v4.10.0') +
+            pin('.github/workflows/release.yml', sha('b'), 'v4.10.0 keep'),
+        )
+      })
       it('throws offline', async () => {
         mockSpawn(128)
         await expect(fix('forge-pins', dir)).rejects.toThrow('unreachable')
@@ -1164,10 +1277,10 @@ describe('REMOTE_CHECKS', () => {
   })
 
   describe('renovate-active', () => {
-    it('skips repos without renovate.json', async () => {
+    it('skips repos without a Renovate config', async () => {
       expect(await renovateActive()).toEqual({
         pass: true,
-        detail: 'no renovate.json',
+        detail: 'no Renovate config',
       })
       expect(vi.mocked(childProcess.execFile)).not.toHaveBeenCalled()
     })
@@ -1183,6 +1296,12 @@ describe('REMOTE_CHECKS', () => {
         expect.anything(),
         expect.anything(),
       )
+    })
+    it('reads any Renovate config file', async () => {
+      const dir = tmpDir()
+      write(dir, '.renovaterc', '{}')
+      answerIssues([pr(10)])
+      expect(await renovateActive(dir)).toBe(true)
     })
     it('passes on a recent PR', async () => {
       answerIssues([pr(10)])

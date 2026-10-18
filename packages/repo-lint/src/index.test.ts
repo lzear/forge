@@ -123,6 +123,7 @@ it.each([
   [{ skip: { b: ' ' } }, 'skip.b: reason required'],
   [{ skip: { b: 1 } }, 'skip.b: reason required'],
   [{ skip: { z: 'why' } }, 'skip.z: unknown check (valid: a, b, c)'],
+  [{ skips: { b: 'why' } }, 'skips: unknown key (valid: skip, repo)'],
   [{ skip: [] }, 'expected { "skip"'],
   ['nope', 'expected { "skip"'],
 ])(

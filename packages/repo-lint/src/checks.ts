@@ -111,6 +111,25 @@ const readmeIncludes = (dir: string, needle: string): boolean => {
 const FORGE_WORKFLOW_RE = /uses:\s*lzear\/forge\/\.github\/workflows\/ci\.yml@/
 const FORGE_PRESET = 'github>lzear/forge'
 const FORGE_PRESET_RE = /^github>lzear\/forge(?:$|[#:])/
+// JSON5, unparsed here: the preset quoted anywhere
+const FORGE_PRESET_QUOTED_RE = /["']github>lzear\/forge(?:[#:][^"']*)?["']/
+
+// where Renovate looks for its config, in its order (package.json's
+// deprecated `renovate` field aside)
+const RENOVATE_FILES = [
+  'renovate.json',
+  'renovate.json5',
+  '.github/renovate.json',
+  '.github/renovate.json5',
+  '.gitlab/renovate.json',
+  '.gitlab/renovate.json5',
+  '.renovaterc',
+  '.renovaterc.json',
+  '.renovaterc.json5',
+]
+
+const renovateFile = (dir: string): string | undefined =>
+  RENOVATE_FILES.find((f) => existsSync(path.join(dir, f)))
 
 const callsForgeWorkflow = (dir: string): boolean => {
   const wfDir = path.join(dir, '.github', 'workflows')
@@ -126,7 +145,18 @@ const callsForgeWorkflow = (dir: string): boolean => {
 
 const FORGE_REMOTE = 'https://github.com/lzear/forge'
 // `uses: lzear/forge/<path>@<ref> # <comment>`
-const FORGE_PIN_RE = /lzear\/forge\/([^@\s]+)@([^\s#]+)(?:[ \t]*#[ \t]*(\S+))?/g
+const FORGE_PIN_RE = /lzear\/forge\/([^@\s]+)@([^\s#]+)(?:[ \t]*#([^\n]*))?/g
+// the ref a pin's comment names, among its other words (`# renovate: v5.0.0`)
+const PIN_TAG_RE = /(?<![\w.-])(?:v\d+\.\d+\.\d+(?:-[\w.]+)?|main)(?![\w.-])/
+
+// the comment with its ref, else the comment, now naming `tag`
+const repinComment = (comment: string | undefined, tag: string): string => {
+  const words = comment?.trim()
+  if (!words) return tag
+  return PIN_TAG_RE.test(words)
+    ? words.replace(PIN_TAG_RE, () => tag)
+    : `${tag} ${words}`
+}
 
 /**
 A forge release: its `vX.Y.Z` tag and the commit it points to.
@@ -177,6 +207,7 @@ export const forgeRelease = async (
   return sha ? { tag, sha } : newestRelease(tags)
 }
 
+// `comment`: the ref the pin's comment names
 type ForgePin = { file: string; path: string; ref: string; comment?: string }
 
 const forgePinFiles = (dir: string): string[] => {
@@ -195,12 +226,10 @@ const findForgePins = (dir: string): ForgePin[] =>
   forgePinFiles(dir).flatMap((file) =>
     readFileSync(path.join(dir, file), 'utf8')
       .matchAll(FORGE_PIN_RE)
-      .map(([, pinPath = '', ref = '', comment]) => ({
-        file,
-        path: pinPath,
-        ref,
-        ...(comment && { comment }),
-      }))
+      .map(([, pinPath = '', ref = '', comment]) => {
+        const tag = comment && PIN_TAG_RE.exec(comment)?.[0]
+        return { file, path: pinPath, ref, ...(tag && { comment: tag }) }
+      })
       .toArray(),
   )
 
@@ -211,8 +240,8 @@ const repin = (dir: string, release: ForgeRelease): string[] =>
     const content = readFileSync(f, 'utf8')
     const pinned = content.replaceAll(
       FORGE_PIN_RE,
-      (_, pinPath: string) =>
-        `lzear/forge/${pinPath}@${release.sha} # ${release.tag}`,
+      (_, pinPath: string, _ref: string, comment: string | undefined) =>
+        `lzear/forge/${pinPath}@${release.sha} # ${repinComment(comment, release.tag)}`,
     )
     if (pinned === content) return false
     writeFileSync(f, pinned, 'utf8')
@@ -261,7 +290,7 @@ const NON_REGISTRY_RANGE_RE =
   /^(?:workspace:|file:|link:|portal:|catalog:|git|https?:)/
 
 const collectEntry = (
-  dependencies: Map<string, string>,
+  dependencies: Map<string, Set<string>>,
   name: string,
   range: unknown,
 ): void => {
@@ -270,11 +299,12 @@ const collectEntry = (
   const alias = /^npm:(.+)@([^@]+)$/.exec(range)
   const target = alias?.[1] ?? name
   const targetRange = alias?.[2] ?? range
-  if (!dependencies.has(target)) dependencies.set(target, targetRange)
+  const ranges = dependencies.get(target) ?? new Set()
+  dependencies.set(target, ranges.add(targetRange))
 }
 
 const collectFromPackage = (
-  dependencies: Map<string, string>,
+  dependencies: Map<string, Set<string>>,
   packageDir: string,
 ): void => {
   const package_ = readPackage(packageDir)
@@ -286,9 +316,10 @@ const collectFromPackage = (
   }
 }
 
-// without the repo's own packages: npm lacks them, whatever their range
-const collectDependencies = (dir: string): Map<string, string> => {
-  const dependencies = new Map<string, string>()
+// each name's distinct ranges, without the repo's own packages: npm lacks
+// them, whatever their range
+const collectDependencies = (dir: string): Map<string, Set<string>> => {
+  const dependencies = new Map<string, Set<string>>()
   const packageDirs = [dir, ...getWorkspaceDirectories(dir)]
   for (const packageDir of packageDirs)
     collectFromPackage(dependencies, packageDir)
@@ -299,12 +330,13 @@ const collectDependencies = (dir: string): Map<string, string> => {
   return dependencies
 }
 
+// each deprecated version `ranges` resolve to
 const findDeprecated = async (
   name: string,
-  range: string,
-): Promise<string | null> => {
+  ranges: Set<string>,
+): Promise<string[]> => {
   const response = await fetch(
-    `https://registry.npmjs.org/${name.replace('/', '%2F')}`,
+    `https://registry.npmjs.org/${name.replaceAll('/', '%2F')}`,
     {
       headers: { accept: 'application/vnd.npm.install-v1+json' },
       signal: AbortSignal.timeout(10_000),
@@ -315,16 +347,21 @@ const findDeprecated = async (
     versions: Record<string, { deprecated?: string }>
     'dist-tags'?: Record<string, string>
   }
-  // Prefer the `latest` dist-tag when it satisfies the range — strict semver
-  // maxSatisfying can pick a junk prerelease no package manager would install.
-  const latest = data['dist-tags']?.latest
-  const resolved =
-    latest && satisfies(latest, range)
-      ? latest
-      : maxSatisfying(Object.keys(data.versions), range)
-  if (!resolved) return null
-  const deprecated = data.versions[resolved]?.deprecated
-  return deprecated ? `${name}@${resolved} — ${deprecated.slice(0, 120)}` : null
+  const tags = data['dist-tags'] ?? {}
+  // A dist-tag range (`next`) is its version. Else prefer `latest` when it
+  // satisfies the range — strict semver maxSatisfying can pick a junk
+  // prerelease no package manager would install.
+  const resolve = (range: string): string | null =>
+    Object.hasOwn(tags, range)
+      ? (tags[range] ?? null)
+      : tags.latest && satisfies(tags.latest, range)
+        ? tags.latest
+        : maxSatisfying(Object.keys(data.versions), range)
+  const resolved = new Set([...ranges].map((r) => resolve(r)))
+  return [...resolved].flatMap((version) => {
+    const deprecated = version && data.versions[version]?.deprecated
+    return deprecated ? `${name}@${version} — ${deprecated.slice(0, 120)}` : []
+  })
 }
 
 // where each package manager sets its minimum release age, in units per day
@@ -563,39 +600,54 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     desc: 'renovate extends forge',
     type: 'local',
     check: (dir) => {
-      const file = path.join(dir, 'renovate.json')
-      if (!existsSync(file)) return false
-      let config: { extends?: string[] }
+      const file = renovateFile(dir)
+      if (!file) return false
+      const missing = `add "${FORGE_PRESET}" to ${file} extends`
+      const raw = readFileSync(path.join(dir, file), 'utf8')
+      if (file.endsWith('.json5'))
+        return (
+          FORGE_PRESET_QUOTED_RE.test(raw) || { pass: false, detail: missing }
+        )
+      let config: { extends?: unknown }
       try {
-        config = JSON.parse(readFileSync(file, 'utf8')) as typeof config
+        config = JSON.parse(raw) as typeof config
       } catch {
-        return { pass: false, detail: 'renovate.json is not valid JSON' }
+        return { pass: false, detail: `${file} is not valid JSON` }
       }
       return (
-        config.extends?.some((p) => FORGE_PRESET_RE.test(p)) === true || {
-          pass: false,
-          detail: 'add "github>lzear/forge" to renovate.json extends',
-        }
+        (Array.isArray(config.extends) &&
+          config.extends.some(
+            (p) => typeof p === 'string' && FORGE_PRESET_RE.test(p),
+          )) || { pass: false, detail: missing }
       )
     },
+    // never a renovate.json beside another config: it would shadow it
     fix: (dir) => {
-      const file = path.join(dir, 'renovate.json')
-      if (!existsSync(file)) {
+      const file = renovateFile(dir)
+      if (!file) {
         const config = {
           $schema: 'https://docs.renovatebot.com/renovate-schema.json',
           extends: [FORGE_PRESET],
         }
-        writeFileSync(file, `${JSON.stringify(config, null, 2)}\n`, 'utf8')
+        writeFileSync(
+          path.join(dir, 'renovate.json'),
+          `${JSON.stringify(config, null, 2)}\n`,
+          'utf8',
+        )
         return 'created renovate.json'
       }
-      const json = readJsonFile(file)
+      if (file.endsWith('.json5'))
+        throw new Error(
+          `JSON5 left as is: add "${FORGE_PRESET}" to ${file} extends`,
+        )
+      const json = readJsonFile(path.join(dir, file))
       const presets = json.data.extends
       json.data.extends = [
         ...((Array.isArray(presets) ? presets : []) as unknown[]),
         FORGE_PRESET,
       ]
-      writeJsonFile(file, json)
-      return `renovate.json extends: + ${FORGE_PRESET}`
+      writeJsonFile(path.join(dir, file), json)
+      return `${file} extends: + ${FORGE_PRESET}`
     },
   },
   {
@@ -666,10 +718,12 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     id: 'pkg-attw',
     desc: 'attw',
     type: 'local',
-    check: (dir) => {
-      const bin = findBin('attw', _dirname)
-      if (!bin) return { pass: false, detail: 'attw not available' }
-      return eachPublishedPackage(dir, async (pkgDir) => {
+    publishedOnly: true,
+    // attw looked up only once a package is published
+    check: (dir) =>
+      eachPublishedPackage(dir, async (pkgDir) => {
+        const bin = findBin('attw', _dirname)
+        if (!bin) return { pass: false, detail: 'attw not available' }
         const r = await run(
           process.execPath,
           [bin, '--pack', '--profile', 'esm-only'],
@@ -678,8 +732,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
         return r.status === 0
           ? { pass: true }
           : { pass: false, detail: (r.stdout + r.stderr).trim() }
-      })
-    },
+      }),
   },
   {
     id: 'pkg-size-limit',
@@ -766,10 +819,9 @@ export const LOCAL_CHECKS: LocalCheck[] = [
       const dependencies = collectDependencies(dir)
       const failures: string[] = []
       await Promise.all(
-        [...dependencies].map(async ([name, range]) => {
+        [...dependencies].map(async ([name, ranges]) => {
           try {
-            const deprecated = await findDeprecated(name, range)
-            if (deprecated) failures.push(deprecated)
+            failures.push(...(await findDeprecated(name, ranges)))
           } catch (error) {
             failures.push(`${name} — check failed: ${String(error)}`)
           }
@@ -875,8 +927,8 @@ export const REMOTE_CHECKS: RemoteCheck[] = [
     drift: true,
     // the issues endpoint lists PRs too
     check: async (repo, dir) => {
-      if (!existsSync(path.join(dir, 'renovate.json')))
-        return { pass: true, detail: 'no renovate.json' }
+      if (!renovateFile(dir))
+        return { pass: true, detail: 'no Renovate config' }
       const query = new URLSearchParams({
         creator: 'renovate[bot]',
         state: 'all',
