@@ -3,9 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { listWorkspaces } from './workspaces.mjs'
 
-vi.mock('./workspaces.mjs', () => ({ listWorkspaces: vi.fn() }))
 vi.mock('node:child_process', () => ({ execSync: vi.fn() }))
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -15,9 +13,11 @@ const write = (file: string, content: unknown): void => {
   writeFileSync(file, JSON.stringify(content))
 }
 
-// what git, changesets and npm answer; `packed` records each version as packed
+// what git, changesets, yarn and npm answer; `packed` records each version as
+// packed; `workspaces` is what `yarn workspaces list --json` lists, root first
 const state = {
   dirty: false,
+  workspaces: [] as { name: string; location: string }[],
   releases: [] as { name: string; type: string; newVersion: string }[],
   npm: new Map<string, string[]>(),
   packed: [] as string[],
@@ -41,9 +41,15 @@ const answers: [RegExp, (match: string[]) => string][] = [
     },
   ],
   [
+    /^yarn workspaces list --json$/,
+    () => state.workspaces.map((w) => JSON.stringify(w)).join('\n'),
+  ],
+  [
     /^yarn workspace "(\S+)" pack/,
     ([, name = '']) => {
-      const file = path.join(name, 'package.json')
+      const { location = '' } =
+        state.workspaces.find((w) => w.name === name) ?? {}
+      const file = path.join(location, 'package.json')
       const { version } = JSON.parse(readFileSync(file, 'utf8'))
       state.packed.push(`${name}@${version}`)
       return ''
@@ -69,15 +75,21 @@ const run = async (...arguments_: string[]): Promise<void> => {
   await import('./prerelease.mjs')
 }
 
-const pkg = (name: string, version: string, newVersion?: string): void => {
-  write(path.join(name, 'package.json'), { name, version })
+const pkg = (
+  name: string,
+  version: string,
+  newVersion?: string,
+  location = name,
+): void => {
+  write(path.join(location, 'package.json'), { name, version })
   if (newVersion) state.releases.push({ name, type: 'minor', newVersion })
 }
 
 const setWorkspaces = (...names: string[]): void => {
-  vi.mocked(listWorkspaces).mockReturnValue(
-    names.map((name) => ({ name, location: name })),
-  )
+  state.workspaces = [
+    { name: 'root', location: '.' },
+    ...names.map((name) => ({ name, location: name })),
+  ]
 }
 
 // each test runs in a fresh temp dir as the repo root
@@ -91,6 +103,7 @@ beforeEach(() => {
   process.chdir(dir)
   Object.assign(state, {
     dirty: false,
+    workspaces: [],
     releases: [],
     npm: new Map(),
     packed: [],
@@ -162,6 +175,14 @@ describe('lzear-prerelease', () => {
     state.npm.set('b', ['1.1.0-beta.3'])
     await run('beta')
     expect(state.packed).toEqual(['a@1.1.0-beta.4', 'b@1.1.0-beta.4'])
+  })
+
+  it('prereleases a single-package repo from its root', async () => {
+    pkg('root', '1.0.0', '1.1.0', '.')
+    setWorkspaces()
+    await run('beta')
+    expect(state.packed).toEqual(['root@1.1.0-beta.0'])
+    expect(commands().at(-1)).toBe('git checkout -- package.json')
   })
 
   it('dry-runs npm without --publish', async () => {

@@ -59,7 +59,11 @@ const getRepoUrl = () => {
   ).repository
   if (!repo) return ''
   if (typeof repo === 'object') repo = repo.url
-  repo = repo.replace(/^git\+/, '').replace(/\.git$/, '')
+  repo = repo
+    .replace(/^git\+/, '')
+    .replace(/\.git$/, '')
+    // git@host:o/r, ssh://git@host/o/r, git://host/o/r → https://host/o/r
+    .replace(/^(?:(?:ssh:\/\/)?git@|git:\/\/)([^:/]+)[:/]/, 'https://$1/')
   if (!repo.includes('://'))
     repo = `https://github.com/${repo.replace(/^github:/, '')}`
   return repo

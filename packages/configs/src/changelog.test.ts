@@ -153,6 +153,12 @@ describe('lzear-changelog', () => {
       'https://github.com/lzear/forge',
     ],
     ['lzear/forge', 'https://github.com/lzear/forge'],
+    ['git@github.com:lzear/forge.git', 'https://github.com/lzear/forge'],
+    [
+      'git+ssh://git@github.com/lzear/forge.git',
+      'https://github.com/lzear/forge',
+    ],
+    ['git://github.com/lzear/forge.git', 'https://github.com/lzear/forge'],
   ])('links commits to repository %j', async (repository, url) => {
     write('package.json', { name: 'root', version: '0.0.0', repository })
     const sha = commit('feat: a')

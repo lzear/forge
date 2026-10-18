@@ -52,11 +52,14 @@ const packages = listWorkspaces(root)
   }))
   .filter((p) => !p.private)
 
-// a fixed group shares one `v<version>` release and the root changelog, other
-// packages get `<name>@<version>` and their own changelog when they have one
+// a fixed group, or a single-package repo's root, shares one `v<version>`
+// release and the root changelog; other packages get `<name>@<version>` and
+// their own changelog when they have one
 const versions = new Set(packages.map((p) => p.version))
 const fixed =
-  packages.length > 1 && versions.size === 1 ? [...versions][0] : undefined
+  (packages.length > 1 || packages[0]?.location === '.') && versions.size === 1
+    ? [...versions][0]
+    : undefined
 /**
 @param {string} location
 */

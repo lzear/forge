@@ -1,10 +1,22 @@
+import type * as childProcess from 'node:child_process'
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { listWorkspaces } from './workspaces.mjs'
 
-vi.mock('./workspaces.mjs', () => ({ listWorkspaces: vi.fn() }))
+// what `yarn workspaces list --json` lists: the root, then each workspace
+const workspaces: { name: string; location: string }[] = []
+vi.mock('node:child_process', async (importOriginal) => {
+  const original = await importOriginal<typeof childProcess>()
+  return {
+    ...original,
+    execSync: vi.fn((command: string, options: object) =>
+      command === 'yarn workspaces list --json'
+        ? Buffer.from(workspaces.map((w) => JSON.stringify(w)).join('\n'))
+        : original.execSync(command, options),
+    ),
+  }
+})
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -70,8 +82,11 @@ afterEach(() => {
 // ── fixtures ─────────────────────────────────────────────────────────────────
 
 const setWorkspaces = (...locations: [name: string, location: string][]) => {
-  vi.mocked(listWorkspaces).mockReturnValue(
-    locations.map(([name, location]) => ({ name, location })),
+  workspaces.splice(
+    0,
+    Infinity,
+    { name: 'root', location: '.' },
+    ...locations.map(([name, location]) => ({ name, location })),
   )
 }
 
@@ -148,6 +163,30 @@ describe('sync-jsr', () => {
       exports: {},
       publish: { include: ['package.json', 'README.md'] },
     })
+  })
+
+  it("generates a single-package repo's root deno.json", async () => {
+    write('.', 'package.json', { name: '@x/solo', version: '1.0.0' })
+    write('.', 'deno.json', {})
+    setWorkspaces()
+
+    expect(await run()).toBeUndefined()
+    expect(readDeno('.')).toEqual({
+      name: '@x/solo',
+      version: '1.0.0',
+      exports: {},
+      publish: { include: ['package.json', 'README.md'] },
+    })
+  })
+
+  it("leaves a monorepo root's deno.json alone", async () => {
+    lib()
+    write('.', 'package.json', { name: 'root', private: true })
+    write('.', 'deno.json', { workspace: ['packages/lib'] })
+    setWorkspaces(['@x/lib', 'packages/lib'])
+
+    expect(await run()).toBeUndefined()
+    expect(readDeno('.')).toEqual({ workspace: ['packages/lib'] })
   })
 
   it('skips workspaces without a deno.json', async () => {

@@ -3,9 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { listWorkspaces } from './workspaces.mjs'
 
-vi.mock('./workspaces.mjs', () => ({ listWorkspaces: vi.fn() }))
 vi.mock('node:child_process', () => ({ execSync: vi.fn() }))
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -22,6 +20,8 @@ const write = (file: string, content: unknown): void => {
 const live = new Set<string>()
 const released = new Set<string>()
 const notes = new Map<string, string>()
+// what `yarn workspaces list --json` lists: the root, then each workspace
+const workspaces: { name: string; location: string }[] = []
 
 const answers: [RegExp, (match: string[]) => string][] = [
   [
@@ -46,6 +46,10 @@ const answers: [RegExp, (match: string[]) => string][] = [
     },
   ],
   [/^git rev-parse HEAD$/, () => 'abc123'],
+  [
+    /^yarn workspaces list --json$/,
+    () => workspaces.map((w) => JSON.stringify(w)).join('\n'),
+  ],
 ]
 
 const fakeExec = (command: string): ReturnType<typeof execSync> => {
@@ -101,8 +105,11 @@ afterEach(() => {
 })
 
 const setWorkspaces = (...locations: string[]): void => {
-  vi.mocked(listWorkspaces).mockReturnValue(
-    locations.map((location) => ({ name: location, location })),
+  workspaces.splice(
+    0,
+    Infinity,
+    { name: 'root', location: '.' },
+    ...locations.map((location) => ({ name: location, location })),
   )
 }
 
@@ -186,6 +193,24 @@ describe('lzear-publish', () => {
     await run('--publish', '--release')
     expect(staged()).toEqual(['a', 'b'])
     expect(Object.fromEntries(notes)).toEqual({ 'v4.5.0': 'Both.' })
+  })
+
+  it('releases a single-package repo as v<version>, from its changelog', async () => {
+    pkg('.', 'root', '1.2.0')
+    write('CHANGELOG.md', '# root\n\n## 1.2.0\n\n- Solo.\n')
+    setWorkspaces()
+    await run('--publish', '--release')
+    expect(staged()).toEqual(['root'])
+    expect(Object.fromEntries(notes)).toEqual({ 'v1.2.0': '- Solo.' })
+  })
+
+  it('leaves a monorepo root out, even when public', async () => {
+    pkg('.', 'root', '1.0.0')
+    pkg('a', 'a', '1.0.0')
+    setWorkspaces('a')
+    await run('--publish', '--release')
+    expect(staged()).toEqual(['a'])
+    expect(Object.fromEntries(notes)).toEqual({ 'a@1.0.0': '' })
   })
 
   it('skips a released version, even if npm does not show it yet', async () => {
