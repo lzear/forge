@@ -17,7 +17,7 @@ on:
         type: string
         default: 'yarn changeset version'
       jsr:
-        description: also `deno publish` the deno.json workspace
+        description: also `deno publish` each deno.json workspace member
         type: boolean
         default: false
 
@@ -76,5 +76,26 @@ jobs:
         uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: v2.x
+      # one `deno publish` per member, its workspace deps first: each fetches
+      # its own OIDC token, which a slow publish before it can't outlive
       - if: inputs.jsr
-        run: deno publish
+        shell: bash
+        run: |
+          node -e '
+            const { existsSync: exists, readFileSync: read } = require("node:fs")
+            const json = (f) => JSON.parse(read(f, "utf8"))
+            const dirs = json("deno.json").workspace
+            const byName = new Map(dirs.map((d) => [json(`${d}/deno.json`).name, d]))
+            const done = new Set()
+            const visit = (d) => {
+              if (done.has(d)) return
+              done.add(d)
+              const p = exists(`${d}/package.json`) ? json(`${d}/package.json`) : {}
+              for (const n of Object.keys({ ...p.dependencies, ...p.peerDependencies }))
+                if (byName.has(n)) visit(byName.get(n))
+              console.log(d)
+            }
+            dirs.forEach(visit)
+          ' | while read -r dir; do
+            (cd "$dir" && deno publish)
+          done
