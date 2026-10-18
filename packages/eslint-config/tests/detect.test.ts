@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, realpathSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { detect } from '../configs/detect'
+import { detect, workspaceManifests } from '../configs/detect'
 import config from '../index'
 
 const project = (files: Record<string, unknown>): string => {
@@ -10,7 +10,10 @@ const project = (files: Record<string, unknown>): string => {
   for (const [file, content] of Object.entries(files)) {
     const target = path.join(root, file)
     mkdirSync(path.dirname(target), { recursive: true })
-    writeFileSync(target, JSON.stringify(content))
+    writeFileSync(
+      target,
+      typeof content === 'string' ? content : JSON.stringify(content),
+    )
   }
   return root
 }
@@ -60,6 +63,50 @@ describe('detect', () => {
       'lib/package.json': { peerDependencies: { react: '*' } },
     })
     expect(detect(root)).toMatchObject({ react: true, typescript: true })
+  })
+
+  it('reads pnpm-workspace.yaml', () => {
+    const root = project({
+      'package.json': {},
+      'pnpm-workspace.yaml': [
+        'catalog:',
+        '  - nope/*',
+        'packages: # globs',
+        "  - 'packages/*'",
+        '  - "apps/web" # quoted',
+        '',
+      ].join('\n'),
+      'packages/ui/package.json': { dependencies: { react: '^19' } },
+      'apps/web/package.json': { devDependencies: { vitest: '^5' } },
+      'nope/x/package.json': { devDependencies: { typescript: '^6' } },
+    })
+    expect(detect(root)).toEqual({
+      react: true,
+      typescript: false,
+      vitest: true,
+    })
+  })
+
+  it('prefers `workspaces` to pnpm-workspace.yaml', () => {
+    const root = project({
+      'package.json': { workspaces: ['lib'] },
+      'pnpm-workspace.yaml': 'packages:\n  - app\n',
+      'app/package.json': { dependencies: { react: '^19' } },
+    })
+    expect(detect(root).react).toBe(false)
+  })
+
+  it('excludes negated globs', () => {
+    const root = project({
+      'package.json': { workspaces: ['packages/*', '!packages/legacy'] },
+      'packages/ui/package.json': { devDependencies: { vitest: '^5' } },
+      'packages/legacy/package.json': { dependencies: { react: '^18' } },
+    })
+    expect(detect(root)).toMatchObject({ react: false, vitest: true })
+    expect(workspaceManifests(root)).toEqual({
+      files: ['packages/*/package.json'],
+      ignores: ['packages/legacy/package.json'],
+    })
   })
 
   it('tolerates a missing manifest', () => {

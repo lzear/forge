@@ -17,13 +17,48 @@ const readManifest = (file: string): Manifest | undefined => {
   }
 }
 
-// The workspace manifests below `cwd`, as globs (npm, Yarn and Bun read `workspaces`)
-export const workspaceManifests = (cwd = process.cwd()): string[] => {
-  const { workspaces = [] } = readManifest(path.join(cwd, 'package.json')) ?? {}
+// pnpm-workspace.yaml's `packages:`, a flat list of (quoted) globs
+const pnpmWorkspaces = (cwd: string): string[] => {
+  let text: string
+  try {
+    text = readFileSync(path.join(cwd, 'pnpm-workspace.yaml'), 'utf8')
+  } catch {
+    return []
+  }
+  const globs: string[] = []
+  let isPackages = false
+  for (const line of text.split('\n')) {
+    if (/^\s*(?:#.*)?$/.test(line)) continue
+    if (/^\S/.test(line)) isPackages = /^packages:\s*(?:#.*)?$/.test(line)
+    else if (isPackages && line.trimStart().startsWith('-')) {
+      const item = line.trim().slice(1).split('#', 1)[0]?.trim() ?? ''
+      const glob = /^(["'])(.*)\1$/.exec(item)?.[2] ?? item
+      if (glob) globs.push(glob)
+    }
+  }
+  return globs
+}
+
+// The workspace manifests below `cwd`, as globs: `files` to match, `ignores`
+// from `!` negations (npm, Yarn and Bun read `workspaces`, pnpm
+// pnpm-workspace.yaml)
+export const workspaceManifests = (
+  cwd = process.cwd(),
+): { files: string[]; ignores: string[] } => {
+  const { workspaces } = readManifest(path.join(cwd, 'package.json')) ?? {}
   const globs = Array.isArray(workspaces)
     ? workspaces
-    : (workspaces.packages ?? [])
-  return globs.map((glob) => path.posix.join(glob, 'package.json'))
+    : (workspaces?.packages ?? pnpmWorkspaces(cwd))
+  const toManifest = (glob: string): string =>
+    path.posix.join(glob, 'package.json')
+  return {
+    files: globs
+      .filter((glob) => !glob.startsWith('!'))
+      .map((glob) => toManifest(glob)),
+    ignores: globs
+      .filter((glob) => glob.startsWith('!'))
+      .map((glob) => toManifest(glob.slice(1))),
+  }
 }
 
 // Layers to enable, from the dependencies of `cwd`'s manifest and its
@@ -32,12 +67,15 @@ export const workspaceManifests = (cwd = process.cwd()): string[] => {
 export const detect = (
   cwd = process.cwd(),
 ): { react: boolean; typescript: boolean; vitest: boolean } => {
+  const { files, ignores } = workspaceManifests(cwd)
+  const options = {
+    cwd,
+    exclude: (file: string) => file.includes('node_modules'),
+  }
+  const ignored = new Set(globSync(ignores, options))
   const manifests = [
     'package.json',
-    ...globSync(workspaceManifests(cwd), {
-      cwd,
-      exclude: (file) => file.includes('node_modules'),
-    }),
+    ...globSync(files, options).filter((file) => !ignored.has(file)),
   ]
   const dependencies = new Set<string>()
   let tsconfig = false

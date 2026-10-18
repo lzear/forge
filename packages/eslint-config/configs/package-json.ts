@@ -6,7 +6,7 @@ import { workspaceManifests } from './detect'
 import * as FILES from './files'
 
 export const packageJson = (): Linter.Config[] => {
-  const workspaces = workspaceManifests()
+  const { files, ignores } = workspaceManifests()
   return [
     packageJsonPlugin.configs.recommended,
     {
@@ -25,11 +25,12 @@ export const packageJson = (): Linter.Config[] => {
         'lzear/major-version-only': 2,
       },
     },
-    ...(workspaces.length > 0
+    ...(files.length > 0
       ? [
           {
             name: 'lzear/package-json/workspaces',
-            files: workspaces,
+            files,
+            ...(ignores.length > 0 && { ignores }),
             // flags every package.json below the cwd, but Node resolves a
             // workspace's `exports`
             rules: { 'package-json/no-nested-exports': 0 as const },
