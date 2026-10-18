@@ -56,10 +56,11 @@ The repo, or one of its workspaces, publishes a package (is not `private`).
 */
 export const hasPublishedPkg = (dir: string): boolean => {
   const package_ = readPackage(dir)
-  return package_
-    ? package_.private !== true ||
-        getWorkspaceDirectories(dir).some((d) => hasPublishedPkg(d))
-    : false
+  return (
+    package_ !== null &&
+    (package_.private !== true ||
+      getWorkspaceDirectories(dir).some((d) => hasPublishedPkg(d)))
+  )
 }
 
 /**
