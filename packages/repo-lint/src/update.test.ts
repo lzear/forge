@@ -8,6 +8,7 @@ import {
   detectPackageManager,
   getWorkspaceDirectories,
   installCommands,
+  run,
   runUpdate,
   type UpdateResult,
 } from './update.ts'
@@ -618,6 +619,36 @@ describe('runUpdate', () => {
     expect(read(dir, 'LICENSE')).toBe(`Copyright (c) 2019-${year} lzear\n`)
   })
 
+  it('keeps an en or em dash when bumping a copyright range', async () => {
+    write(dir, 'package.json', JSON.stringify({}))
+    write(
+      dir,
+      'LICENSE',
+      'Copyright (c) 2019–2024 lzear\nCopyright 2020 — 2021\n',
+    )
+    mockRegistry({})
+    const year = new Date().getFullYear()
+    await runUpdate({ dir, install: false })
+    expect(read(dir, 'LICENSE')).toBe(
+      `Copyright (c) 2019–${year} lzear\nCopyright 2020 — 2021\n`,
+    )
+    write(dir, 'LICENSE', 'Copyright 2020 — 2021\n')
+    await runUpdate({ dir, install: false })
+    expect(read(dir, 'LICENSE')).toBe(`Copyright 2020 — ${year}\n`)
+  })
+
+  it('leaves a current en-dash range alone', async () => {
+    write(dir, 'package.json', JSON.stringify({}))
+    const year = new Date().getFullYear()
+    write(dir, 'LICENSE', `Copyright (c) 2023–${year} lzear\n`)
+    mockRegistry({})
+    const report = await runUpdate({ dir, dry: true })
+    expect(resultById(report.results, 'license-year')).toMatchObject({
+      changed: false,
+      detail: `2023–${year} is current`,
+    })
+  })
+
   it('leaves a current copyright year alone', async () => {
     write(dir, 'package.json', JSON.stringify({}))
     const year = new Date().getFullYear()
@@ -732,6 +763,30 @@ describe('runUpdate', () => {
     expect(resultById(report.results, 'package-manager')).toMatchObject({
       pass: false,
     })
+  })
+})
+
+describe('run', () => {
+  it('buffers output past the 1 MB default', async () => {
+    vi.mocked(childProcess.execFile).mockImplementation(((
+      ...arguments_: unknown[]
+    ) => {
+      const callback = arguments_.at(-1) as (
+        error: null,
+        stdout: string,
+        stderr: string,
+      ) => void
+      callback(null, 'ok', '')
+    }) as never)
+    expect(
+      await run('git', ['ls-remote', '--tags', 'x'], { cwd: '/' }),
+    ).toEqual({ status: 0, stdout: 'ok', stderr: '' })
+    expect(childProcess.execFile).toHaveBeenCalledWith(
+      'git',
+      ['ls-remote', '--tags', 'x'],
+      expect.objectContaining({ maxBuffer: 64 * 1024 * 1024 }),
+      expect.any(Function),
+    )
   })
 })
 

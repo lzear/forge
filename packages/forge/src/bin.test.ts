@@ -348,6 +348,8 @@ describe('forge sync', () => {
   it('exits 1 on --check when a file drifted, writing nothing', async () => {
     mockSync('unchanged', 'updated')
     expect(await run('sync', '--check')).toBe(1)
+    // an exit code, not process.exit, which cuts piped output
+    expect(vi.spyOn(process, 'exit')).not.toHaveBeenCalled()
     expect(syncTemplates).toHaveBeenCalledWith({ dry: true })
     expect(printed()).toContain('Run: forge sync')
   })
@@ -369,6 +371,7 @@ describe('forge init', () => {
     mockInit()
     vi.mocked(checkLocal).mockResolvedValue(report(true, false))
     expect(await run('init', '--app', '--bun')).toBe(1)
+    expect(vi.spyOn(process, 'exit')).not.toHaveBeenCalled()
     expect(initRepo).toHaveBeenCalledWith({
       kind: 'app',
       packageManager: 'bun',

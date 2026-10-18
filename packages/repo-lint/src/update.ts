@@ -262,7 +262,9 @@ export const run = (
     execFile(
       command,
       arguments_,
-      { ...options, encoding: 'utf8' },
+      // the 1 MB default cuts `ls-remote --tags` on tag-heavy repos and big
+      // audit output, failing them as a spawn error
+      { ...options, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 },
       (error, stdout, stderr) => {
         // a numeric code is the exit status; anything else failed to spawn
         if (!error) resolve({ status: 0, stdout, stderr })
@@ -567,7 +569,7 @@ const stepBunVersion = async (
 
 const LICENSE_FILES = ['LICENSE', 'LICENSE.md', 'LICENSE.txt']
 const COPYRIGHT_RE =
-  /(copyright(?:\s+\(c\)|\s+©)?\s+)(\d{4})(?:\s*-\s*(\d{4}))?/i
+  /(copyright(?:\s+\(c\)|\s+©)?\s+)(\d{4})(?:(\s*[-–—]\s*)(\d{4}))?/i
 
 const stepLicenseYear = (dir: string, isDry: boolean): UpdateResult => {
   const base = { id: 'license-year', desc: 'LICENSE copyright year' }
@@ -587,16 +589,18 @@ const stepLicenseYear = (dir: string, isDry: boolean): UpdateResult => {
     }
   const year = new Date().getFullYear()
   const start = match[2]
-  const end = Number(match[3] ?? start)
+  // keeps the range's own dash (`-`, `–` or `—`) and spacing
+  const dash = match[3] ?? '-'
+  const end = Number(match[4] ?? start)
   if (end >= year)
     return {
       ...base,
       pass: true,
       changed: false,
-      detail: `${start}${match[3] ? '-' + match[3] : ''} is current`,
+      detail: `${start}${match[4] ? dash + match[4] : ''} is current`,
     }
   const current = match[0]
-  const next = `${match[1] ?? ''}${start}-${year}`
+  const next = `${match[1] ?? ''}${start}${dash}${year}`
   if (!isDry)
     writeFileSync(
       file,

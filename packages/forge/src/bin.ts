@@ -275,7 +275,7 @@ program
     const isDrift =
       options.check && report.results.some((r) => r.status !== 'unchanged')
     log.outro(isDrift ? pc.red('Drifted. Run: forge sync') : pc.green('Done.'))
-    if (isDrift) process.exit(1)
+    if (isDrift) process.exitCode = 1
   })
 
 const INIT_LABELS: Record<SyncStatus, [string, string]> = {
@@ -327,7 +327,7 @@ program
       if (isDry || !report.isInstalled) return
       process.stdout.write(`\n  ${pc.bold('forge check --skip-remote')}\n\n`)
       const result = await checkLocal({ skipRemote: true })
-      process.exit(printResults(result, false) ? 1 : 0)
+      process.exitCode = printResults(result, false) ? 1 : 0
     },
   )
 

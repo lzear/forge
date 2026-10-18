@@ -258,7 +258,15 @@ describe('initRepo', () => {
       status: 'unchanged',
     })
     expect(read(dir, 'tsconfig.json')).toBe('{}')
-    expect(status['.yarnrc.yml']?.status).toBe('unchanged')
+    // Yarn 4 defaults to PnP, which hides the bins forge's hooks run
+    expect(status['.yarnrc.yml']).toEqual({
+      file: '.yarnrc.yml',
+      status: 'updated',
+      detail: 'nodeLinker: node-modules',
+    })
+    expect(read(dir, '.yarnrc.yml')).toBe(
+      'nodeLinker: node-modules\nnpmMinimalAgeGate: 1d\n',
+    )
     expect(status['package.json']).toEqual({
       file: 'package.json',
       status: 'updated',
@@ -328,6 +336,19 @@ describe('initRepo', () => {
     const { results } = await init(dir, { kind: 'app' })
     expect(results.map((r) => r.file)).not.toContain('src/index.ts')
     expect(existsSync(path.join(dir, 'index.html'))).toBe(false)
+  })
+
+  it('keeps an explicit PnP linker, flagging it', async () => {
+    const yarnrc = 'nodeLinker: "pnp"\nnpmMinimalAgeGate: 3d\n'
+    const dir = repo({ '.yarnrc.yml': yarnrc })
+    const { results, next } = await init(dir, { packageManager: 'yarn' })
+    expect(results.find((r) => r.file === '.yarnrc.yml')?.status).toBe(
+      'unchanged',
+    )
+    expect(read(dir, '.yarnrc.yml')).toBe(yarnrc)
+    expect(next).toContain(
+      ".yarnrc.yml: set nodeLinker: node-modules, forge's hooks and checks run node_modules/.bin",
+    )
   })
 
   it('records the manager, which forge check reads before install', async () => {

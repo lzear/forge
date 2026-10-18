@@ -251,8 +251,12 @@ const writePackage = async (context: Context): Promise<InitResult> => {
   return { file, status: 'updated', detail }
 }
 
-// adds the gate unless the key is set; Yarn's file starts with node_modules,
-// which forge's hooks and checks run bins from
+const NODE_LINKER = /^nodeLinker\s*:\s*['"]?(\w[\w-]*)/m
+const NODE_MODULES = 'nodeLinker: node-modules'
+
+// adds the gate unless the key is set; Yarn's file gets node_modules unless it
+// names a linker (Yarn 4 defaults to PnP): forge's hooks and checks run bins
+// from there
 const writeReleaseAge = async ({
   dir,
   pm,
@@ -261,15 +265,25 @@ const writeReleaseAge = async ({
   const { file, key, line } = releaseAgeSetting(pm)
   const f = path.join(dir, file)
   const isNew = !existsSync(f)
-  const config = isNew
-    ? pm === 'yarn'
-      ? 'nodeLinker: node-modules\n'
-      : ''
-    : readFileSync(f, 'utf8')
-  if (new RegExp(String.raw`^${key}\s*[=:]`, 'm').test(config))
-    return { file, status: 'unchanged' }
-  if (!isDry) await writeFile(f, withReleaseAge(config, pm), 'utf8')
-  return { file, status: isNew ? 'created' : 'updated', detail: line }
+  const original = isNew ? '' : readFileSync(f, 'utf8')
+  const isLinkerMissing = pm === 'yarn' && !NODE_LINKER.test(original)
+  const hasGate = new RegExp(String.raw`^${key}\s*[=:]`, 'm').test(original)
+  if (hasGate && !isLinkerMissing) return { file, status: 'unchanged' }
+  const config = isLinkerMissing ? `${NODE_MODULES}\n${original}` : original
+  if (!isDry)
+    await writeFile(f, hasGate ? config : withReleaseAge(config, pm), 'utf8')
+  const detail = [isLinkerMissing && NODE_MODULES, !hasGate && line]
+    .filter(Boolean)
+    .join(', ')
+  return { file, status: isNew ? 'created' : 'updated', detail }
+}
+
+// a linker other than node-modules hides the bins forge runs
+const isOtherLinker = ({ dir, pm }: Context): boolean => {
+  const f = path.join(dir, '.yarnrc.yml')
+  if (pm !== 'yarn' || !existsSync(f)) return false
+  const linker = NODE_LINKER.exec(readFileSync(f, 'utf8'))?.[1]
+  return linker !== undefined && linker !== 'node-modules'
 }
 
 const RELEASE_JOB = '\n  release:\n'
@@ -375,6 +389,11 @@ const nextSteps = (
     ...(missing.length > 0 ? [`${pm} add -D ${missing.join(' ')}`] : []),
     ...(!isInstalled && missing.length === 0 ? [`${pm} install`] : []),
     ...(isRelease ? ['yarn changeset init'] : []),
+    ...(isOtherLinker(context)
+      ? [
+          `.yarnrc.yml: set ${NODE_MODULES}, forge's hooks and checks run node_modules/.bin`,
+        ]
+      : []),
     ...(context.pmField === null &&
     readPackage(context.dir)?.packageManager === undefined
       ? [`registry unreachable: set packageManager to ${pm}@<version>`]

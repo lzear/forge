@@ -24,7 +24,15 @@ const { results, skipped, fixed, pass } = await checkLocal({
 }) // [{ pass, desc, detail?, drift? }], [{ id, desc, skipped }], fix runs: [{ pass, desc, detail? }], pass: drift aside unless strict
 const update = await runUpdate({ dir, dry, install, only, skip }) // results: [{ id, desc, pass, changed, detail? }], steps: UPDATE_STEPS
 const sync = await syncTemplates({ dir, dry }) // [{ file, status }], from templates/; `.codacy.yml` only where it exists
-const init = await initRepo({ dir, kind, react, packageManager, dry, version }) // results: [{ file, status, detail? }], next: [steps left], isInstalled, from templates/init/
+const init = await initRepo({
+  dir,
+  kind,
+  packageManager,
+  dry,
+  version,
+  release,
+  packageManagerField,
+}) // React from dependencies; release/packageManagerField skip the lookups (null: main, none); results: [{ file, status, detail? }], next: [steps left], isInstalled, from templates/init/
 ```
 
 ## Checks
