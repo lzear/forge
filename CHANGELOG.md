@@ -1,3 +1,35 @@
+## 5.1.0
+
+Parser no longer sets `tsconfigRootDir`, so ESLint caches stay valid across checkouts.
+
+`lzear-prerelease` is back: it publishes pending changesets as a beta without committing.
+
+`forge update` bumps GitHub Actions pins, and takes `--only`/`--skip` to pick its steps.
+
+### ESLint rules
+
+#### `lzear/core`
+
+- `unicorn/no-repeated-call-wrappers`, `unicorn/no-unnecessary-default-arguments`: added, `off`
+
+#### `package-json/recommended`
+
+- `package-json/no-short-flags-in-scripts`: added, `error`
+
+### Commits
+
+- [`1c93f46`](https://github.com/lzear/forge/commit/1c93f46) test(eslint-config): snapshot plugin names, not plugin objects
+- [`ae94f8f`](https://github.com/lzear/forge/commit/ae94f8f) fix: lint
+- [`8508cb0`](https://github.com/lzear/forge/commit/8508cb0) chore: `yarn housekeep`
+- [`beb6010`](https://github.com/lzear/forge/commit/beb6010) feat(forge): update GitHub Actions pins, pick steps with --only/--skip
+- [`584fd8d`](https://github.com/lzear/forge/commit/584fd8d) chore(deps): update dependency npm-check-updates to v23.1.1 (#40)
+- [`949a658`](https://github.com/lzear/forge/commit/949a658) chore(deps): update dependency tsdown to v0.23.1 (#39)
+- [`6117f58`](https://github.com/lzear/forge/commit/6117f58) chore(deps): update dependency prettier to v3.9.10 (#38)
+- [`41a77e2`](https://github.com/lzear/forge/commit/41a77e2) chore(deps): update dependency @types/node to v26.6.5 (#37)
+- [`97231a2`](https://github.com/lzear/forge/commit/97231a2) docs: fix the React tsconfig's libs and the CI example's release tags
+- [`de0862d`](https://github.com/lzear/forge/commit/de0862d) fix(eslint-config): leave parserOptions.tsconfigRootDir unset
+- [`54ce93a`](https://github.com/lzear/forge/commit/54ce93a) feat(configs): restore lzear-prerelease
+
 ## 5.0.0
 
 `forge check` fails on the gate; drift (`forge-pins`, `deps-fresh`, `deps-audit`, `deps-deprecated`, `renovate-active`) warns, `--strict` fails on it.
