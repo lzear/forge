@@ -16,7 +16,7 @@ describe('number-input ban', () => {
   it('rejects <input type="number">', async () => {
     const messages = await lintJsx('const a = <input type="number" />')
     expect(messages.map((m) => m.message)).toEqual([
-      'No number inputs: use a slider.',
+      'No number inputs: use a text field with inputMode (lzear.org NumberField).',
     ])
   })
 

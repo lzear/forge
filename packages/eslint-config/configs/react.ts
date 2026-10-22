@@ -8,7 +8,8 @@ export const RESTRICTED_SYNTAX: { selector: string; message: string }[] = [
   {
     selector:
       "JSXOpeningElement[name.name='input'] > JSXAttribute[name.name='type'][value.value='number']",
-    message: 'No number inputs: use a slider.',
+    message:
+      'No number inputs: use a text field with inputMode (lzear.org NumberField).',
   },
 ]
 
