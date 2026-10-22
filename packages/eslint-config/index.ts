@@ -3,7 +3,7 @@ import { a11y } from './configs/a11y'
 import { core } from './configs/core'
 import { detect } from './configs/detect'
 import * as FILES from './configs/files'
-import { ignores } from './configs/ignores'
+import { gitignored, ignores } from './configs/ignores'
 import { json } from './configs/json'
 import { markdown } from './configs/markdown'
 import { node } from './configs/node'
@@ -17,7 +17,7 @@ import { yaml } from './configs/yaml'
 export { a11y } from './configs/a11y'
 export { core } from './configs/core'
 export * as FILES from './configs/files'
-export { ignores } from './configs/ignores'
+export { gitignored, ignores } from './configs/ignores'
 export { json } from './configs/json'
 export { markdown } from './configs/markdown'
 export { node } from './configs/node'
@@ -71,6 +71,7 @@ const configGenerator = async (
 
   return [
     { name: 'lzear/ignores', ignores },
+    ...gitignored(),
     {
       name: 'lzear/linter-options',
       linterOptions: {
