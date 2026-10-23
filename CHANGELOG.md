@@ -1,3 +1,36 @@
+## 5.2.0
+
+Release scripts publish a single-package repo's root (tag `v<version>`) and link SSH repository URLs in changelogs
+
+Ignore the files the consuming repo's `.gitignore` lists
+
+Autodetect reads `pnpm-workspace.yaml` and excludes negated workspace globs
+
+Release: one `deno publish` per JSR package, dependencies first, each with a fresh OIDC token
+
+The number-input ban points to a text field with inputMode, not a slider
+
+Checks read every Renovate config file and the ref among pin comment words, check each dependency range and dist-tag, skip attw with nothing published, and reject unknown `forge` keys.
+
+Keep an en or em dash in LICENSE year ranges, add `nodeLinker: node-modules` to an existing `.yarnrc.yml`, buffer up to 64 MB of spawned output, and exit `forge sync --check`/`init` through `process.exitCode`.
+
+### ESLint rules
+
+#### `lzear/react`
+
+- `no-restricted-syntax`: options changed
+
+### Commits
+
+- [`d8021aa`](https://github.com/lzear/forge/commit/d8021aa) chore: `yarn housekeep`
+- [`9d2449a`](https://github.com/lzear/forge/commit/9d2449a) fix(eslint-config): point the number-input ban to a text field, not a slider
+- [`ed1e7c0`](https://github.com/lzear/forge/commit/ed1e7c0) feat(eslint-config): ignore files the consuming repo's .gitignore lists
+- [`374ac47`](https://github.com/lzear/forge/commit/374ac47) fix(repo-lint): keep LICENSE range dashes, set nodeLinker in existing .yarnrc.yml
+- [`91d39b2`](https://github.com/lzear/forge/commit/91d39b2) fix(configs): release a single-package repo's root; parse SSH repository URLs
+- [`7807979`](https://github.com/lzear/forge/commit/7807979) fix(repo-lint): read every Renovate config, pin comment refs and dependency range
+- [`58ed909`](https://github.com/lzear/forge/commit/58ed909) fix(eslint-config): read pnpm-workspace.yaml and negated workspace globs in autodetect
+- [`5d6fd7d`](https://github.com/lzear/forge/commit/5d6fd7d) fix(release): publish each JSR package with its own deno publish
+
 ## 5.1.0
 
 Parser no longer sets `tsconfigRootDir`, so ESLint caches stay valid across checkouts.
