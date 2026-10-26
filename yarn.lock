@@ -3316,11 +3316,14 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-de-morgan@npm:^2":
-  version: 2.2.1
-  resolution: "eslint-plugin-de-morgan@npm:2.2.1"
+  version: 2.3.0
+  resolution: "eslint-plugin-de-morgan@npm:2.3.0"
   peerDependencies:
     eslint: ^8.45.0 || ^9.0.0 || ^10.0.0
-  checksum: 10c0/90c6b0c9417dee0ecb96a53b8c192c4983f22c858270480a785164cd5180018d028de83d6c1973d01f981bd8209224ae4ee6f1beb8fd2ce8e5b102bf3d3fff95
+  peerDependenciesMeta:
+    eslint:
+      optional: true
+  checksum: 10c0/d017458ce9f21010ae316e26d525c2b5e553fe8c57a0ea734484087f3c4e3b9b4f3b38aa1d12898c35c3c9166f2f602535cb8e51746bb785f62fed29d6bab9b6
   languageName: node
   linkType: hard
 
