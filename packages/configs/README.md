@@ -18,9 +18,9 @@ Peers are optional: install the tools you use (`tsdown`, `vite`, `vitest`, `jsdo
 ```
 
 - `base`: `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax`, `erasableSyntaxOnly`, `noUnused*`.
-- `app`: base + ES2025, bundler resolution, `noEmit`.
-- `lib`: base + ES2025, bundler resolution, dts, declaration and source maps.
-- `react`: base + ES2025, DOM, `react-jsx`, `.ts` import extensions, `noEmit`.
+- `app`: base + ESNext, bundler resolution, `noEmit`.
+- `lib`: base + ESNext, bundler resolution, dts, declaration and source maps.
+- `react`: base + ESNext, DOM, `react-jsx`, `.ts` import extensions, `noEmit`.
 
 ```ts
 // tsdown.config.ts — ESM; lib emits dts (oxc: exports need `isolatedDeclarations` types) and cleans, bin keeps the source's shebang and doesn't clean

@@ -166,7 +166,7 @@ const toResult = (c: Check, raw: boolean | CheckDetail): CheckResult =>
     : { ...label(c), ...raw }
 
 const errorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : String(error)
+  Error.isError(error) ? error.message : String(error)
 
 // a check that throws fails alone, not the whole run
 const settle = async (

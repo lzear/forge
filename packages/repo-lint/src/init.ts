@@ -219,7 +219,7 @@ const writePackage = async (context: Context): Promise<InitResult> => {
     ...(context.isLib ? LIB_FIELDS : { private: true }),
     type: 'module',
     // forge's floor
-    engines: { node: '>=24' },
+    engines: { node: '>=26' },
     // before install, no lockfile tells forge check the manager
     ...(context.pmField && { packageManager: context.pmField }),
   }
@@ -479,7 +479,7 @@ export const initRepo = async (
   const variables = {
     name,
     repo,
-    year: String(new Date().getFullYear()),
+    year: String(Temporal.Now.plainDateISO().year),
     author: authorOf(dir, repo.split('/', 1)[0] ?? ''),
     tsconfig: context.isReact ? 'react' : context.isLib ? 'lib' : 'app',
     vitest: context.isReact ? 'vitest/react' : 'vitest',

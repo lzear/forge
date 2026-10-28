@@ -940,7 +940,7 @@ export const REMOTE_CHECKS: RemoteCheck[] = [
       const isActive = issues.some((i) =>
         i.pull_request === undefined
           ? i.state === 'open' && i.title === 'Dependency Dashboard'
-          : Date.parse(i.created_at) > since,
+          : Temporal.Instant.from(i.created_at).epochMilliseconds > since,
       )
       return (
         isActive || {

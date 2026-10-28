@@ -112,17 +112,19 @@ export const core = (local?: string): Linter.Config => {
     'unicorn/no-missing-local-resource': 2,
     'unicorn/no-null': 0,
     'unicorn/prefer-await': 0, // await fn().catch() is convenient
+    'unicorn/prefer-error-is-error': 2,
     'unicorn/prefer-import-meta-properties': 2,
+    // TypeScript's lib has no Iterator.concat yet
+    'unicorn/prefer-iterator-concat': 0,
     'unicorn/prefer-json-import': 2,
     'unicorn/prefer-regexp-escape': 2,
     'unicorn/prefer-short-arrow-method': 2,
+    'unicorn/prefer-temporal': 2,
+    'unicorn/prefer-uint8array-base64': 2,
+    'unicorn/prefer-uint8array-hex': 2,
     'unicorn/prevent-abbreviations': 0,
     'unicorn/require-post-message-target-origin': 2,
     'unicorn/switch-case-braces': [2, 'avoid'],
-    // Off until engines leave Node 24, which lacks these APIs. Error.isError
-    // runs there, but its types are ESNext only, past forge's ES2025 tsconfig.
-    // prefer-error-is-error, prefer-iterator-concat, prefer-temporal,
-    // prefer-uint8array-base64, prefer-uint8array-hex
   } satisfies Linter.RulesRecord
 
   return {
@@ -133,7 +135,7 @@ export const core = (local?: string): Linter.Config => {
     languageOptions: {
       globals: {
         ...globals.browser,
-        ...globals.es2025,
+        ...globals.es2026,
         ...globals.node,
       },
       parserOptions: {

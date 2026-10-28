@@ -56,7 +56,7 @@ Each is exported too, for replacing one wholesale. `prettier` comes last so it o
 | `ignores`     |                    | `dist`, `coverage`, `build`, caches                                                                                                                |
 
 Arrow functions only, `curly: multi`, inline type imports, `it` over `test`. Unused disable directives and inline configs are errors.
-On TS files, sonarjs rules that tsc or typescript-eslint already enforce are off; `sonarjs/aws-*` everywhere. `only-throw-error` allows TanStack Router's `redirect()` and `notFound()`. The `n` layer leaves Node builtins alone in JSX/TSX (browser code). react-x reads the installed React version.
+On TS files, sonarjs rules that tsc or typescript-eslint already enforce are off; `sonarjs/aws-*` everywhere. `only-throw-error` allows TanStack Router's `redirect()` and `notFound()`. The `n` layer leaves Node builtins alone in JSX/TSX (browser code). In a React repo, `unicorn/prefer-temporal` and `unicorn/prefer-error-is-error` are off, because Safari lacks Temporal and its `Error.isError` rejects `DOMException`. react-x reads the installed React version.
 The data layers keep correctness rules: Prettier formats those files. In code blocks, imports may name the package itself and values go unused; `<!-- eslint-skip -->` above a block skips it.
 
 Adding your own `no-restricted-syntax` replaces forge's: spread `RESTRICTED_SYNTAX` into it.

@@ -51,7 +51,7 @@
   "bin": "./dist/bin.js",
   "sideEffects": false,
   "engines": {
-    "node": ">=24"
+    "node": ">=26"
   },
   "publishConfig": {
     "access": "public",

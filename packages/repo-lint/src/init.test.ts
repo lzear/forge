@@ -146,7 +146,7 @@ describe('initRepo', () => {
         '.': { types: './dist/index.d.mts', default: './dist/index.mjs' },
       },
       files: ['dist'],
-      engines: { node: '>=24' },
+      engines: { node: '>=26' },
       sideEffects: false,
       packageManager: 'yarn@4.10.3',
       scripts: {
@@ -186,7 +186,7 @@ describe('initRepo', () => {
     expect(workflow).toContain("coverage-command: 'yarn test --coverage'")
     expect(workflow).toContain('${{ secrets.CODACY_PROJECT_TOKEN }}')
     expect(read(dir, 'LICENSE')).toContain(
-      `Copyright (c) ${new Date().getFullYear()} `,
+      `Copyright (c) ${Temporal.Now.plainDateISO().year} `,
     )
     expect(read(dir, 'README.md')).toContain(
       `https://img.shields.io/npm/v/${name}`,

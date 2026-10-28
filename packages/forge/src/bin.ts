@@ -166,7 +166,7 @@ program
       try {
         result = await checkLocal(checkOptions)
       } catch (error) {
-        log.error(error instanceof Error ? error.message : String(error))
+        log.error(Error.isError(error) ? error.message : String(error))
         process.exit(1)
       }
       // exit() would cut a piped stdout past 64 KB
@@ -234,7 +234,7 @@ program
           ...(skip && { skip }),
         })
       } catch (error) {
-        log.error(error instanceof Error ? error.message : String(error))
+        log.error(Error.isError(error) ? error.message : String(error))
         process.exit(1)
       }
       const isAnyFail = report.results.some((r) => !r.pass)

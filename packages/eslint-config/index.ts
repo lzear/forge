@@ -97,6 +97,18 @@ const configGenerator = async (
           rules: { 'n/no-unsupported-features/node-builtins': 0 as const },
         }
       : [],
+    config.react
+      ? {
+          name: 'lzear/safari',
+          files: FILES.CORE,
+          // a React app runs in Safari, which lacks Temporal and whose
+          // Error.isError rejects DOMException (fetch's AbortError)
+          rules: {
+            'unicorn/prefer-error-is-error': 0 as const,
+            'unicorn/prefer-temporal': 0 as const,
+          },
+        }
+      : [],
     typescriptConfig,
     vitestConfig,
     jsonConfig,

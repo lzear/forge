@@ -1,4 +1,3 @@
-import { Buffer } from 'node:buffer'
 import { execFile, spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { existsSync, globSync, readFileSync, writeFileSync } from 'node:fs'
@@ -96,7 +95,8 @@ const OWN_PACKAGE_RE = /^(?:@lzear\/|(?:votes|eslint-plugin-ninja)$)/
 const cooldown = (name: string): number =>
   OWN_PACKAGE_RE.test(name) ? 0 : MIN_RELEASE_AGE_DAYS
 const isOldEnough = (date: string): boolean =>
-  Date.now() - Date.parse(date) >= MIN_RELEASE_AGE_DAYS * 86_400_000
+  Date.now() - Temporal.Instant.from(date).epochMilliseconds >=
+  MIN_RELEASE_AGE_DAYS * 86_400_000
 
 type JsonFile = {
   data: Record<string, unknown>
@@ -348,7 +348,7 @@ const corepackHash = ({ version, integrity }: Release): string => {
   const [algorithm, digest] = integrity?.split('-', 2) ?? []
   if (algorithm !== 'sha512' || !digest)
     throw new Error(`no sha512 integrity for ${version}`)
-  return `+sha512.${Buffer.from(digest, 'base64').toString('hex')}`
+  return `+sha512.${Uint8Array.fromBase64(digest).toHex()}`
 }
 
 const NCURC_FILES = [
@@ -532,8 +532,8 @@ const stepNodeVersion = async (
       date: string
       lts: string | false
     }[]
-    // newest first
-    const lts = index.find((v) => v.lts && isOldEnough(v.date))
+    // newest first, dated by day only
+    const lts = index.find((v) => v.lts && isOldEnough(`${v.date}T00:00Z`))
     if (!lts)
       throw new Error(`no LTS release is ${MIN_RELEASE_AGE_DAYS} days old yet`)
     const latest = lts.version.replace(/^v/, '')
@@ -586,7 +586,7 @@ const stepLicenseYear = (dir: string, isDry: boolean): UpdateResult => {
       changed: false,
       detail: 'no copyright year found',
     }
-  const year = new Date().getFullYear()
+  const year = Temporal.Now.plainDateISO().year
   const start = match[2]
   // keeps the range's own dash (`-`, `–` or `—`) and spacing
   const dash = match[3] ?? '-'

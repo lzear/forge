@@ -1233,7 +1233,9 @@ const renovateActive = async (
 }
 
 const daysAgo = (days: number): string =>
-  new Date(Date.now() - days * 86_400_000).toISOString()
+  Temporal.Now.instant()
+    .subtract({ milliseconds: days * 86_400_000 })
+    .toString({ smallestUnit: 'millisecond' })
 
 const withRenovate = (): string => {
   const dir = tmpDir()

@@ -35,11 +35,13 @@ const read = (dir: string, file: string): string =>
   readFileSync(path.join(dir, file), 'utf8')
 
 const daysAgo = (days: number): string =>
-  new Date(Date.now() - days * 86_400_000).toISOString()
+  Temporal.Now.instant()
+    .subtract({ milliseconds: days * 86_400_000 })
+    .toString({ smallestUnit: 'millisecond' })
 
 // sha512-<base64> of a fake tarball, `seed` repeated
 const integrity = (seed: number): string =>
-  `sha512-${Buffer.alloc(64, seed).toString('base64')}`
+  `sha512-${new Uint8Array(64).fill(seed).toBase64()}`
 
 // a packument whose releases are { version: age in days }, latest last
 const packument = (releases: Record<string, number>): object => ({
@@ -596,7 +598,7 @@ describe('runUpdate', () => {
     write(dir, 'package.json', JSON.stringify({}))
     write(dir, 'LICENSE', 'MIT License\n\nCopyright (c) 2023 lzear\n')
     mockRegistry({})
-    const year = new Date().getFullYear()
+    const year = Temporal.Now.plainDateISO().year
     const report = await runUpdate({ dir, install: false })
     expect(resultById(report.results, 'license-year')).toMatchObject({
       pass: true,
@@ -611,7 +613,7 @@ describe('runUpdate', () => {
     write(dir, 'package.json', JSON.stringify({}))
     write(dir, 'LICENSE', 'Copyright (c) 2019-2024 lzear\n')
     mockRegistry({})
-    const year = new Date().getFullYear()
+    const year = Temporal.Now.plainDateISO().year
     const report = await runUpdate({ dir, install: false })
     expect(resultById(report.results, 'license-year')).toMatchObject({
       changed: true,
@@ -627,7 +629,7 @@ describe('runUpdate', () => {
       'Copyright (c) 2019–2024 lzear\nCopyright 2020 — 2021\n',
     )
     mockRegistry({})
-    const year = new Date().getFullYear()
+    const year = Temporal.Now.plainDateISO().year
     await runUpdate({ dir, install: false })
     expect(read(dir, 'LICENSE')).toBe(
       `Copyright (c) 2019–${year} lzear\nCopyright 2020 — 2021\n`,
@@ -639,7 +641,7 @@ describe('runUpdate', () => {
 
   it('leaves a current en-dash range alone', async () => {
     write(dir, 'package.json', JSON.stringify({}))
-    const year = new Date().getFullYear()
+    const year = Temporal.Now.plainDateISO().year
     write(dir, 'LICENSE', `Copyright (c) 2023–${year} lzear\n`)
     mockRegistry({})
     const report = await runUpdate({ dir, dry: true })
@@ -651,7 +653,7 @@ describe('runUpdate', () => {
 
   it('leaves a current copyright year alone', async () => {
     write(dir, 'package.json', JSON.stringify({}))
-    const year = new Date().getFullYear()
+    const year = Temporal.Now.plainDateISO().year
     write(dir, 'LICENSE', `Copyright (c) ${year} lzear\n`)
     mockRegistry({})
     const report = await runUpdate({ dir, dry: true })
