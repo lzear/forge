@@ -1,6 +1,6 @@
 {
   "name": "@lzear/repo-lint",
-  "version": "5.2.0",
+  "version": "6.0.0",
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts"

@@ -1,3 +1,26 @@
+## 6.0.0
+
+Require Node 26, and target ESNext in the `app`, `lib` and `react` tsconfigs; `forge init` writes `engines.node` as `>=26`.
+
+Turn on ten opt-in unicorn rules: `no-missing-local-resource`, `prefer-error-is-error`, `prefer-import-meta-properties`, `prefer-json-import`, `prefer-regexp-escape`, `prefer-short-arrow-method`, `prefer-temporal`, `prefer-uint8array-base64`, `prefer-uint8array-hex` and `require-post-message-target-origin`, with `prefer-temporal` and `prefer-error-is-error` off in React repos for Safari.
+
+### ESLint rules
+
+#### `lzear/core`
+
+- `unicorn/no-missing-local-resource`, `unicorn/prefer-error-is-error`, `unicorn/prefer-import-meta-properties`, `unicorn/prefer-json-import`, `unicorn/prefer-regexp-escape`, `unicorn/prefer-short-arrow-method`, `unicorn/prefer-temporal`, `unicorn/prefer-uint8array-base64`, `unicorn/prefer-uint8array-hex`, `unicorn/require-post-message-target-origin`: `off` → `error`
+
+#### `lzear/safari`
+
+- new block, 2 rules
+
+### Commits
+
+- [`3f3192f`](https://github.com/lzear/forge/commit/3f3192f) fix(repo-lint): accept Deno's undefined import.meta.dirname
+- [`8251ca8`](https://github.com/lzear/forge/commit/8251ca8) feat!: require Node 26 and turn on the unicorn rules it allows
+- [`96205a1`](https://github.com/lzear/forge/commit/96205a1) feat(eslint-config): turn on six opt-in unicorn rules
+- [`875d1ef`](https://github.com/lzear/forge/commit/875d1ef) chore: `yarn housekeep`
+
 ## 5.2.0
 
 Release scripts publish a single-package repo's root (tag `v<version>`) and link SSH repository URLs in changelogs
