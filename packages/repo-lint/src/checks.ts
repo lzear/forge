@@ -66,15 +66,17 @@ Any local or remote check.
 */
 export type Check = LocalCheck | RemoteCheck
 
-const findBin = (name: string, startDir: string): string | null => {
+// Deno leaves import.meta.dirname undefined in a remote module
+const findBin = (name: string, startDir: string | undefined): string | null => {
   let dir = startDir
-  while (true) {
+  while (dir !== undefined) {
     const bin = path.join(dir, 'node_modules', '.bin', name)
     if (existsSync(bin)) return bin
     const parent = path.join(dir, '..')
     if (parent === dir) return null
     dir = parent
   }
+  return null
 }
 
 const head = (output: string): string =>
