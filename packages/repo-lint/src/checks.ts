@@ -1,6 +1,5 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { publint } from 'publint'
 import { maxSatisfying, satisfies } from 'semver'
 import { isForgeRepo, syncTemplate, syncTemplates } from './templates.ts'
@@ -18,8 +17,6 @@ import {
   stepDeps,
   writeJsonFile,
 } from './update.ts'
-
-const _dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /**
 A check result carrying an explanation.
@@ -722,7 +719,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     // attw looked up only once a package is published
     check: (dir) =>
       eachPublishedPackage(dir, async (pkgDir) => {
-        const bin = findBin('attw', _dirname)
+        const bin = findBin('attw', import.meta.dirname)
         if (!bin) return { pass: false, detail: 'attw not available' }
         const r = await run(
           process.execPath,
@@ -764,7 +761,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
     desc: 'fallow',
     type: 'local',
     check: async (dir) => {
-      const bin = findBin('fallow', _dirname)
+      const bin = findBin('fallow', import.meta.dirname)
       if (!bin) return { pass: false, detail: 'fallow not available' }
       const r = await run(
         process.execPath,
@@ -784,7 +781,7 @@ export const LOCAL_CHECKS: LocalCheck[] = [
       const package_ = readPackage(dir)
       if (!package_ || getWorkspacePatterns(package_, dir).length === 0)
         return { pass: true, detail: 'not a monorepo' }
-      const bin = findBin('sherif', _dirname)
+      const bin = findBin('sherif', import.meta.dirname)
       if (!bin) return { pass: false, detail: 'sherif not available' }
       const r = await run(process.execPath, [bin], {
         cwd: dir,

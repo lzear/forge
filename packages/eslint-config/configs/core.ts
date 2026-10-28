@@ -109,10 +109,20 @@ export const core = (local?: string): Linter.Config => {
     'unicorn/default-export-style': [2, { functions: 'separate' }],
     'unicorn/name-replacements': 0, // i like my abbreviations
     'unicorn/no-abusive-eslint-disable': 0,
+    'unicorn/no-missing-local-resource': 2,
     'unicorn/no-null': 0,
     'unicorn/prefer-await': 0, // await fn().catch() is convenient
+    'unicorn/prefer-import-meta-properties': 2,
+    'unicorn/prefer-json-import': 2,
+    'unicorn/prefer-regexp-escape': 2,
+    'unicorn/prefer-short-arrow-method': 2,
     'unicorn/prevent-abbreviations': 0,
+    'unicorn/require-post-message-target-origin': 2,
     'unicorn/switch-case-braces': [2, 'avoid'],
+    // Off until engines leave Node 24, which lacks these APIs. Error.isError
+    // runs there, but its types are ESNext only, past forge's ES2025 tsconfig.
+    // prefer-error-is-error, prefer-iterator-concat, prefer-temporal,
+    // prefer-uint8array-base64, prefer-uint8array-hex
   } satisfies Linter.RulesRecord
 
   return {
