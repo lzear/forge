@@ -40,10 +40,6 @@ type JsonMember = {
   value: JsonString | JsonObject | JsonOther
 }
 
-type Options = {
-  ignore?: (string | { regex: string })[]
-}
-
 export const majorVersionOnly: Rule.RuleModule = {
   meta: {
     type: 'suggestion',
@@ -79,6 +75,9 @@ export const majorVersionOnly: Rule.RuleModule = {
   },
 
   create: (context) => {
+    type Options = {
+      ignore?: (string | { regex: string })[]
+    }
     const options = context.options[0] as Options | undefined
     const ignore: (string | RegExp)[] = (options?.ignore ?? []).map((item) =>
       typeof item === 'string' ? item : new RegExp(item.regex),

@@ -9,8 +9,6 @@ const moduleVisitor = await interopDefault(
 
 const resolve = await interopDefault(import('eslint-module-utils/resolve'))
 
-type SourceNode = Rule.Node & { value: string }
-
 const findPackageRoot = (filePath: string): string | null => {
   let current = path.dirname(filePath)
   const root = path.parse(current).root
@@ -66,8 +64,6 @@ const countParentPrefixes = (p: string) => {
   return match ? match[0].length / 3 : 0
 }
 
-type Options = [{ maxParentPrefixes?: number }?]
-
 export const preferRelativeImports: Rule.RuleModule = {
   meta: {
     type: 'suggestion',
@@ -87,6 +83,8 @@ export const preferRelativeImports: Rule.RuleModule = {
   },
 
   create: (context) => {
+    type Options = [{ maxParentPrefixes?: number }?]
+    type SourceNode = Rule.Node & { value: string }
     const options = (context.options as Options)[0]
     const maxParentPrefixes = options?.maxParentPrefixes ?? 1
     const filename = context.physicalFilename

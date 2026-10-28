@@ -308,15 +308,14 @@ const pmRegistryName = (
 
 type Release = { version: string; integrity: string | undefined }
 
-type Packument = {
-  'dist-tags'?: { latest?: string }
-  time?: Record<string, string>
-  versions?: Record<string, { dist?: { integrity?: string } }>
-}
-
 // the newest version up to `latest` past the age gate, from the full packument
 // (the abbreviated one has no publish times)
 const gatedRelease = async (name: string): Promise<Release> => {
+  type Packument = {
+    'dist-tags'?: { latest?: string }
+    time?: Record<string, string>
+    versions?: Record<string, { dist?: { integrity?: string } }>
+  }
   const data = await fetchJson<Packument>(`https://registry.npmjs.org/${name}`)
   const latest = data['dist-tags']?.latest
   if (!latest) throw new TypeError(`no latest version for ${name}`)
@@ -638,13 +637,6 @@ const compareTags = (a: string, b: string): number =>
   compare(coerce(a) ?? '0.0.0', coerce(b) ?? '0.0.0') ||
   a.split('.').length - b.split('.').length
 
-type GitHubRelease = {
-  tag_name: string
-  published_at: string | null
-  draft: boolean
-  prerelease: boolean
-}
-
 const githubHeaders = (): Record<string, string> => {
   const token = process.env.GH_TOKEN ?? process.env.GITHUB_TOKEN
   return {
@@ -665,6 +657,12 @@ const resolveAction = async (
   if (!tags) throw new Error('tags unreachable')
   let versions = tags.keys().filter((t) => VERSION_FILE_RE.test(t))
   if (!repo.startsWith('lzear/')) {
+    type GitHubRelease = {
+      tag_name: string
+      published_at: string | null
+      draft: boolean
+      prerelease: boolean
+    }
     const releases = await fetchJson<GitHubRelease[]>(
       `https://api.github.com/repos/${repo}/releases?per_page=100`,
       githubHeaders(),

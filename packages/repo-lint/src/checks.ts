@@ -907,13 +907,6 @@ const ghApi = async <T>(endpoint: string, cwd: string): Promise<T> => {
   return JSON.parse(r.stdout) as T
 }
 
-type GhIssue = {
-  title: string
-  state: string
-  created_at: string
-  pull_request?: unknown
-}
-
 const RENOVATE_WINDOW_DAYS = 60
 
 /**
@@ -927,6 +920,12 @@ export const REMOTE_CHECKS: RemoteCheck[] = [
     drift: true,
     // the issues endpoint lists PRs too
     check: async (repo, dir) => {
+      type GhIssue = {
+        title: string
+        state: string
+        created_at: string
+        pull_request?: unknown
+      }
       if (!renovateFile(dir))
         return { pass: true, detail: 'no Renovate config' }
       const query = new URLSearchParams({
