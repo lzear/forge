@@ -44,13 +44,6 @@ const TEMPLATES: Record<string, string> = {
 
 const OPTIONAL_TEMPLATES = new Set(['codacy.yml'])
 
-// forge <= 4.10 fetches these from forge's main branch
-const LEGACY_COPIES: Record<string, string> = {
-  'template/.editorconfig': 'editorconfig',
-  'template/.codacy.yml': 'codacy.yml',
-  'template/lefthook.yml': 'lefthook.yml',
-}
-
 /**
 The repo, or one of its workspaces, publishes a package (is not `private`).
 */
@@ -122,9 +115,8 @@ export const syncTemplates = async (
   options: SyncOptions = {},
 ): Promise<SyncReport> => {
   const { dir = process.cwd(), dry: isDry = false } = options
-  const files = { ...TEMPLATES, ...(isForgeRepo(dir) && LEGACY_COPIES) }
   const results = await Promise.all(
-    Object.entries(files).map(([file, template]) =>
+    Object.entries(TEMPLATES).map(([file, template]) =>
       syncFile(dir, file, template, isDry),
     ),
   )

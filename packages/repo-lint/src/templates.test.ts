@@ -70,22 +70,4 @@ describe('syncTemplates', () => {
       status: 'updated',
     })
   })
-
-  it("keeps forge's template/ copies for older CLIs", async () => {
-    write(
-      dir,
-      'package.json',
-      JSON.stringify({ private: true, workspaces: ['packages/*'] }),
-    )
-    write(
-      dir,
-      'packages/forge/package.json',
-      JSON.stringify({ name: '@lzear/forge' }),
-    )
-    const { results } = await syncTemplates({ dir })
-    expect(results.map((r) => r.file)).toContain('template/lefthook.yml')
-    expect(readFileSync(path.join(dir, 'template/lefthook.yml'), 'utf8')).toBe(
-      template('lefthook.yml'),
-    )
-  })
 })
