@@ -1078,58 +1078,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fallow-cli/darwin-arm64@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@fallow-cli/darwin-arm64@npm:3.36.0"
+"@fallow-cli/darwin-arm64@npm:3.37.0":
+  version: 3.37.0
+  resolution: "@fallow-cli/darwin-arm64@npm:3.37.0"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@fallow-cli/darwin-x64@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@fallow-cli/darwin-x64@npm:3.36.0"
+"@fallow-cli/darwin-x64@npm:3.37.0":
+  version: 3.37.0
+  resolution: "@fallow-cli/darwin-x64@npm:3.37.0"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@fallow-cli/linux-arm64-gnu@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@fallow-cli/linux-arm64-gnu@npm:3.36.0"
+"@fallow-cli/linux-arm64-gnu@npm:3.37.0":
+  version: 3.37.0
+  resolution: "@fallow-cli/linux-arm64-gnu@npm:3.37.0"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"@fallow-cli/linux-arm64-musl@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@fallow-cli/linux-arm64-musl@npm:3.36.0"
+"@fallow-cli/linux-arm64-musl@npm:3.37.0":
+  version: 3.37.0
+  resolution: "@fallow-cli/linux-arm64-musl@npm:3.37.0"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"@fallow-cli/linux-x64-gnu@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@fallow-cli/linux-x64-gnu@npm:3.36.0"
+"@fallow-cli/linux-x64-gnu@npm:3.37.0":
+  version: 3.37.0
+  resolution: "@fallow-cli/linux-x64-gnu@npm:3.37.0"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"@fallow-cli/linux-x64-musl@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@fallow-cli/linux-x64-musl@npm:3.36.0"
+"@fallow-cli/linux-x64-musl@npm:3.37.0":
+  version: 3.37.0
+  resolution: "@fallow-cli/linux-x64-musl@npm:3.37.0"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"@fallow-cli/win32-arm64-msvc@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@fallow-cli/win32-arm64-msvc@npm:3.36.0"
+"@fallow-cli/win32-arm64-msvc@npm:3.37.0":
+  version: 3.37.0
+  resolution: "@fallow-cli/win32-arm64-msvc@npm:3.37.0"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@fallow-cli/win32-x64-msvc@npm:3.36.0":
-  version: 3.36.0
-  resolution: "@fallow-cli/win32-x64-msvc@npm:3.36.0"
+"@fallow-cli/win32-x64-msvc@npm:3.37.0":
+  version: 3.37.0
+  resolution: "@fallow-cli/win32-x64-msvc@npm:3.37.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -3795,9 +3795,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fallow-type-aware@npm:3.36.0":
-  version: 3.36.0
-  resolution: "fallow-type-aware@npm:3.36.0"
+"fallow-type-aware@npm:3.37.0":
+  version: 3.37.0
+  resolution: "fallow-type-aware@npm:3.37.0"
   dependencies:
     typescript: "npm:7.0.2"
   peerDependencies:
@@ -3807,24 +3807,24 @@ __metadata:
       optional: true
   bin:
     fallow-type-aware: fallow-type-aware.mjs
-  checksum: 10c0/ee8f16a54de18665393a8f671c7c19f8e31ccc0005b8de4f990fd3557eb196bde6721a45757b954c1d968ce8f76176a68f3dfba0b78b4497b973686eae982e4a
+  checksum: 10c0/3226e9bb155136e83f7dcb06d7582a8e699a686c49e1146da625624e833fa146f3bf0c2b43c2e94fde4f972fb752a8ce0eb66ae31c9bdb623b188b4e5e7b0b4f
   languageName: node
   linkType: hard
 
 "fallow@npm:^3":
-  version: 3.36.0
-  resolution: "fallow@npm:3.36.0"
+  version: 3.37.0
+  resolution: "fallow@npm:3.37.0"
   dependencies:
-    "@fallow-cli/darwin-arm64": "npm:3.36.0"
-    "@fallow-cli/darwin-x64": "npm:3.36.0"
-    "@fallow-cli/linux-arm64-gnu": "npm:3.36.0"
-    "@fallow-cli/linux-arm64-musl": "npm:3.36.0"
-    "@fallow-cli/linux-x64-gnu": "npm:3.36.0"
-    "@fallow-cli/linux-x64-musl": "npm:3.36.0"
-    "@fallow-cli/win32-arm64-msvc": "npm:3.36.0"
-    "@fallow-cli/win32-x64-msvc": "npm:3.36.0"
+    "@fallow-cli/darwin-arm64": "npm:3.37.0"
+    "@fallow-cli/darwin-x64": "npm:3.37.0"
+    "@fallow-cli/linux-arm64-gnu": "npm:3.37.0"
+    "@fallow-cli/linux-arm64-musl": "npm:3.37.0"
+    "@fallow-cli/linux-x64-gnu": "npm:3.37.0"
+    "@fallow-cli/linux-x64-musl": "npm:3.37.0"
+    "@fallow-cli/win32-arm64-msvc": "npm:3.37.0"
+    "@fallow-cli/win32-x64-msvc": "npm:3.37.0"
     detect-libc: "npm:2.1.2"
-    fallow-type-aware: "npm:3.36.0"
+    fallow-type-aware: "npm:3.37.0"
   dependenciesMeta:
     "@fallow-cli/darwin-arm64":
       optional: true
@@ -3848,7 +3848,7 @@ __metadata:
     fallow: bin/fallow
     fallow-lsp: bin/fallow-lsp
     fallow-mcp: bin/fallow-mcp
-  checksum: 10c0/64410a948f2524a04dbb41e5bfe576a74c98c5021f58017f382b07c5cf8881148fcaca02a21a83a3703a839d5c9330c00da5d1a17c0347e37a4f8bb7aaef68bd
+  checksum: 10c0/77ec7614b740ab1c72016ecb6329ff3cb45bd63c36a83005f57dd01368e0727bc51a22cbace986402ca9e29411ed33fc755f0c44e20ace12111d6a19e3275cd9
   languageName: node
   linkType: hard
 
