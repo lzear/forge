@@ -1,3 +1,20 @@
+## 6.1.0
+
+The reusable CI runs zizmor and gitleaks as steps of its `ci` job, so a private repo is billed one rounded minute instead of three.
+
+`forge sync` no longer writes forge's own `template/` copies, which only forge 4.10 and older fetched.
+
+`lzear/major-version-only` reports a bare `^0`, `~0`, `^0.0` or `~0.0.N` range, and `forge init` writes a 0.0.x version as `^0.0.N`.
+
+### Commits
+
+- [`dca3e8f`](https://github.com/lzear/forge/commit/dca3e8f) chore: `yarn housekeep`
+- [`a2fb711`](https://github.com/lzear/forge/commit/a2fb711) feat(eslint-config): report bare ^0, ~0, ^0.0 and ~0.0.N ranges
+- [`531fb2c`](https://github.com/lzear/forge/commit/531fb2c) feat: open Renovate updates weekly, grouped, rebased only on conflict
+- [`a710199`](https://github.com/lzear/forge/commit/a710199) feat: stop Renovate opening updates that rewrite a package.json range
+- [`bdd000b`](https://github.com/lzear/forge/commit/bdd000b) chore(repo-lint): stop syncing the legacy template/ copies
+- [`62e1293`](https://github.com/lzear/forge/commit/62e1293) chore(repo-lint): drop the legacy template/ copies
+
 ## 6.0.0
 
 Require Node 26, and target ESNext in the `app`, `lib` and `react` tsconfigs; `forge init` writes `engines.node` as `>=26`.
