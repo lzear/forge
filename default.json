@@ -9,6 +9,31 @@
       "minimumReleaseAge": "7 days"
     },
     {
+      "description": "an agent does major updates of package.json ranges with `forge update`, because Renovate writes ^6.0.0 where lint asks for ^6",
+      "matchManagers": ["npm"],
+      "matchDepTypes": [
+        "dependencies",
+        "devDependencies",
+        "optionalDependencies",
+        "peerDependencies"
+      ],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "an agent does minor updates of ^0.x ranges with `forge update`, because Renovate writes ^0.156.0 where lint asks for ^0.156",
+      "matchManagers": ["npm"],
+      "matchDepTypes": [
+        "dependencies",
+        "devDependencies",
+        "optionalDependencies",
+        "peerDependencies"
+      ],
+      "matchCurrentValue": "/^\\^0\\./",
+      "matchUpdateTypes": ["minor"],
+      "enabled": false
+    },
+    {
       "description": "own packages skip the wait",
       "matchPackageNames": ["@lzear/**", "votes", "eslint-plugin-ninja"],
       "minimumReleaseAge": "0 days"

@@ -72,7 +72,7 @@ Release needs `@lzear/configs` as a dev dep and the npm trusted publisher set to
 
 Custom jobs: `uses: lzear/forge/actions/setup@<sha>` (node + corepack + cache + install; inputs `node-version`, `cache`, `install-command`).
 
-Renovate: `"extends": ["github>lzear/forge"]` (digest-pinned actions, updates wait 3 days except own packages, patches automerged after 7).
+Renovate: `"extends": ["github>lzear/forge"]` (digest-pinned actions, updates wait 3 days except own packages, patches automerged after 7). It opens no major update of a `package.json` range, nor a minor update of a `^0.x` range, because Renovate writes those as `^6.0.0` where the `lzear/major-version-only` rule asks for `^6`; an agent does them with `forge update`.
 
 ## Development
 
