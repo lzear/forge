@@ -72,7 +72,7 @@ Release needs `@lzear/configs` as a dev dep and the npm trusted publisher set to
 
 Custom jobs: `uses: lzear/forge/actions/setup@<sha>` (node + corepack + cache + install; inputs `node-version`, `cache`, `install-command`).
 
-Renovate: `"extends": ["github>lzear/forge"]` (digest-pinned actions, updates wait 3 days except own packages, patches automerged after 7). It opens no major update of a `package.json` range, nor a minor update of a `^0.x` range, because Renovate writes those as `^6.0.0` where the `lzear/major-version-only` rule asks for `^6`; an agent does them with `forge update`.
+Renovate: `"extends": ["github>lzear/forge"]` (digest-pinned actions, updates wait 3 days except own packages, patches automerged after 7). It opens pull requests only before 6am on Mondays, with all minor and patch updates of a repo in one pull request and each major update apart, and it rebases a pull request only when it conflicts, so one red check does not re-run CI after every push to the base branch. Security updates ignore the schedule and come at once. Without branch protection, as on GitHub Free, a pull request need not be up to date to merge, so the rebase rule does not stop automerge. It opens no major update of a `package.json` range, nor a minor update of a `^0.x` range, because Renovate writes those as `^6.0.0` where the `lzear/major-version-only` rule asks for `^6`; an agent does them with `forge update`.
 
 ## Development
 
