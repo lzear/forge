@@ -3014,7 +3014,7 @@
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.72.0",
+          "version": "8.72.1",
         },
         "parseForESLint": [Function],
       },
@@ -3247,7 +3247,7 @@
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.72.0",
+          "version": "8.72.1",
         },
         "parseForESLint": [Function],
       },
@@ -3397,7 +3397,7 @@
       "parser": {
         "meta": {
           "name": "typescript-eslint/parser",
-          "version": "8.72.0",
+          "version": "8.72.1",
         },
         "parseForESLint": [Function],
       },
