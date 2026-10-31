@@ -1,3 +1,6 @@
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import { RuleTester } from 'eslint'
 import packageJsonPlugin from 'eslint-package-json'
 import { majorVersionOnly } from '../plugin/rules/major-version-only'
@@ -7,13 +10,23 @@ const { plugins = {}, language = 'json/json' } =
 
 const ruleTester = new RuleTester({ plugins, language })
 
+// A project with `minor` at 0.5.4 and `patch` at 0.0.3 installed
+const project = mkdtempSync(path.join(tmpdir(), 'major-version-only-'))
+const installed = { minor: '0.5.4', patch: '0.0.3' }
+for (const [name, version] of Object.entries(installed)) {
+  const dir = path.join(project, 'node_modules', name)
+  mkdirSync(dir, { recursive: true })
+  writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ version }))
+}
+const filename = path.join(project, 'package.json')
+
 const deps = (field: string, versions: Record<string, unknown>): string =>
   JSON.stringify({ [field]: versions })
 
 ruleTester.run('major-version-only', majorVersionOnly, {
   valid: [
     deps('dependencies', { a: '^1', b: '~2', c: '^0.5' }),
-    deps('dependencies', { a: '^0.0.2', b: '~0.0.2', c: '^0.0', d: '^0.0.0' }),
+    deps('dependencies', { a: '^0.0.2', b: '^0.0.0', c: '~0.5' }),
     deps('dependencies', { a: '1.2.3', b: '^1.0.0-beta.1', c: 'workspace:*' }),
     deps('scripts', { a: '^1.2.3' }),
     deps('dependencies', { a: 1 }),
@@ -47,6 +60,22 @@ ruleTester.run('major-version-only', majorVersionOnly, {
       code: deps('optionalDependencies', { skip: '^1.2', a: '^3.0' }),
       output: deps('optionalDependencies', { skip: '^1.2', a: '^3' }),
       options: [{ ignore: ['skip'] }],
+      errors: [{ messageId: 'useMajorOnly' }],
+    },
+    {
+      code: deps('dependencies', { minor: '^0', patch: '~0.0' }),
+      output: deps('dependencies', { minor: '^0.5', patch: '^0.0.3' }),
+      filename,
+      errors: [{ messageId: 'useMajorOnly' }, { messageId: 'useMajorOnly' }],
+    },
+    {
+      code: deps('dependencies', { a: '~0', b: '^0.0' }),
+      filename,
+      errors: [{ messageId: 'tooWide' }, { messageId: 'tooWide' }],
+    },
+    {
+      code: deps('dependencies', { a: '~0.0.2' }),
+      output: deps('dependencies', { a: '^0.0.2' }),
       errors: [{ messageId: 'useMajorOnly' }],
     },
   ],

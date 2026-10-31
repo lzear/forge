@@ -10,6 +10,7 @@ import {
   withReleaseAge,
 } from './checks.ts'
 import { detectRepo, gitUsername } from './git.ts'
+import { caretRange } from './range.ts'
 import { readTemplate, type SyncResult, syncTemplates } from './templates.ts'
 import {
   detectPackageManager,
@@ -332,12 +333,9 @@ const DEV_RANGES: Record<string, string> = {
   jsdom: '~30',
 }
 
-// `^5`, or `^0.23` for 0.x; any version when unknown
-const caretRange = (version: string | undefined): string => {
-  const parsed = coerce(version)
-  if (!parsed) return '*'
-  return parsed.major === 0 ? `^0.${parsed.minor}` : `^${parsed.major}`
-}
+// Any version when unknown
+const forgeRange = (version: string | undefined): string =>
+  caretRange(coerce(version)?.version ?? '') ?? '*'
 
 const devDependencies = ({ isLib, isReact, pm }: Context): string[] => [
   '@lzear/forge',
@@ -469,7 +467,7 @@ export const initRepo = async (
     pm,
     pmField,
     isDry: options.dry ?? false,
-    forgeRange: caretRange(options.version ?? release?.tag),
+    forgeRange: forgeRange(options.version ?? release?.tag),
   }
   const missing = missingDependencies(context)
   const packageName = readPackage(dir)?.name

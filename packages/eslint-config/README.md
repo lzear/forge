@@ -79,4 +79,4 @@ const restricted = {
 ## Rules
 
 - `lzear/prefer-relative-imports` (fixable): an aliased import inside the same package becomes relative when shorter, up to `maxParentPrefixes` `../` (default 1).
-- `lzear/major-version-only` (fixable): `^1.2.3` → `^1`, `^0.5.4` → `^0.5`. `ignore` takes package names or `{ regex }`.
+- `lzear/major-version-only` (fixable): `^1.2.3` → `^1`, `^0.5.4` → `^0.5`, `~0.0.2` → `^0.0.2`. A bare `^0`, `~0` or `^0.0` is reported too: the fix writes the installed version's range (`^0.5` or `^0.0.3`), and there is no fix when nothing is installed. `ignore` takes package names or `{ regex }`.
