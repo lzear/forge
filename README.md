@@ -38,7 +38,7 @@ Complements [e18e](https://e18e.dev): the ESLint config runs `e18e/ban-dependenc
 
 ## CI
 
-Call the reusable workflow, SHA-pinned (renovate bumps it). It runs the `build`, `typecheck`, `lint` and `test` scripts (tests with coverage), uploads coverage to Codacy when `CODACY_PROJECT_TOKEN` is set (optional: add the repo on app.codacy.com, then `gh secret set CODACY_PROJECT_TOKEN`) and audits workflows with zizmor. gitleaks gates in CI, on the pushed or PR commit range, and at pre-commit. A `bun.lock` switches it to Bun.
+Call the reusable workflow, SHA-pinned (renovate bumps it). It runs the `build`, `typecheck`, `lint` and `test` scripts (tests with coverage), uploads coverage to Codacy when `CODACY_PROJECT_TOKEN` is set (optional: add the repo on app.codacy.com, then `gh secret set CODACY_PROJECT_TOKEN`). Its last steps, which still run after a red test, audit workflows with zizmor and scan the pushed or PR commit range with gitleaks, all in the one `ci` job so a run bills one minute rather than three. gitleaks also gates at pre-commit. A `bun.lock` switches it to Bun.
 
 ```yaml
 on:
