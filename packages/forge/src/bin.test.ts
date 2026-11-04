@@ -23,27 +23,27 @@ vi.mock('std-env', () => environment)
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 class ExitError extends Error {
-  readonly code: number | undefined
+  readonly code: number
 
-  constructor(code: number | undefined) {
+  constructor(code: number) {
     super(`exit ${code}`)
     this.code = code
   }
 }
 
 // runs the CLI with the given args, resolving to its exit code
-const run = async (...arguments_: string[]): Promise<number | undefined> => {
+const run = async (...arguments_: string[]): Promise<number> => {
   process.argv = ['node', 'forge', ...arguments_]
   vi.resetModules()
   try {
     await import('./bin.ts')
-    return process.exitCode === undefined ? undefined : Number(process.exitCode)
+    return Number(process.exitCode ?? 0)
   } catch (error) {
     if (error instanceof ExitError) return error.code
     throw error
   } finally {
-    // the test run's own exit code
-    process.exitCode = undefined
+    // the test run's own exit code; 0 rather than undefined, which Bun keeps
+    process.exitCode = 0
   }
 }
 
@@ -123,7 +123,7 @@ const signalListeners = new Set([
 beforeEach(() => {
   setTTY(undefined)
   vi.spyOn(process, 'exit').mockImplementation((code) => {
-    throw new ExitError(code as number | undefined)
+    throw new ExitError(Number(code ?? 0))
   })
   output.length = 0
   vi.spyOn(process.stdout, 'write').mockImplementation(capture)
@@ -323,7 +323,7 @@ describe('forge update', () => {
 describe('forge sync', () => {
   it('writes the bundled templates', async () => {
     mockSync('created', 'updated', 'unchanged')
-    expect(await run('sync')).toBeUndefined()
+    expect(await run('sync')).toBe(0)
     expect(syncTemplates).toHaveBeenCalledWith({ dry: false })
     expect(printed()).toContain('f0 (created)')
     expect(printed()).toContain('f1 (updated)')
@@ -332,7 +332,7 @@ describe('forge sync', () => {
 
   it('previews changes on --dry', async () => {
     mockSync('created', 'updated')
-    expect(await run('sync', '--dry')).toBeUndefined()
+    expect(await run('sync', '--dry')).toBe(0)
     expect(syncTemplates).toHaveBeenCalledWith({ dry: true })
     expect(printed()).toContain('f0 (would create)')
     expect(printed()).toContain('f1 (would update)')
@@ -349,7 +349,7 @@ describe('forge sync', () => {
 
   it('exits 0 on --check when in sync', async () => {
     mockSync('unchanged')
-    expect(await run('sync', '--check')).toBeUndefined()
+    expect(await run('sync', '--check')).toBe(0)
   })
 
   it('exits 1 when a write fails', async () => {
@@ -382,14 +382,14 @@ describe('forge init', () => {
 
   it('leaves the check to the user before install', async () => {
     mockInit(false)
-    expect(await run('init')).toBeUndefined()
+    expect(await run('init')).toBe(0)
     expect(printed()).toContain('→  gh secret set CODACY_PROJECT_TOKEN')
     expect(checkLocal).not.toHaveBeenCalled()
   })
 
   it('previews on --dry, without checking', async () => {
     mockInit()
-    expect(await run('init', '--dry')).toBeUndefined()
+    expect(await run('init', '--dry')).toBe(0)
     expect(initRepo).toHaveBeenCalledWith({
       kind: 'lib',
       dry: true,
@@ -410,12 +410,12 @@ describe('forge init', () => {
 
 describe('forge arguments', () => {
   it('prints the version', async () => {
-    expect(await run('-v')).toBeUndefined()
+    expect(await run('-v')).toBe(0)
     expect(printed()).toMatch(/^\d+\.\d+\.\d+/)
   })
 
   it('prints help with aligned, wrapped rows', async () => {
-    expect(await run('--help')).toBeUndefined()
+    expect(await run('--help')).toBe(0)
     expect(printed()).toContain('Usage: forge [options] [command]')
     expect(printed()).toContain('  -v, --version     output the version number')
     expect(printed()).toContain(
@@ -429,7 +429,7 @@ describe('forge arguments', () => {
       ['help', 'check'],
     ]) {
       output.length = 0
-      expect(await run(...arguments_)).toBeUndefined()
+      expect(await run(...arguments_)).toBe(0)
       expect(printed()).toContain('Usage: forge check [options]')
       expect(printed()).toContain(
         '  --skip-remote  skip GitHub checks (gh) (default: false)',
