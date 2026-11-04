@@ -48,10 +48,14 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "npx-pinned CLIs in workflows",
-      "managerFilePatterns": ["/^\\.github/workflows/[^/]+\\.ya?ml$/"],
+      "description": "npx- and npm-installed CLIs pinned in workflows and composite actions",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/[^/]+\\.ya?ml$/",
+        "/^actions/.+/action\\.ya?ml$/"
+      ],
       "matchStrings": [
-        "npx --yes (?<depName>@?[^@\\s]+)@(?<currentValue>\\S+)"
+        "npx --yes (?<depName>@?[^@\\s]+)@(?<currentValue>\\S+)",
+        "npm i -g (?<depName>@?[^@\\s]+)@(?<currentValue>\\S+)"
       ],
       "datasourceTemplate": "npm"
     }
