@@ -483,7 +483,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@clack/prompts@npm:^1, @clack/prompts@npm:^1.7.0":
+"@clack/prompts@npm:^1.7.0":
   version: 1.8.1
   resolution: "@clack/prompts@npm:1.8.1"
   dependencies:
@@ -1350,15 +1350,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lzear/forge@workspace:packages/forge"
   dependencies:
-    "@clack/prompts": "npm:^1"
     "@lzear/configs": "workspace:*"
     "@lzear/eslint-config": "workspace:*"
     "@lzear/repo-lint": "workspace:*"
     "@types/node": "npm:^26"
     "@vitest/coverage-v8": "npm:^5"
-    commander: "npm:^15"
     eslint: "npm:^10"
-    picocolors: "npm:^1"
     std-env: "npm:^4"
     tsdown: "npm:^0.23"
     typescript: "npm:@typescript/typescript6@^6"
@@ -2858,13 +2855,6 @@ __metadata:
   version: 10.0.1
   resolution: "commander@npm:10.0.1"
   checksum: 10c0/53f33d8927758a911094adadda4b2cbac111a5b377d8706700587650fd8f45b0bbe336de4b5c3fe47fd61f420a3d9bd452b6e0e6e5600a7e74d7bf0174f6efe3
-  languageName: node
-  linkType: hard
-
-"commander@npm:^15":
-  version: 15.0.0
-  resolution: "commander@npm:15.0.0"
-  checksum: 10c0/539229c171914ea1ccd45ee5f10d924289a12a684ea3a7a44147abe54003c35ed6de9ae4ad198d88c29fdf403dca0428451a388234e6dc01b6faa978fb207206
   languageName: node
   linkType: hard
 
@@ -5729,7 +5719,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"picocolors@npm:^1, picocolors@npm:^1.1.1":
+"picocolors@npm:^1.1.1":
   version: 1.1.1
   resolution: "picocolors@npm:1.1.1"
   checksum: 10c0/e2e3e8170ab9d7c7421969adaa7e1b31434f789afb9b3f115f6b96d91945041ac3ceb02e9ec6fe6510ff036bcc0bf91e69a1772edc0b707e12b19c0f2d6bcf58

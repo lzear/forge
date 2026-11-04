@@ -1,5 +1,4 @@
 import { stripVTControlCharacters } from 'node:util'
-import * as clack from '@clack/prompts'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   checkLocal,
@@ -20,12 +19,6 @@ vi.mock('@lzear/repo-lint', () => ({
 // vitest itself may run under an agent: pin it per test
 const environment = vi.hoisted(() => ({ isAgent: false }))
 vi.mock('std-env', () => environment)
-vi.mock('@clack/prompts', () => ({
-  intro: vi.fn(),
-  outro: vi.fn(),
-  log: { success: vi.fn(), error: vi.fn(), warn: vi.fn() },
-  cancel: vi.fn(),
-}))
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -413,6 +406,100 @@ describe('forge init', () => {
   })
 })
 
+// ── arguments and help ───────────────────────────────────────────────────────
+
+describe('forge arguments', () => {
+  it('prints the version', async () => {
+    expect(await run('-v')).toBeUndefined()
+    expect(printed()).toMatch(/^\d+\.\d+\.\d+/)
+  })
+
+  it('prints help with aligned, wrapped rows', async () => {
+    expect(await run('--help')).toBeUndefined()
+    expect(printed()).toContain('Usage: forge [options] [command]')
+    expect(printed()).toContain('  -v, --version     output the version number')
+    expect(printed()).toContain(
+      '  update [options]  update dependencies, packageManager, runtime version files,\n                    GitHub Actions pins and the LICENSE year',
+    )
+  })
+
+  it("prints a command's help, showing defaults", async () => {
+    for (const arguments_ of [
+      ['check', '-h'],
+      ['help', 'check'],
+    ]) {
+      output.length = 0
+      expect(await run(...arguments_)).toBeUndefined()
+      expect(printed()).toContain('Usage: forge check [options]')
+      expect(printed()).toContain(
+        '  --skip-remote  skip GitHub checks (gh) (default: false)',
+      )
+      expect(printed()).toContain('  --only <ids>   run only these checks')
+      expect(printed()).toContain('  -h, --help     show help')
+    }
+    expect(checkLocal).not.toHaveBeenCalled()
+  })
+
+  it('fails with the help when no command is given', async () => {
+    expect(await run()).toBe(1)
+    expect(printed()).toContain('Usage: forge [options] [command]')
+  })
+
+  it.each([
+    [['bogus'], "error: unknown command 'bogus'"],
+    [['constructor'], "error: unknown command 'constructor'"],
+    [['--bogus'], "error: unknown option '--bogus'"],
+    [['check', '--bogus'], "error: unknown option '--bogus'"],
+    [['check', '--json=1'], "error: unknown option '--json=1'"],
+    [['check', '--only'], "error: option '--only <ids>' argument missing"],
+    [
+      ['check', '--only', '--json'],
+      "error: option '--only <ids>' argument missing",
+    ],
+    [
+      ['check', 'x', 'y'],
+      "error: too many arguments for 'check'. Expected 0 arguments but got 2: x, y.",
+    ],
+    [
+      ['init', '--yarn', '--bun'],
+      "error: option '--yarn' cannot be used with option '--bun'",
+    ],
+  ])('rejects %j', async (arguments_, message) => {
+    expect(await run(...arguments_)).toBe(1)
+    expect(printed()).toContain(message)
+    expect(checkLocal).not.toHaveBeenCalled()
+    expect(initRepo).not.toHaveBeenCalled()
+  })
+
+  it('takes an inline value', async () => {
+    vi.mocked(checkLocal).mockResolvedValue(report(true))
+    expect(await run('check', '--only=a')).toBe(0)
+    expect(checkLocal).toHaveBeenCalledWith({
+      skipRemote: false,
+      only: ['a'],
+    })
+  })
+})
+
+describe('terminal output', () => {
+  it('draws a guide on a terminal', async () => {
+    setTTY(true)
+    mockSync('unchanged', 'updated')
+    expect(await run('sync', '--check')).toBe(1)
+    expect(printed()).toContain('┌  forge sync')
+    expect(printed()).toContain('│\n◆  f0 (unchanged)')
+    expect(printed()).toContain('│\n▲  f1 (would update)')
+    expect(printed()).toContain('│\n└  Drifted. Run: forge sync\n')
+  })
+
+  it('reports an error on a terminal', async () => {
+    setTTY(true)
+    vi.mocked(checkLocal).mockRejectedValue(new Error('nope'))
+    expect(await run('check', '--json')).toBe(1)
+    expect(printed()).toContain('│\n■  nope')
+  })
+})
+
 // ── signals ──────────────────────────────────────────────────────────────────
 
 describe('signals', () => {
@@ -424,6 +511,6 @@ describe('signals', () => {
       .listeners('SIGINT')
       .find((l) => !signalListeners.has(l))
     expect(() => handler?.('SIGINT')).toThrow('exit 130')
-    expect(clack.cancel).toHaveBeenCalledWith('Cancelled.')
+    expect(printed()).toContain('Cancelled.')
   })
 })
