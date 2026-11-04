@@ -4,7 +4,7 @@
 [![jsr](https://jsr.io/badges/@lzear/repo-lint)](https://jsr.io/@lzear/repo-lint)
 [![license](https://img.shields.io/npm/l/@lzear/repo-lint)](../../LICENSE)
 
-Engine behind `forge init`, `forge check`, `forge update` and `forge sync` ([forge](https://github.com/lzear/forge)). Node ≥ 24.
+Engine behind `forge init`, `forge check`, `forge update` and `forge sync` ([forge](https://github.com/lzear/forge)). Node ≥ 26.
 
 ```ts
 import {
