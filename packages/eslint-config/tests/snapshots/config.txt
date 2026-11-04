@@ -1335,7 +1335,6 @@
       "de-morgan",
       "import-x",
       "lzear",
-      "prefer-arrow",
       "promise",
       "regexp",
       "simple-import-sort",
@@ -1724,6 +1723,10 @@
       "de-morgan/no-negated-conjunction": "error",
       "de-morgan/no-negated-disjunction": "error",
       "for-direction": "error",
+      "func-style": [
+        2,
+        "expression",
+      ],
       "getter-return": "error",
       "import-x/default": "error",
       "import-x/export": "error",
@@ -1804,14 +1807,6 @@
       "no-useless-catch": "error",
       "no-useless-escape": "error",
       "no-with": "error",
-      "prefer-arrow/prefer-arrow-functions": [
-        2,
-        {
-          "classPropertiesAllowed": false,
-          "disallowPrototype": true,
-          "singleReturnOnly": false,
-        },
-      ],
       "prefer-regex-literals": "error",
       "preserve-caught-error": "error",
       "promise/always-return": "error",

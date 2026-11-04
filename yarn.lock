@@ -1322,7 +1322,6 @@ __metadata:
     eslint-plugin-import-x: "npm:^4"
     eslint-plugin-jsx-a11y-x: "npm:^0.2"
     eslint-plugin-n: "npm:^18"
-    eslint-plugin-prefer-arrow: "npm:^1"
     eslint-plugin-prettier: "npm:^5"
     eslint-plugin-promise: "npm:^7"
     eslint-plugin-react-dom: "npm:^5"
@@ -3406,15 +3405,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/a8174dd24bd2a1e31867125cfca342bbf601e1610c25905773e7c165581526fe01bd982c7e25c0fef6291bfbe3bab5c6450f4f59cf15c4e891c175f8d4a45050
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-prefer-arrow@npm:^1":
-  version: 1.2.3
-  resolution: "eslint-plugin-prefer-arrow@npm:1.2.3"
-  peerDependencies:
-    eslint: ">=2.0.0"
-  checksum: 10c0/9fd463ae0a8b80f216bee947783813b565d1859583e82b7f72f8853931be7cf6297209610f8e4bdc0b7e5459328b6f0030eab695964d3662ef1939eaada2e86e
   languageName: node
   linkType: hard
 

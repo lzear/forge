@@ -5,7 +5,6 @@ import type { Linter } from 'eslint'
 import { defaultConditionNames } from 'eslint-import-resolver-typescript'
 import deMorganPlugin from 'eslint-plugin-de-morgan'
 import importXPlugin from 'eslint-plugin-import-x'
-import preferArrowPlugin from 'eslint-plugin-prefer-arrow'
 import promisePlugin from 'eslint-plugin-promise'
 import regexpPlugin from 'eslint-plugin-regexp'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
@@ -71,14 +70,7 @@ export const core = (local?: string): Linter.Config => {
 
     'lzear/prefer-relative-imports': 2,
 
-    'prefer-arrow/prefer-arrow-functions': [
-      2,
-      {
-        classPropertiesAllowed: false,
-        disallowPrototype: true,
-        singleReturnOnly: false,
-      },
-    ],
+    'func-style': [2, 'expression'],
 
     ...promisePlugin.configs.recommended.rules,
 
@@ -105,7 +97,7 @@ export const core = (local?: string): Linter.Config => {
 
     ...unicornPlugin.configs.recommended.rules,
     'unicorn/consistent-boolean-name': 0, // a bit annoying
-    // `inline` wants a function declaration, which prefer-arrow forbids
+    // `inline` wants a function declaration, which func-style forbids
     'unicorn/default-export-style': [2, { functions: 'separate' }],
     'unicorn/name-replacements': 0, // i like my abbreviations
     'unicorn/no-abusive-eslint-disable': 0,
@@ -150,7 +142,6 @@ export const core = (local?: string): Linter.Config => {
       'de-morgan': deMorganPlugin,
       'import-x': importXPlugin,
       lzear: lzearPlugin,
-      'prefer-arrow': preferArrowPlugin,
       promise: promisePlugin,
       regexp: regexpPlugin,
       'simple-import-sort': simpleImportSort,

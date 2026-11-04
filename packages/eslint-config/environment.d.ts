@@ -32,13 +32,6 @@ declare module 'eslint-module-utils/resolve' {
   ): string | null | false
 }
 
-declare module 'eslint-plugin-prefer-arrow' {
-  import type { ESLint } from 'eslint'
-
-  let plugin: ESLint.Plugin
-  export = plugin
-}
-
 declare module 'eslint-plugin-promise' {
   import type { ESLint, Linter } from 'eslint'
 

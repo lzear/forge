@@ -42,7 +42,7 @@ Each is exported too, for replacing one wholesale. `prettier` comes last so it o
 
 | Layer         | Files              | Plugins                                                                                                                                            |
 | ------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `core`        | JS, TS, JSX, TSX   | `@eslint/js`, stylistic, unicorn, sonarjs, import-x, simple-import-sort, promise, regexp, de-morgan, eslint-comments, prefer-arrow                 |
+| `core`        | JS, TS, JSX, TSX   | `@eslint/js`, stylistic, unicorn, sonarjs, import-x, simple-import-sort, promise, regexp, de-morgan, eslint-comments                               |
 | `typescript`  | TS, TSX            | typescript-eslint `strictTypeChecked` + `stylisticTypeChecked` (project service)                                                                   |
 | `react`       | JSX, TSX           | react-x, react-dom, react-web-api, react-hooks                                                                                                     |
 | `a11y`        | JSX, TSX           | jsx-a11y-x, as `jsx-a11y`                                                                                                                          |
