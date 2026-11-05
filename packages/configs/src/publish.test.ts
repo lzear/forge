@@ -5,6 +5,9 @@ import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('node:child_process', () => ({ execSync: vi.fn() }))
+vi.mock('node:timers/promises', () => ({
+  setTimeout: () => Promise.resolve(),
+}))
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -20,6 +23,8 @@ const write = (file: string, content: unknown): void => {
 const live = new Set<string>()
 const released = new Set<string>()
 const notes = new Map<string, string>()
+// how each next `gh release create` fails: `created` still creates the release
+const releaseFailures: ('lost' | 'created')[] = []
 // what `yarn workspaces list --json` lists: the root, then each workspace
 const workspaces: { name: string; location: string }[] = []
 
@@ -41,6 +46,9 @@ const answers: [RegExp, (match: string[]) => string][] = [
   [
     /^gh release create "(.+)" --title "\1" --target \S+ --notes-file (\S+)(?: --prerelease)?$/,
     ([, tag = '', file = '']) => {
+      const failure = releaseFailures.shift()
+      if (failure === 'created') released.add(tag)
+      if (failure) throw new Error('HTTP 500')
       notes.set(tag, readFileSync(file, 'utf8'))
       return ''
     },
@@ -62,6 +70,9 @@ const fakeExec = (command: string): ReturnType<typeof execSync> => {
 
 const commands = (): string[] =>
   vi.mocked(execSync).mock.calls.map(([command]) => command)
+
+const creates = (): string[] =>
+  commands().filter((c) => c.startsWith('gh release create'))
 
 const staged = (): string[] =>
   commands().flatMap((c) => {
@@ -91,6 +102,7 @@ beforeEach(() => {
   live.clear()
   released.clear()
   notes.clear()
+  releaseFailures.length = 0
   logged.length = 0
   vi.mocked(execSync).mockReset().mockImplementation(fakeExec)
   vi.spyOn(console, 'log').mockImplementation((line: unknown) => {
@@ -228,5 +240,31 @@ describe('lzear-publish', () => {
     setWorkspaces('a', 'b')
     await run('--publish', '--release')
     expect(Object.fromEntries(notes)).toEqual({ 'a@1.0.0': '', 'b@2.0.0': '' })
+  })
+
+  it('retries a failed release without staging again', async () => {
+    pkg('a', 'a', '1.0.0')
+    setWorkspaces('a')
+    releaseFailures.push('lost', 'lost')
+    await run('--publish', '--release')
+    expect(staged()).toEqual(['a'])
+    expect(creates()).toHaveLength(3)
+    expect(Object.fromEntries(notes)).toEqual({ 'a@1.0.0': '' })
+  })
+
+  it('stops retrying when a failed call created the release anyway', async () => {
+    pkg('a', 'a', '1.0.0')
+    setWorkspaces('a')
+    releaseFailures.push('created')
+    await run('--publish', '--release')
+    expect(creates()).toHaveLength(1)
+  })
+
+  it('fails once the retries run out', async () => {
+    pkg('a', 'a', '1.0.0')
+    setWorkspaces('a')
+    releaseFailures.push('lost', 'lost', 'lost')
+    await expect(run('--publish', '--release')).rejects.toThrow('HTTP 500')
+    expect(creates()).toHaveLength(3)
   })
 })

@@ -6,11 +6,14 @@
 // otherwise. --release
 // also creates the GitHub release, whose tag marks the version as done: a
 // released version is skipped, even while its npm stage awaits approval.
+// npm refuses to stage a version twice, so a run that staged packages and then
+// failed can only re-run once those stages are approved or the release exists.
 
 import { execSync } from 'node:child_process'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import { setTimeout as sleep } from 'node:timers/promises'
 import { parseArgs } from 'node:util'
 import { listWorkspaces } from './workspaces.mjs'
 
@@ -30,6 +33,8 @@ const { values: options } = parseArgs({
 })
 const root = process.cwd()
 const tarball = path.join(tmpdir(), 'lzear-publish.tgz')
+// waits between the attempts to create a release, in milliseconds
+const releaseRetryDelays = [15_000, 60_000]
 
 /**
 @param {string} command
@@ -154,9 +159,29 @@ const notesOf = ({ changelog, version }) => {
 }
 
 /**
+retried because the packages are staged by now, and a re-run can't stage them
+again; a failed call may still have created the release
+@param {string} tag
+@param {string} command
+*/
+const runReleaseCommand = async (tag, command) => {
+  for (const delay of releaseRetryDelays)
+    try {
+      run(command)
+      return
+    } catch (error) {
+      console.log(`Retrying ${tag} in ${delay / 1000}s: ${String(error)}`)
+      await sleep(delay)
+      if (isReleased(tag)) return
+    }
+
+  run(command)
+}
+
+/**
 @param {Release} release
 */
-const createRelease = (release) => {
+const createRelease = async (release) => {
   if (!options.publish) {
     console.log(`[dry-run] would release ${release.tag}`)
     return
@@ -165,7 +190,8 @@ const createRelease = (release) => {
   writeFileSync(notes, notesOf(release))
   const sha = run('git rev-parse HEAD')
   const flag = prereleaseOf(release.version) ? ' --prerelease' : ''
-  run(
+  await runReleaseCommand(
+    release.tag,
     `gh release create "${release.tag}" --title "${release.tag}" --target ${sha} --notes-file ${notes}${flag}`,
   )
   console.log(`Released ${release.tag}`)
@@ -177,5 +203,5 @@ for (const release of releases) {
     continue
   }
   for (const p of release.packages) stage(p)
-  if (options.release) createRelease(release)
+  if (options.release) await createRelease(release)
 }
