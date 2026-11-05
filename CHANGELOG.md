@@ -1,3 +1,32 @@
+## 6.2.0
+
+Install a pinned corepack after setup-node in CI, because Node 25 and later don't bundle it.
+
+Replace eslint-plugin-prefer-arrow with the built-in `func-style` rule, set to `expression`.
+
+Run the CLI on `node:util` alone, dropping commander, picocolors and @clack/prompts.
+
+State the Node 26 requirement in the README.
+
+Turn on `noUncheckedSideEffectImports` in the shared tsconfig.
+
+### ESLint rules
+
+#### `lzear/core`
+
+- `func-style`: added, `error` `"expression"`
+- `prefer-arrow/prefer-arrow-functions`: removed
+
+### Commits
+
+- [`be73322`](https://github.com/lzear/forge/commit/be73322) feat(configs): turn on noUncheckedSideEffectImports in the shared tsconfig
+- [`c284a02`](https://github.com/lzear/forge/commit/c284a02) chore: `yarn housekeep`
+- [`2e2de33`](https://github.com/lzear/forge/commit/2e2de33) test(forge): reset exitCode to 0 so the bin tests pass on Bun too
+- [`be6acef`](https://github.com/lzear/forge/commit/be6acef) fix(configs): let Renovate bump the npm-installed corepack pin
+- [`615eeb9`](https://github.com/lzear/forge/commit/615eeb9) refactor(forge): run the CLI on node:util
+- [`66cfbc1`](https://github.com/lzear/forge/commit/66cfbc1) feat(eslint-config): replace prefer-arrow with func-style
+- [`618c8bb`](https://github.com/lzear/forge/commit/618c8bb) docs(repo-lint): state the Node 26 requirement
+
 ## 6.1.0
 
 The reusable CI runs zizmor and gitleaks as steps of its `ci` job, so a private repo is billed one rounded minute instead of three.
