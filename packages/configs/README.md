@@ -17,7 +17,7 @@ Peers are optional: install the tools you use (`tsdown`, `vite`, `vitest`, `jsdo
 { "extends": "@lzear/configs/tsconfig/lib" }
 ```
 
-- `base`: `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax`, `erasableSyntaxOnly`, `noUnused*`.
+- `base`: `strict`, `noUncheckedIndexedAccess`, `noUncheckedSideEffectImports`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax`, `erasableSyntaxOnly`, `noUnused*`.
 - `app`: base + ESNext, bundler resolution, `noEmit`.
 - `lib`: base + ESNext, bundler resolution, dts, declaration and source maps.
 - `react`: base + ESNext, DOM, `react-jsx`, `.ts` import extensions, `noEmit`.
