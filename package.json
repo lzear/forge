@@ -19,7 +19,7 @@
     "housekeep": "yarn build && yarn forge update && yarn test --update && yarn qa && yarn forge check --strict",
     "test": "yarn workspaces foreach --all run test",
     "typecheck": "yarn workspaces foreach --all run typecheck",
-    "zizmor": "zizmor --config .github/zizmor.yml .github",
+    "zizmor": "zizmor --config .github/zizmor.yml .",
     "version-packages": "yarn lzear-changelog && node packages/eslint-config/scripts/rule-notes.ts --changelog CHANGELOG.md && changeset version && yarn lzear-sync-jsr"
   },
   "workspaces": [

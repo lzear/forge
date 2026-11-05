@@ -22,7 +22,7 @@ runs:
     - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
       with:
         node-version: ${{ inputs.node-version }}
-    - run: npm i -g corepack@0.36.x && corepack enable
+    - run: npm i -g corepack@0.36.x && corepack enable # zizmor: ignore[adhoc-packages] no lockfile exists before the package manager
       shell: bash
     # setup-node again, now for the cache: its detection must resolve the
     # packageManager-pinned yarn/pnpm, not the runner's preinstalled one

@@ -7,7 +7,7 @@ Yarn workspaces monorepo of shared dev tooling, published to npm and JSR. Packag
 ```bash
 CI=true yarn qa                                      # build, then typecheck, lint, test, forge check at once
 cd packages/<name> && yarn vitest run src/x.test.ts  # one test file
-yarn zizmor                                          # audit workflows (brew/uv zizmor; CI runs the action)
+yarn zizmor                                          # audit the whole repo (workflows and actions; brew/uv zizmor; CI runs the action)
 yarn e2e:init [lib-yarn|app-bun|lib-bun|react-yarn]  # scaffold, install from npm, run each script: after changing forge init or its configs
 ```
 
