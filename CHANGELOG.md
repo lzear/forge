@@ -1,3 +1,25 @@
+## 6.2.1
+
+`lzear-publish` retries creating the GitHub release, so a GitHub 500 no longer leaves packages staged without a release.
+
+### ESLint rules
+
+#### `lzear/core`
+
+- `func-style`: added, `error` `"expression"`
+- `prefer-arrow/prefer-arrow-functions`: removed
+
+### Commits
+
+- [`b707214`](https://github.com/lzear/forge/commit/b707214) fix(configs): retry creating the GitHub release in lzear-publish
+- [`be73322`](https://github.com/lzear/forge/commit/be73322) feat(configs): turn on noUncheckedSideEffectImports in the shared tsconfig
+- [`c284a02`](https://github.com/lzear/forge/commit/c284a02) chore: `yarn housekeep`
+- [`2e2de33`](https://github.com/lzear/forge/commit/2e2de33) test(forge): reset exitCode to 0 so the bin tests pass on Bun too
+- [`be6acef`](https://github.com/lzear/forge/commit/be6acef) fix(configs): let Renovate bump the npm-installed corepack pin
+- [`615eeb9`](https://github.com/lzear/forge/commit/615eeb9) refactor(forge): run the CLI on node:util
+- [`66cfbc1`](https://github.com/lzear/forge/commit/66cfbc1) feat(eslint-config): replace prefer-arrow with func-style
+- [`618c8bb`](https://github.com/lzear/forge/commit/618c8bb) docs(repo-lint): state the Node 26 requirement
+
 ## 6.2.0
 
 Install a pinned corepack after setup-node in CI, because Node 25 and later don't bundle it.
